@@ -8,6 +8,8 @@
 
 namespace ReuseAndRepair\Info;
 
+error_reporting(E_ALL);
+
 require_once("../main/php/ReuseAndRepair/Info/InfoService.php");
 
 use PHPUnit_Framework_TestCase;
