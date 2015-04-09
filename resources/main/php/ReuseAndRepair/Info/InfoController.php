@@ -8,8 +8,6 @@
 
 namespace ReuseAndRepair\Info;
 
-//use ReuseAndRepair\Info\InfoService;
-//use ReuseAndRepair\Info\InfoPresenter;
 
 class InfoController {
 
