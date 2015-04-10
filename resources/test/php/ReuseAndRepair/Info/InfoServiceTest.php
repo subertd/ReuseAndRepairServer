@@ -8,13 +8,9 @@
 
 namespace ReuseAndRepair\Info;
 
-error_reporting(E_ALL);
-
 require_once("../main/php/ReuseAndRepair/Info/InfoService.php");
 
 use PHPUnit_Framework_TestCase;
-
-$test = new InfoService();
 
 class InfoServiceTest extends PHPUnit_Framework_TestCase {
 
@@ -27,13 +23,13 @@ class InfoServiceTest extends PHPUnit_Framework_TestCase {
     const NON_INTEGER_STRING = "3.14";
 
     /**
-     * @var \ReuseAndRepair\Info\InfoService
+     * @var InfoService
      */
     private $infoService;
 
     function setUp()
     {
-        $this->infoService = new \ReuseAndRepair\Info\InfoService();
+        $this->infoService = new InfoService();
     }
 
     function testGetWhat_integerValueForWhat_shouldReturnParsedInt()
