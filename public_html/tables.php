@@ -1,6 +1,7 @@
 <?php
 
-const CREATE_ORGANIZATION_TABLE_QUERY = "CREATE TABLE  `cs419-g15`.`Organization` (
+const CREATE_ORGANIZATION_TABLE_QUERY =
+    "CREATE TABLE  `cs419-g15`.`Organization` (
             `organization_id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY ,
             `phone_number` VARCHAR( 14 ) NULL ,
             `website_url` VARCHAR( 255 ) NULL ,
@@ -19,6 +20,24 @@ const CREATE_ITEM_TABLE_QUERY = "CREATE TABLE  `cs419-g15`.`Item` (
             INDEX (  `category_id` )
             ) ENGINE = INNODB";
 
+const CREATE_ORGANIZATION_ITEM_TABLE_QUERY =
+    "CREATE TABLE `cs419-g15`.`Organization_Item` (
+            `organization_id` INT NOT NULL,
+            `item_id` INT NOT NULL,
+            FOREIGN KEY (`organization_id`) REFERENCES `cs419-g15`.`Organization`(`organization_id`) ON DELETE CASCADE,
+            FOREIGN KEY (`item_id`) REFERENCES `cs419-g15`.`Item`(`item_id`) ON DELETE CASCADE,
+            UNIQUE KEY (`organization_id`, `item_id`)
+            ) ENGINE = INNODB;";
+
+const DROP_ORGANIZATION_TABLE_QUERY =
+    "DROP TABLE IF EXISTS `cs419-g15`.`Organization`";
+
+const DROP_CATEGORY_TABLE_QUERY = "DROP TABLE IF EXISTS `cs419-g15`.`Category`";
+
+const DROP_ITEM_TABLE_QUERY = "DROP TABLE IF EXISTS `cs419-g15`.`Item`";
+
+const DROP_ORGANIZATION_ITEM_TABLE_QUERY = "DROP TABLE IF EXISTS `cs419-g15`.`Organization_item`";
+
 header("Content-type:text/html");
 ini_set('display_errors', 'On');
 
@@ -34,7 +53,8 @@ catch (MysqlException $mysqlException) {
     die ("Failed to connect to Mysql: " . $mysqlException);
 }
 
-//createTables($mysqli);
+deleteTables($mysqli);
+createTables($mysqli);
 insertRowsIntoTables($mysqli);
 
 function createTables($mysqli) {
@@ -73,7 +93,6 @@ function createTables($mysqli) {
 
 function insertRowsIntoTables($mysqli)
 {
-
     $result = $mysqli->query(
         "INSERT INTO  `cs419-g15`.`Category` (
     `category_id` ,
@@ -304,21 +323,28 @@ function insertRowsIntoTables($mysqli)
 
 function deleteTables($mysqli)
 {
-    $result = $mysqli->query("DROP TABLE Organization");
+    $result = $mysqli->query(DROP_ORGANIZATION_ITEM_TABLE_QUERY);
+    if($result == 'TRUE') {
+        echo "Table 'Organization_Item' delete successful.<br>";
+    } else {
+        echo "Table 'Organization_Item' delete fail.<br>";
+    }
+
+    $result = $mysqli->query(DROP_ORGANIZATION_TABLE_QUERY);
     if($result == 'TRUE') {
         echo "Table 'Organization' delete successful.<br>";
     } else {
         echo "Table 'Organization' delete fail.<br>";
     }
 
-    $result = $mysqli->query("DROP TABLE Category");
+    $result = $mysqli->query(DROP_CATEGORY_TABLE_QUERY);
     if($result == 'TRUE') {
         echo "Table 'Category' delete successful.<br>";
     } else {
         echo "Table 'Category' delete fail.<br>";
     }
 
-    $result = $mysqli->query("DROP TABLE Item");
+    $result = $mysqli->query(DROP_ITEM_TABLE_QUERY);
     if($result == 'TRUE') {
         echo "Table 'Item' delete successful.<br>";
     } else {
