@@ -6,9 +6,8 @@
  * Time: 3:16 PM
  */
 
-namespace ReuseAndRepair\Persistence;
+namespace ReuseAndRepair\Persistence\Mysql;
 
-use ReuseAndRepair\Mysql\MysqliFactory;
 use ReuseAndRepair\Models\Organization;
 use ReuseAndRepair\Models\Category;
 use ReuseAndRepair\Models\Item;

@@ -6,9 +6,8 @@
  * Time: 12:11 PM
  */
 
-namespace ReuseAndRepair\Mysql;
+namespace ReuseAndRepair\Persistence\Mysql;
 
-use ReuseAndRepair\Mysql\MysqlException;
 
 class MysqliFactory {
 
@@ -38,14 +37,15 @@ class MysqliFactory {
      * Get an instance of a mysqli
      *
      * @return \mysqli the instance
-     * @throws MysqlException if a mysqli could not be created
+     * @throws MysqliFactoryException if a mysqli could not be created
      */
     public function getInstance() {
         $mysqli =  new \mysqli(
             $this->host, $this->user, $this->password, $this->database);
 
         if ($mysqli->connect_errno > 0) {
-            throw new MysqlException($mysqli->connect_error, $mysqli->connect_errno);
+            throw new MysqliFactoryException(
+                $mysqli->connect_error, $mysqli->connect_errno);
         }
 
         return $mysqli;

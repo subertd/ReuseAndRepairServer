@@ -6,10 +6,10 @@
  * Time: 2:01 PM
  */
 
-namespace ReuseAndRepair\Mysql;
+namespace ReuseAndRepair\Persistence;
 
 
-class MysqlException extends \Exception  {
+class PersistenceException extends \Exception  {
 
     public function __construct($message = null, $errno = null, $cause = null) {
         parent::__construct($message, $errno, $cause);
