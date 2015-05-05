@@ -25,7 +25,9 @@ class MysqliFactory {
         $databaseProperties = parse_ini_file(
             "../resources/main/config/database.ini");
 
-        // TODO add error message for missing ini file
+        if ($databaseProperties == null) {
+            throw new MysqliFactoryException("Missing database.ini");
+        }
 
         $this->host = $databaseProperties[MysqliFactory::HOST];
         $this->user = $databaseProperties[MysqliFactory::USER];
