@@ -19,7 +19,7 @@ CREATE TABLE `cs419-g15`.`Item` (
   `item_id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
   `item_name` VARCHAR( 255 ) NOT NULL,
   `category_id` INT NOT NULL,
-  INDEX ( `category_id` )
+  FOREIGN KEY (`category_id`) REFERENCES `cs419-g15`.`Category`(`category_id`) ON DELETE CASCADE
 ) ENGINE = INNODB;
 
 CREATE TABLE `cs419-g15`.`Organization_Item` (
