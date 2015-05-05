@@ -37,7 +37,7 @@ const DROP_CATEGORY_TABLE_QUERY = "DROP TABLE IF EXISTS `cs419-g15`.`Category`";
 
 const DROP_ITEM_TABLE_QUERY = "DROP TABLE IF EXISTS `cs419-g15`.`Item`";
 
-const DROP_ORGANIZATION_ITEM_TABLE_QUERY = "DROP TABLE IF EXISTS `cs419-g15`.`Organization_item`";
+const DROP_ORGANIZATION_ITEM_TABLE_QUERY = "DROP TABLE IF EXISTS `cs419-g15`.`Organization_Item`";
 
 header("Content-type:text/html");
 ini_set('display_errors', 'On');
