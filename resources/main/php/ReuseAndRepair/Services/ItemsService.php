@@ -10,6 +10,7 @@ namespace ReuseAndRepair\Services;
 
 use ReuseAndRepair\Models\ModelException;
 use ReuseAndRepair\Persistence\DataAccessObject;
+use ReuseAndRepair\Models\ItemFactory;
 use ReuseAndRepair\Models\Item;
 
 class ItemsService {
@@ -115,7 +116,7 @@ class ItemsService {
         if ($authorizationService->isAuthorized(
             $authenticationService, $params))
         {
-            return $this->dao->deleteOrganization($id);
+            return $this->dao->deleteItem($id);
         }
 
         return array('success' => false);

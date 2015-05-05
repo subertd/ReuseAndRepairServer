@@ -15,6 +15,8 @@ use ReuseAndRepair\Persistence\DataAccessObject;
 
 class MysqlDataAccessObject implements DataAccessObject {
 
+    //const SYNC_DATABASE_STRING =
+
     const INSERT_ORGANIZATION_STRING = "INSERT INTO `cs419-g15`.`Organization` (
             `organization_name`,
             `phone_number`,

@@ -257,7 +257,7 @@ class DataController {
         $params = json_decode(file_get_contents("php://input"), true);
 
         try {
-            $response = $this->categoriesService->insertCategory(
+            $response = $this->categoriesService->updateCategory(
                 $this->authenticationService,
                 $this->authorizationService,
                 $params);
@@ -332,7 +332,7 @@ class DataController {
         $params = json_decode(file_get_contents("php://input"), true);
 
         try {
-            $response = $this->itemsService->insertItem(
+            $response = $this->itemsService->updateItem(
                 $this->authenticationService,
                 $this->authorizationService,
                 $params);

@@ -13,6 +13,7 @@ class ItemFactory {
 
     const ID = "id";
     const NAME = "name";
+    const CATEGORY_REF = "categoryRef";
 
     /**
      * Returns a new instance of an item, setting its fields from the parameters
