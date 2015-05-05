@@ -15,7 +15,7 @@ use ReuseAndRepair\Models\ModelException;
 
 class OrganizationsService {
 
-    const ID = "organizationId";
+    const ID = "id";
 
     private $dao;
 
@@ -23,7 +23,7 @@ class OrganizationsService {
         $this->dao = $dao;
     }
 
-    public function setOrganization(
+    public function insertOrganization(
         AuthenticationService $authenticationService,
         AuthorizationService $authorizationService,
         array $params)
@@ -35,7 +35,32 @@ class OrganizationsService {
             if ($authorizationService->isAuthorized(
                 $authenticationService, $params)
             ) {
-                return $this->dao->setOrganization($organization);
+                return $this->dao->insertOrganization($organization);
+            }
+        }
+        catch (ModelException $e) {
+            throw new ServiceException(
+                "Unable to get an organization model", null, $e);
+        }
+
+        return array(
+            'success' => false
+        );
+    }
+
+    public function updateOrganization(
+        AuthenticationService $authenticationService,
+        AuthorizationService $authorizationService,
+        array $params)
+    {
+        try {
+            /** @var Organization $organization */
+            $organization = OrganizationFactory::getInstance($params);
+
+            if ($authorizationService->isAuthorized(
+                $authenticationService, $params)
+            ) {
+                return $this->dao->updateOrganization($organization);
             }
         }
         catch (ModelException $e) {
@@ -65,5 +90,9 @@ class OrganizationsService {
         {
             return $this->dao->deleteOrganization($id);
         }
+
+        return array(
+            'success' => false
+        );
     }
 }

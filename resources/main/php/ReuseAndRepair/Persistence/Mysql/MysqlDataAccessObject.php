@@ -15,13 +15,24 @@ use ReuseAndRepair\Persistence\DataAccessObject;
 
 class MysqlDataAccessObject implements DataAccessObject {
 
-    const INSERT_STRING = "INSERT INTO `cs419-g15`.`Organization` (
+    const INSERT_ORGANIZATION_STRING = "INSERT INTO `cs419-g15`.`Organization` (
             `organization_name`,
             `phone_number`,
             `website_url`,
             `physical_address`
         ) VALUES (?, ?, ?, ?)";
 
+    const UPDATE_ORGANIZATION_STRING = "UPDATE `cs419-g15`.`Organization` SET
+            `organization_name` = ?,
+            `phone_number` = ?,
+            `website_url` = ?,
+            `physical_address` = ?
+            WHERE `organization_id` = ?";
+
+    const DELETE_ORGANIZATION_STRING = "DELETE FROM `cs419-g15`.`Organization`
+            WHERE `organization_id` = ?";
+
+    /** @var \mysqli  */
     private $mysqli;
 
     public function __construct() {
@@ -36,46 +47,100 @@ class MysqlDataAccessObject implements DataAccessObject {
         // TODO make this query the database for a list of all organization-item associations and return it
     }
 
-    public function setOrganization(Organization $organization) {
+    public function insertOrganization(Organization $organization) {
 
-        if ($organization->getId() == null)
+        /** @var string $name */
+        $name = $organization->getName();
+
+        /** @var string $phoneNumber */
+        $phoneNumber = $organization->getPhoneNumber();
+
+        /** @var string $websiteUrl */
+        $websiteUrl = $organization->getWebsiteUrl();
+
+        /** @var string $physicalAddress */
+        $physicalAddress = $organization->getPhysicalAddress();
+
+        if (!($stmt = $this->mysqli->prepare(
+            MysqlDataAccessObject::INSERT_ORGANIZATION_STRING)))
         {
-            $name = $organization->getName();
-
-            $phoneNumber = $organization->getPhoneNumber();
-
-            $websiteUrl = $organization->getWebsiteUrl();
-
-            $physicalAddress = $organization->getPhysicalAddress();
-
-            if (!($stmt = $this->mysqli->prepare(
-                MysqlDataAccessObject::INSERT_STRING)))
-            {
-                die("Unable to prepare statement " . $this->mysqli->error);
-            }
-
-            if (!$stmt->bind_param("ssss",
-                $name,$phoneNumber, $websiteUrl, $physicalAddress))
-            {
-                die("Unable to bind params " . $stmt->error);
-            }
-
-            $result =  $stmt->execute();
-
-            return array(
-                'success' => $result
-            );
+            die("Unable to prepare statement " . $this->mysqli->error);
         }
-        else {
-            throw new \Exception("Not yet implemented - update instead of insert");
+
+        if (!$stmt->bind_param("ssss",
+            $name,$phoneNumber, $websiteUrl, $physicalAddress))
+        {
+            die("Unable to bind params " . $stmt->error);
         }
+
+        $result =  $stmt->execute();
+
+        return array(
+            'success' => $result
+        );
+    }
+
+    public function updateOrganization(Organization $organization) {
+
+        /** @var int $id */
+        $id = $organization->getId();
+
+        /** @var string $name */
+        $name = $organization->getName();
+
+        /** @var string $phoneNumber */
+        $phoneNumber = $organization->getPhoneNumber();
+
+        /** @var string $websiteUrl */
+        $websiteUrl = $organization->getWebsiteUrl();
+
+        /** @var string $physicalAddress */
+        $physicalAddress = $organization->getPhysicalAddress();
+
+        if (!($stmt = $this->mysqli->prepare(
+            MysqlDataAccessObject::UPDATE_ORGANIZATION_STRING)))
+        {
+            die("Unable to prepare statement " . $this->mysqli->error);
+        }
+
+        if (!$stmt->bind_param("ssssi",
+            $name,$phoneNumber, $websiteUrl, $physicalAddress, $id))
+        {
+            die("Unable to bind params " . $stmt->error);
+        }
+
+        $result =  $stmt->execute();
+
+        return array(
+            'success' => $result
+        );
     }
 
     public function deleteOrganization($id) {
+
+        if (!($stmt = $this->mysqli->prepare(
+            MysqlDataAccessObject::DELETE_ORGANIZATION_STRING)))
+        {
+            die("Unable to prepare statement " . $this->mysqli->error);
+        }
+
+        if (!$stmt->bind_param("i", $id))
+        {
+            die("Unable to bind params " . $stmt->error);
+        }
+
+        $result =  $stmt->execute();
+
+        return array(
+            'success' => $result
+        );
+    }
+
+    public function insertCategory(Category $category) {
         throw new \Exception("Not yet implemented");
     }
 
-    public function setCategory(Category $category) {
+    public function updateCategory(Category $category) {
         throw new \Exception("Not yet implemented");
     }
 
@@ -83,7 +148,11 @@ class MysqlDataAccessObject implements DataAccessObject {
         throw new \Exception("Not yet implemented");
     }
 
-    public function setItem(Item $item) {
+    public function insertItem(Item $item) {
+        throw new \Exception("Not yet implemented");
+    }
+
+    public function updateItem(Item $item) {
         throw new \Exception("Not yet implemented");
     }
 
