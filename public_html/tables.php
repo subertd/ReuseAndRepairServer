@@ -43,31 +43,111 @@ ini_set('display_errors', 'On');
 
 require_once("../autoload.php");
 
-use ReuseAndRepair\Mysql\MysqliFactory;
+use ReuseAndRepair\Persistence\Mysql\MysqliFactory;
+use ReuseAndRepair\Persistence\Mysql\MysqliFactoryException;
 
 try {
     $mysqliFactory = new MysqliFactory();
     $mysqli = $mysqliFactory->getInstance();
 }
-catch (MysqlException $mysqlException) {
-    die ("Failed to connect to Mysql: " . $mysqlException);
+catch (MysqliFactoryException $e) {
+    die ("Failed to connect to Mysql: " . $e);
 }
 
-deleteTables($mysqli);
+dropTables($mysqli);
 createTables($mysqli);
 insertRowsIntoTables($mysqli);
 
+/**
+ * @param mysqli $mysqli
+ */
+function dropTables($mysqli)
+{
+    dropOrganizationItemTable($mysqli);
+    dropItemTable($mysqli);
+    dropCategoryTable($mysqli);
+    dropOrganizationTable($mysqli);
+
+    echo "<p>";
+}
+
+/**
+ * @param mysqli $mysqli
+ */
+function dropOrganizationItemTable($mysqli) {
+    $result = $mysqli->query(DROP_ORGANIZATION_ITEM_TABLE_QUERY);
+    if($result == 'TRUE') {
+        echo "Table 'Organization_Item' delete successful.<br>";
+    } else {
+        echo "Table 'Organization_Item' delete fail.<br>";
+    }
+}
+
+/**
+ * @param mysqli $mysqli
+ */
+function dropItemTable($mysqli) {
+    $result = $mysqli->query(DROP_ITEM_TABLE_QUERY);
+    if($result == 'TRUE') {
+        echo "Table 'Item' delete successful.<br>";
+    } else {
+        echo "Table 'Item' delete fail.<br>";
+    }
+}
+
+/**
+ * @param mysqli $mysqli
+ */
+function dropCategoryTable($mysqli) {
+    $result = $mysqli->query(DROP_CATEGORY_TABLE_QUERY);
+    if($result == 'TRUE') {
+        echo "Table 'Category' delete successful.<br>";
+    } else {
+        echo "Table 'Category' delete fail.<br>";
+    }
+}
+
+/**
+ * @param mysqli $mysqli
+ */
+function dropOrganizationTAble($mysqli) {
+    $result = $mysqli->query(DROP_ORGANIZATION_TABLE_QUERY);
+    if($result == 'TRUE') {
+        echo "Table 'Organization' delete successful.<br>";
+    } else {
+        echo "Table 'Organization' delete fail.<br>";
+    }
+}
+
+/**
+ * @param mysqli $mysqli
+ */
 function createTables($mysqli) {
 
-    // Create Organization Table
+    createOrganizationTable($mysqli);
+    createCategoryTable($mysqli);
+    createItemTable($mysqli);
+    createOrganizationItemTable($mysqli);
+
+    echo "<p>";
+}
+
+/**
+ * @param mysqli $mysqli
+ */
+function createOrganizationTable($mysqli) {
     $result = $mysqli->query(CREATE_ORGANIZATION_TABLE_QUERY);
-    if($result == 'TRUE') {
+    if ($result == 'TRUE') {
         echo "Table 'Organization' creation successful.<br>";
     } else {
         echo "Table 'Organization' creation fail.<br>";
     }
+}
 
-    // Create Category Table
+/**
+ * @param mysqli $mysqli
+ */
+function createCategoryTable($mysqli) {
     $result = $mysqli->query(
         CREATE_CATEGORY_TABLE_QUERY
     );
@@ -76,8 +156,12 @@ function createTables($mysqli) {
     } else {
         echo "Table 'Category' creation fail.<br>";
     }
+}
 
-    // Create Item Table
+/**
+ * @param mysqli $mysqli
+ */
+function createItemTable($mysqli) {
     $result = $mysqli->query(
         CREATE_ITEM_TABLE_QUERY
     );
@@ -86,12 +170,44 @@ function createTables($mysqli) {
     } else {
         echo "Table 'Item' creation fail.<br>";
     }
-
-    echo "<p>";
-
 }
 
+/**
+ * @param mysqli $mysqli
+ */
+function createOrganizationItemTable($mysqli) {
+    $result = $mysqli->query(
+        CREATE_ORGANIZATION_ITEM_TABLE_QUERY
+    );
+    if($result == 'TRUE') {
+        echo "Table 'Organization_Item' creation successful.<br>";
+    } else {
+        echo "Table 'Organization_Item' creation fail." . $mysqli->error . "<br>";
+    }
+}
+
+/**
+ * @param mysqli $mysqli
+ */
 function insertRowsIntoTables($mysqli)
+{
+    insertRowsIntoOrganizationTable($mysqli);
+    insertRowsIntoCategoryTable($mysqli);
+    insertRowsIntoItemTable($mysqli);
+    insertRowsIntoOrganizationItemTable($mysqli);
+}
+
+/**
+ * @param mysqli $mysqli
+ */
+function insertRowsIntoOrganizationTable($mysqli) {
+    // TODO implement
+}
+
+/**
+ * @param mysqli $mysqli
+ */
+function insertRowsIntoCategoryTable($mysqli)
 {
     $result = $mysqli->query(
         "INSERT INTO  `cs419-g15`.`Category` (
@@ -110,8 +226,13 @@ function insertRowsIntoTables($mysqli)
         echo "Table 'Category' insertions successful.<br>";
     else
         echo "Table 'Category' insertions fail.<br>";
+}
 
-// Item insertion queries
+/**
+ * @param mysqli $mysqli
+ */
+function insertRowsIntoItemTable($mysqli)
+{
     $result = $mysqli->query(
         "INSERT INTO  `cs419-g15`.`Item` (
     `item_id` ,
@@ -321,37 +442,11 @@ function insertRowsIntoTables($mysqli)
     echo "<p>";
 }
 
-function deleteTables($mysqli)
-{
-    $result = $mysqli->query(DROP_ORGANIZATION_ITEM_TABLE_QUERY);
-    if($result == 'TRUE') {
-        echo "Table 'Organization_Item' delete successful.<br>";
-    } else {
-        echo "Table 'Organization_Item' delete fail.<br>";
-    }
-
-    $result = $mysqli->query(DROP_ORGANIZATION_TABLE_QUERY);
-    if($result == 'TRUE') {
-        echo "Table 'Organization' delete successful.<br>";
-    } else {
-        echo "Table 'Organization' delete fail.<br>";
-    }
-
-    $result = $mysqli->query(DROP_CATEGORY_TABLE_QUERY);
-    if($result == 'TRUE') {
-        echo "Table 'Category' delete successful.<br>";
-    } else {
-        echo "Table 'Category' delete fail.<br>";
-    }
-
-    $result = $mysqli->query(DROP_ITEM_TABLE_QUERY);
-    if($result == 'TRUE') {
-        echo "Table 'Item' delete successful.<br>";
-    } else {
-        echo "Table 'Item' delete fail.<br>";
-    }
-
-    echo "<p>";
+/**
+ * @param mysqli $mysqli
+ */
+function insertRowsIntoOrganizationItemTable($mysqli) {
+    // TODO implement
 }
 
 ?>
