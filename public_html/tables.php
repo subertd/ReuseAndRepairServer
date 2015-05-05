@@ -92,7 +92,7 @@ function dropItemTable($mysqli) {
     if($result == 'TRUE') {
         echo "Table 'Item' delete successful.<br>";
     } else {
-        echo "Table 'Item' delete fail.<br>";
+        echo "Table 'Item' delete fail; " . $mysqli->error . "<br>";
     }
 }
 
@@ -104,7 +104,7 @@ function dropCategoryTable($mysqli) {
     if($result == 'TRUE') {
         echo "Table 'Category' delete successful.<br>";
     } else {
-        echo "Table 'Category' delete fail.<br>";
+        echo "Table 'Category' delete fail; " . $mysqli->error . "<br>";
     }
 }
 
@@ -116,7 +116,7 @@ function dropOrganizationTAble($mysqli) {
     if($result == 'TRUE') {
         echo "Table 'Organization' delete successful.<br>";
     } else {
-        echo "Table 'Organization' delete fail.<br>";
+        echo "Table 'Organization' delete fail; " . $mysqli->error . "<br>";
     }
 }
 
@@ -141,7 +141,7 @@ function createOrganizationTable($mysqli) {
     if ($result == 'TRUE') {
         echo "Table 'Organization' creation successful.<br>";
     } else {
-        echo "Table 'Organization' creation fail.<br>";
+        echo "Table 'Organization' creation fail; " . $mysqli->error . "<br>";
     }
 }
 
@@ -155,7 +155,7 @@ function createCategoryTable($mysqli) {
     if($result == 'TRUE') {
         echo "Table 'Category' creation successful.<br>";
     } else {
-        echo "Table 'Category' creation fail.<br>";
+        echo "Table 'Category' creation fail; " . $mysqli->error . "<br>";
     }
 }
 
@@ -169,7 +169,7 @@ function createItemTable($mysqli) {
     if($result == 'TRUE') {
         echo "Table 'Item' creation successful.<br>";
     } else {
-        echo "Table 'Item' creation fail.<br>";
+        echo "Table 'Item' creation fail; " . $mysqli->error . "<br>";
     }
 }
 
@@ -183,7 +183,7 @@ function createOrganizationItemTable($mysqli) {
     if($result == 'TRUE') {
         echo "Table 'Organization_Item' creation successful.<br>";
     } else {
-        echo "Table 'Organization_Item' creation fail." . $mysqli->error . "<br>";
+        echo "Table 'Organization_Item' creation fail; " . $mysqli->error . "<br>";
     }
 }
 
