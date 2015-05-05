@@ -11,7 +11,8 @@ namespace ReuseAndRepair\Presenters;
 
 class JsonSetResponsePresenter implements Presenter {
 
-    public function present($response) {
-        // TODO implement
+    public function present(array $response) {
+        header("content-type:application/json");
+        echo json_encode($response);
     }
 }

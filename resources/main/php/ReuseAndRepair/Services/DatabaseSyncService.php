@@ -19,6 +19,8 @@ class DatabaseSyncService {
     }
 
     public function syncDatabase() {
-        // TODO implement
+        // TODO parse HTTP request parameters
+
+        return $this->dao->syncDatabase();
     }
 }

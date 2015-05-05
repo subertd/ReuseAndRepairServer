@@ -9,9 +9,13 @@
 namespace ReuseAndRepair\Services;
 
 use ReuseAndRepair\Persistence\DataAccessObject;
+use ReuseAndRepair\Models\OrganizationFactory;
 use ReuseAndRepair\Models\Organization;
+use ReuseAndRepair\Models\ModelException;
 
 class OrganizationsService {
+
+    const ID = "organizationId";
 
     private $dao;
 
@@ -21,9 +25,45 @@ class OrganizationsService {
 
     public function setOrganization(
         AuthenticationService $authenticationService,
-        Organization $organization)
+        AuthorizationService $authorizationService,
+        array $params)
     {
-        return null;
-        // TODO implement
+        try {
+            /** @var Organization $organization */
+            $organization = OrganizationFactory::getInstance($params);
+
+            if ($authorizationService->isAuthorized(
+                $authenticationService, $params)
+            ) {
+                return $this->dao->setOrganization($organization);
+            }
+        }
+        catch (ModelException $e) {
+            throw new ServiceException(
+                "Unable to get an organization model", null, $e);
+        }
+
+        return array(
+            'success' => false
+        );
+    }
+
+    public function deleteOrganization(
+        AuthenticationService $authenticationService,
+        AuthorizationService $authorizationService,
+        array $params)
+    {
+        if (empty($params[OrganizationsService::ID])
+            || !is_numeric(($id = $params[OrganizationsService::ID])))
+        {
+            throw new ServiceException(
+                "Missing parameter " . OrganizationsService::ID);
+        }
+
+        if ($authorizationService->isAuthorized(
+            $authenticationService, $params))
+        {
+            return $this->dao->deleteOrganization($id);
+        }
     }
 }

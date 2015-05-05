@@ -3,9 +3,10 @@
 const CREATE_ORGANIZATION_TABLE_QUERY =
     "CREATE TABLE  `cs419-g15`.`Organization` (
             `organization_id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY ,
+            `organization_name` VARCHAR ( 255) NOT NULL,
             `phone_number` VARCHAR( 14 ) NULL ,
             `website_url` VARCHAR( 255 ) NULL ,
-            `physical address` VARCHAR( 255 ) NULL
+            `physical_address` VARCHAR( 255 ) NULL
             ) ENGINE = INNODB";
 
 const CREATE_CATEGORY_TABLE_QUERY = "CREATE TABLE  `cs419-g15`.`Category` (

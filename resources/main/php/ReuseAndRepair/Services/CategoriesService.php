@@ -22,6 +22,6 @@ class CategoriesService {
     public function setCategory(
         AuthenticationService $authenticationService, Category $category)
     {
-        // TODO implement
+        throw new \Exception("Not yet implemented");
     }
 }

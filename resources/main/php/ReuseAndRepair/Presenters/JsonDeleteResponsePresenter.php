@@ -11,7 +11,7 @@ namespace ReuseAndRepair\Presenters;
 
 class JsonDeleteResponsePresenter implements Presenter {
 
-    public function present($response) {
-        // TODO implement
+    public function present(array $response) {
+        throw new \Exception("Not yet implemented");
     }
 }

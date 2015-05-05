@@ -22,6 +22,6 @@ class ItemsService {
     public function setItem(
         AuthenticationService $authenticationService, Item $item)
     {
-        // TODO implement
+        throw new \Exception("Not yet implemented");
     }
 }

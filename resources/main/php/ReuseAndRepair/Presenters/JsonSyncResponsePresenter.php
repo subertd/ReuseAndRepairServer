@@ -16,7 +16,7 @@ class JsonSyncResponsePresenter implements Presenter {
      *
      * @param array $response the response to send as JSON
      */
-    public function present($response) {
+    public function present(array $response) {
         header("content-type:application/json");
         echo json_encode($response);
     }

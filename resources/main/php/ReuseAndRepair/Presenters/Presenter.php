@@ -11,5 +11,5 @@ namespace ReuseAndRepair\Presenters;
 
 interface Presenter {
 
-    public function present($response);
+    public function present(array $response);
 }

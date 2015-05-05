@@ -9,33 +9,80 @@
 namespace ReuseAndRepair;
 
 use ReuseAndRepair\Persistence\DataAccessObject;
-use ReuseAndRepair\Persistence\MysqlDataAccessObject;
+use ReuseAndRepair\Persistence\Mysql\MysqlDataAccessObject;
+use ReuseAndRepair\Presenters\JsonSyncResponsePresenter;
 use ReuseAndRepair\Presenters\JsonSetResponsePresenter;
+use ReuseAndRepair\Presenters\JsonDeleteResponsePresenter;
 use ReuseAndRepair\Services\AuthenticationService;
+use ReuseAndRepair\Services\AuthorizationService;
 use ReuseAndRepair\Services\DatabaseSyncService;
 use ReuseAndRepair\Services\OrganizationsService;
 use ReuseAndRepair\Services\CategoriesService;
 use ReuseAndRepair\Services\ItemsService;
 use ReuseAndRepair\Services\ServiceException;
 use ReuseAndRepair\Models\Organization;
-//use ReuseAndRepair\Models\Category;
-//use ReuseAndRepair\Models\Item;
+use ReuseAndRepair\Models\Category;
+use ReuseAndRepair\Models\Item;
 
 class Controller {
 
+    private $params;
+
+    /**
+     * @var AuthenticationService
+     */
     private $authenticationService;
 
+    /**
+     * @var AuthorizationService
+     */
+    private $authorizationService;
+
+    /**
+     * @var DatabaseSyncService
+     */
     private $databaseSyncService;
 
+    /**
+     * @var OrganizationsService
+     */
     private $organizationsService;
+
+    /**
+     * @var CategoriesService
+     */
     private $categoriesService;
+
+    /**
+     * @var ItemsService
+     */
     private $itemsService;
 
+    /**
+     * @var JsonSyncResponsePresenter
+     */
+    private $jsonSyncResponsePresenter;
+
+    /**
+     * @var JsonSetResponsePresenter
+     */
     private $jsonSetResponsePresenter;
 
-    public function __construct() {
+    /**
+     * @var JsonDeleteResponsePresenter
+     */
+    private $jsonDeleteResponsePresenter;
+
+    /**
+     * @param array $params the http request body data
+     */
+    public function __construct(array $params) {
+
+        /** @var array params */
+        $this->params = $params;
 
         $this->authenticationService = new AuthenticationService();
+        $this->authorizationService = new AuthorizationService();
 
         /** @var DataAccessObject $dao */
         $dao = new MysqlDataAccessObject();
@@ -46,49 +93,67 @@ class Controller {
         $this->categoriesService = new CategoriesService($dao);
         $this->itemsService = new ItemsService($dao);
 
+        $this->jsonSyncResponsePresenter = new JsonSyncResponsePresenter();
         $this->jsonSetResponsePresenter = new JsonSetResponsePresenter();
+        $this->jsonDeleteResponsePresenter = new JsonDeleteResponsePresenter();
     }
 
     public function syncDatabase() {
-        // TODO implement
+        $this->jsonSyncResponsePresenter->present(
+            $this->databaseSyncService->syncDatabase());
     }
 
     public function setOrganization() {
 
-        $organization = new Organization;
-
-        // TODO set the properties of the organization
-
         try {
             $response = $this->organizationsService->setOrganization(
                 $this->authenticationService,
-                $organization);
-
-            $this->jsonSetResponsePresenter->present($response);
+                $this->authorizationService,
+                $this->params);
         }
         catch (ServiceException $e) {
-            // TODO handle
+            $response = array(
+                'success' => false,
+                'message' => $e->getMessage(),
+                'code' =>$e->getCode()
+            );
         }
+
+        $this->jsonSetResponsePresenter->present($response);
     }
 
     public function deleteOrganization() {
-        // TODO implement
+
+        try {
+            $response = $this->organizationsService->deleteOrganization(
+                $this->authenticationService,
+                $this->authorizationService,
+                $this->params);
+        }
+        catch (ServiceException $e) {
+            $response = array(
+                'success' => false,
+                'message' => $e->getMessage(),
+                'code' => $e->getCode()
+            );
+        }
+
+        $this->jsonDeleteResponsePresenter->present($response);
     }
 
     public function setCategory() {
-        // TODO implement
-        return null;
+        throw new \Exception("Not yet implemented");
     }
 
     public function deleteCategory() {
-        // TODO implement
+        throw new \Exception("Not yet implemented");
     }
 
     public function setItem() {
-        // TODO implement
+        throw new \Exception("Not yet implemented");
     }
 
     public function deleteItem() {
-        // TODO implement
+        throw new \Exception("Not yet implemented");
     }
 }
