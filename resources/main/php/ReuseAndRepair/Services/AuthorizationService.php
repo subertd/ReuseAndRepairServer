@@ -9,12 +9,32 @@
 namespace ReuseAndRepair\Services;
 
 
+/**
+ * Class AuthorizationService
+ * @package ReuseAndRepair\Services
+ *
+ * Handles authorization of users to make changes to the data
+ */
 class AuthorizationService {
 
+
+    /**
+     * Returns whether the user is authorized to make changes to the data
+     *
+     * @param AuthenticationService $authenticationService
+     * @param array $params the parsed HTTP request parameters
+     * @return bool true if the user is authorized, else false
+     */
     public function isAuthorized(AuthenticationService $authenticationService,
         array $params)
     {
         // TODO implement
+        /*
+         * Put here, the code for determining whether a user, once identified,
+         * is an administrative user.
+         *
+         * Use the AuthenticationService to get the identity of the user
+         */
         return true;
     }
 }

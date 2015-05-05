@@ -9,6 +9,12 @@
 namespace ReuseAndRepair\Models;
 
 
+/**
+ * Class OrganizationFactory
+ * @package ReuseAndRepair\Models
+ *
+ * Creates an instance of an organization, setting its fields as appropriate
+ */
 class OrganizationFactory {
 
     const ID = "id";
@@ -17,36 +23,39 @@ class OrganizationFactory {
     const PHYSICAL_ADDRESS = "physicalAddress";
     const WEBSITE_URL = "websiteUrl";
 
+    /**
+     * Returns a new instance of an organization, setting its fields from
+     * the parameters
+     *
+     * @param array $params the parameters
+     * @return Organization the new instance
+     * @throws ModelException if the parameters are missing one or more required
+     * fields
+     */
     public static function getInstance(array $params) {
 
         /** @var Organization $organization */
         $organization = new Organization();
 
-        if (empty($params[OrganizationFactory::NAME])
-            || empty($params[OrganizationFactory::PHONE_NUMBER])
-            || empty($params[OrganizationFactory::WEBSITE_URL])
-            || empty($params[OrganizationFactory::PHYSICAL_ADDRESS]))
+        if (empty($params[self::NAME])
+            || empty($params[self::PHONE_NUMBER])
+            || empty($params[self::WEBSITE_URL])
+            || empty($params[self::PHYSICAL_ADDRESS]))
         {
             throw new ModelException("Missing Parameters");
         }
 
-        if (!empty($params[OrganizationFactory::ID])
-            && is_numeric(($id = $params[OrganizationFactory::ID])))
-        {
-            $organization->setId($id);
+        if (!empty($params[self::ID])
+            && is_numeric(($id = $params[self::ID]))
+            && (( (float) $params[self::ID]) % 1 == 0)
+        ) {
+            $organization->setId( (int) $params[self::ID]);
         }
 
-        $organization->setName($params[
-            OrganizationFactory::NAME]);
-
-        $organization->setPhoneNumber($params[
-            OrganizationFactory::PHONE_NUMBER]);
-
-        $organization->setWebsiteUrl($params[
-            OrganizationFactory::WEBSITE_URL]);
-
-        $organization->setPhysicalAddress($params[
-            OrganizationFactory::PHYSICAL_ADDRESS]);
+        $organization->setName($params[self::NAME]);
+        $organization->setPhoneNumber($params[self::PHONE_NUMBER]);
+        $organization->setWebsiteUrl($params[self::WEBSITE_URL]);
+        $organization->setPhysicalAddress($params[self::PHYSICAL_ADDRESS]);
 
         return $organization;
     }

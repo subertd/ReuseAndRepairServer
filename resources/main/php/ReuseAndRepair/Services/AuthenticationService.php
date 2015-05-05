@@ -11,4 +11,7 @@ namespace ReuseAndRepair\Services;
 
 class AuthenticationService {
 
+    /*
+     * Put here, code to retrieve the user's identity, or whatever
+     */
 }
