@@ -2,7 +2,7 @@
 
 require_once('../autoload.php');
 
-use ReuseAndRepair\Controller;
+use ReuseAndRepair\Controllers\DataController;
 
-$controller = new Controller();
-$controller->handleHttpRequest();
+$dataController = new DataController();
+$dataController->handleHttpRequest();

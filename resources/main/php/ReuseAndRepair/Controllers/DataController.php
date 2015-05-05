@@ -6,7 +6,7 @@
  * Time: 3:30 PM
  */
 
-namespace ReuseAndRepair;
+namespace ReuseAndRepair\Controllers;
 
 use ReuseAndRepair\Persistence\DataAccessObject;
 use ReuseAndRepair\Persistence\Mysql\MysqlDataAccessObject;
@@ -18,11 +18,17 @@ use ReuseAndRepair\Services\OrganizationsService;
 use ReuseAndRepair\Services\CategoriesService;
 use ReuseAndRepair\Services\ItemsService;
 use ReuseAndRepair\Services\ServiceException;
-use ReuseAndRepair\Models\Organization;
-use ReuseAndRepair\Models\Category;
-use ReuseAndRepair\Models\Item;
 
-class Controller {
+/**
+ * Class Controller
+ *
+ * The controller is responsible for parsing the request body, routing the
+ * request to the appropriate services, and passing the response to the
+ * appropriate presenter.
+ *
+ * @package ReuseAndRepair
+ */
+class DataController {
 
     const ACTION = "action";
     const ACTION_ORGANIZATION = "organization";
@@ -81,50 +87,55 @@ class Controller {
         $this->jsonResponsePresenter = new JsonResponsePresenter();
     }
 
+    /**
+     * handles an HTTP request
+     */
     public function handleHttpRequest() {
 
         $headers = getallheaders();
-        $action = $headers[Controller::ACTION];
 
         switch($_SERVER['REQUEST_METHOD']) {
             case 'GET':
                 $this->syncDatabase();
                 break;
             case 'POST':
+                $action = $headers[DataController::ACTION];
                 switch($action) {
-                    case Controller::ACTION_ORGANIZATION:
+                    case DataController::ACTION_ORGANIZATION:
                         $this->insertOrganization();
                         break;
-                    case Controller::ACTION_CATEGORY:
+                    case DataController::ACTION_CATEGORY:
                         $this->insertCategory();
                         break;
-                    case Controller::ACTION_ITEM:
+                    case DataController::ACTION_ITEM:
                         $this->insertItem();
                         break;
                 }
                 break;
             case 'PUT':
+                $action = $headers[DataController::ACTION];
                 switch($action) {
-                    case Controller::ACTION_ORGANIZATION:
+                    case DataController::ACTION_ORGANIZATION:
                         $this->updateOrganization();
                         break;
-                    case Controller::ACTION_CATEGORY:
+                    case DataController::ACTION_CATEGORY:
                         $this->updateCategory();
                         break;
-                    case Controller::ACTION_ITEM:
+                    case DataController::ACTION_ITEM:
                         $this->updateItem();
                         break;
                 }
                 break;
             case 'DELETE':
+                $action = $headers[DataController::ACTION];
                 switch($action) {
-                    case Controller::ACTION_ORGANIZATION:
+                    case DataController::ACTION_ORGANIZATION:
                         $this->deleteOrganization();
                         break;
-                    case Controller::ACTION_CATEGORY:
+                    case DataController::ACTION_CATEGORY:
                         $this->deleteCategory();
                         break;
-                    case Controller::ACTION_ITEM:
+                    case DataController::ACTION_ITEM:
                         $this->deleteItem();
                         break;
                 }
@@ -137,6 +148,9 @@ class Controller {
             $this->databaseSyncService->syncDatabase());
     }
 
+    /**
+     * inserts an organization
+     */
     private function insertOrganization() {
 
         /** @var array $params */
@@ -159,6 +173,9 @@ class Controller {
         $this->jsonResponsePresenter->present($response);
     }
 
+    /**
+     * updates an existing organization
+     */
     private function updateOrganization() {
 
         /** @var array $params */
@@ -181,6 +198,9 @@ class Controller {
         $this->jsonResponsePresenter->present($response);
     }
 
+    /**
+     * deletes an existing organization
+     */
     private function deleteOrganization() {
 
         /** @var array $params */
@@ -203,6 +223,9 @@ class Controller {
         $this->jsonResponsePresenter->present($response);
     }
 
+    /**
+     * inserts a category
+     */
     private function insertCategory() {
 
         /** @var array $params */
@@ -218,30 +241,135 @@ class Controller {
             $response = array(
                 'success' => false,
                 'message' => $e->getMessage(),
-                'code' =>$e->getCode()
+                'code' => $e->getCode()
             );
         }
 
         $this->jsonResponsePresenter->present($response);
     }
 
+    /**
+     * updates and existing category
+     */
     private function updateCategory() {
-        throw new \Exception("Not yet implemented");
+
+        /** @var array $params */
+        $params = json_decode(file_get_contents("php://input"), true);
+
+        try {
+            $response = $this->categoriesService->insertCategory(
+                $this->authenticationService,
+                $this->authorizationService,
+                $params);
+        }
+        catch (ServiceException $e) {
+            $response = array(
+                'success' => false,
+                'message' => $e->getMessage(),
+                'code' => $e->getCode()
+            );
+        }
+
+        $this->jsonResponsePresenter->present($response);
     }
 
+    /**
+     * deletes an existing category
+     */
     private function deleteCategory() {
-        throw new \Exception("Not yet implemented");
+
+        /** @var array $params */
+        $params = json_decode(file_get_contents("php://input"), true);
+
+        try {
+            $response = $this->categoriesService->deleteCategory(
+                $this->authenticationService,
+                $this->authorizationService,
+                $params);
+        }
+        catch (ServiceException $e) {
+            $response = array(
+                'success' => false,
+                'message' => $e->getMessage(),
+                'code' => $e->getCode()
+            );
+        }
+
+        $this->jsonResponsePresenter->present($response);
     }
 
+    /**
+     * inserts an item
+     */
     private function insertItem() {
-        throw new \Exception("Not yet implemented");
+
+        /** @var array $params */
+        $params = json_decode(file_get_contents("php://input"), true);
+
+        try {
+            $response = $this->itemsService->insertItem(
+                $this->authenticationService,
+                $this->authorizationService,
+                $params);
+        }
+        catch (ServiceException $e) {
+            $response = array(
+                'success' => false,
+                'message' => $e->getMessage(),
+                'code' => $e->getCode()
+            );
+        }
+
+        $this->jsonResponsePresenter->present($response);
     }
 
+    /**
+     * updates an existing item
+     */
     private function updateItem() {
-        throw new \Exception("Not yet implemented");
+
+        /** @var array $params */
+        $params = json_decode(file_get_contents("php://input"), true);
+
+        try {
+            $response = $this->itemsService->insertItem(
+                $this->authenticationService,
+                $this->authorizationService,
+                $params);
+        }
+        catch (ServiceException $e) {
+            $response = array(
+                'success' => false,
+                'message' => $e->getMessage(),
+                'code' => $e->getCode()
+            );
+        }
+
+        $this->jsonResponsePresenter->present($response);
     }
 
+    /**
+     * delets an existing item
+     */
     private function deleteItem() {
-        throw new \Exception("Not yet implemented");
+
+        /** @var array $params */
+        $params = json_decode(file_get_contents("php://input"), true);
+
+        try {
+            $response = $this->itemsService->deleteItem(
+                $this->authenticationService,
+                $this->authorizationService,
+                $params);
+        }
+        catch (ServiceException $e) {
+            $response = array(
+                'success' => false,
+                'message' => $e->getMessage(),
+                'code' => $e->getCode()
+            );
+        }
+
+        $this->jsonResponsePresenter->present($response);
     }
 }
