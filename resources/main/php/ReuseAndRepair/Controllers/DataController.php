@@ -18,6 +18,7 @@ use ReuseAndRepair\Services\DatabaseSyncService;
 use ReuseAndRepair\Services\OrganizationsService;
 use ReuseAndRepair\Services\CategoriesService;
 use ReuseAndRepair\Services\ItemsService;
+use ReuseAndRepair\Services\OrganizationItemsService;
 use ReuseAndRepair\Services\ServiceException;
 
 /**
@@ -35,6 +36,7 @@ class DataController {
     const ACTION_ORGANIZATION = "organization";
     const ACTION_CATEGORY = "category";
     const ACTION_ITEM = "item";
+    const ACTION_ORGANIZATION_ITEM = "organization_item";
 
     /** @var DataAccessObject */
     private $dao;
@@ -70,6 +72,11 @@ class DataController {
     private $itemsService;
 
     /**
+     * @var OrganizationItemService
+     */
+    private $organizationItemService;
+
+    /**
      * @var Presenter
      */
     private $presenter;
@@ -86,6 +93,8 @@ class DataController {
         $this->organizationsService = new OrganizationsService($this->dao);
         $this->categoriesService = new CategoriesService($this->dao);
         $this->itemsService = new ItemsService($this->dao);
+        $this->organizationItemService
+            = new OrganizationItemService($this->dao);
 
         $this->presenter = new JsonPresenter();
     }
@@ -122,6 +131,9 @@ class DataController {
                     case DataController::ACTION_ITEM:
                         $this->insertItem();
                         break;
+                    case self::ACTION_ORGANIZATION_ITEM:
+                        $this->insertOrganizationItem();
+                        break;
                 }
                 break;
             case 'PUT':
@@ -136,6 +148,8 @@ class DataController {
                     case DataController::ACTION_ITEM:
                         $this->updateItem();
                         break;
+                    case self::ACTION_ORGANIZATION_ITEM:
+                        $this->updateOrganizationItem();
                 }
                 break;
             case 'DELETE':
@@ -150,6 +164,8 @@ class DataController {
                     case DataController::ACTION_ITEM:
                         $this->deleteItem();
                         break;
+                    case self::ACTION_ORGANIZATION_ITEM:
+                        $this->deleteOrganizationItem();
                 }
                 break;
         }
@@ -349,4 +365,56 @@ class DataController {
             $this->presenter->presentException($e);
         }
     }
+
+    private function insertOrganizationItem() {
+
+        /** @var array $params */
+        $params = json_decode(file_get_contents("php://input"), true);
+
+        try {
+            $this->presenter->presentResponse(
+                $this->itemsService->insertOrganizationItem(
+                    $this->authenticationService,
+                    $this->authorizationService,
+                    $params));
+        }
+        catch (ServiceException $e) {
+            $this->presenter->presentException($e);
+        }
+    }
+
+    private function updateOrganizationItem() {
+
+        /** @var array $params */
+        $params = json_decode(file_get_contents("php://input"), true);
+
+        try {
+            $this->presenter->presentResponse(
+                $this->itemsService->updateOrganizationItem(
+                    $this->authenticationService,
+                    $this->authorizationService,
+                    $params));
+        }
+        catch (ServiceException $e) {
+            $this->presenter->presentException($e);
+        }
+    }
+
+    private function deleteOrganizationItem() {
+
+        /** @var array $params */
+        $params = json_decode(file_get_contents("php://input"), true);
+
+        try {
+            $this->presenter->presentResponse(
+                $this->itemsService->deleteOrganizationItem(
+                    $this->authenticationService,
+                    $this->authorizationService,
+                    $params));
+        }
+        catch (ServiceException $e) {
+            $this->presenter->presentException($e);
+        }
+    }
+
 }
