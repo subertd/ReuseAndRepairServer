@@ -19,6 +19,7 @@ class ItemsService {
 
     const MODEL_ERROR = "Unable to get an item model";
 
+    /** @var DataAccessObject */
     private $dao;
 
     public function __construct(DataAccessObject $dao) {

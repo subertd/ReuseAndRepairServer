@@ -72,9 +72,9 @@ class DataController {
     private $itemsService;
 
     /**
-     * @var OrganizationItemService
+     * @var OrganizationItemsService
      */
-    private $organizationItemService;
+    private $organizationItemsService;
 
     /**
      * @var Presenter
@@ -347,7 +347,7 @@ class DataController {
     }
 
     /**
-     * delets an existing item
+     * deletes an existing item
      */
     private function deleteItem() {
 
@@ -366,6 +366,9 @@ class DataController {
         }
     }
 
+    /**
+     * Inserts a new organization-item relationship
+     */
     private function insertOrganizationItem() {
 
         /** @var array $params */
@@ -373,7 +376,7 @@ class DataController {
 
         try {
             $this->presenter->presentResponse(
-                $this->itemsService->insertOrganizationItem(
+                $this->organizationItemsService->insertOrganizationItem(
                     $this->authenticationService,
                     $this->authorizationService,
                     $params));
@@ -383,6 +386,9 @@ class DataController {
         }
     }
 
+    /**
+     * Updates an existing organization-item relationship
+     */
     private function updateOrganizationItem() {
 
         /** @var array $params */
@@ -390,7 +396,7 @@ class DataController {
 
         try {
             $this->presenter->presentResponse(
-                $this->itemsService->updateOrganizationItem(
+                $this->organizationItemsService->updateOrganizationItem(
                     $this->authenticationService,
                     $this->authorizationService,
                     $params));
@@ -400,6 +406,9 @@ class DataController {
         }
     }
 
+    /**
+     * Deletes an organization-item relationship
+     */
     private function deleteOrganizationItem() {
 
         /** @var array $params */
@@ -407,7 +416,7 @@ class DataController {
 
         try {
             $this->presenter->presentResponse(
-                $this->itemsService->deleteOrganizationItem(
+                $this->organizationItemsService->deleteOrganizationItem(
                     $this->authenticationService,
                     $this->authorizationService,
                     $params));
@@ -416,5 +425,4 @@ class DataController {
             $this->presenter->presentException($e);
         }
     }
-
 }
