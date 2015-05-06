@@ -38,7 +38,7 @@ class CategoriesService {
      */
     public function insertCategory(
         AuthenticationService $authenticationService,
-        $authorizationService,
+        AuthorizationService $authorizationService,
         array $params)
     {
         try {

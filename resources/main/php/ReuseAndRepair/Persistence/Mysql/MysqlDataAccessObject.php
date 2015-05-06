@@ -8,7 +8,6 @@
 
 namespace ReuseAndRepair\Persistence\Mysql;
 
-use ReuseAndRepair\Models\ModelException;
 use ReuseAndRepair\Models\OrganizationFactory;
 use ReuseAndRepair\Models\Organization;
 use ReuseAndRepair\Models\CategoryFactory;
@@ -117,8 +116,6 @@ class MysqlDataAccessObject implements DataAccessObject {
 
         $query = $this->constructSyncDatabaseQuery();
 
-        //echo "<br>$query<br>";
-
         if (!$results = $this->mysqli->query($query)) {
             throw new PersistenceException(
                 $this->mysqli->error, $this->mysqli->errno);
@@ -129,7 +126,7 @@ class MysqlDataAccessObject implements DataAccessObject {
         /** @var array $items */
         $items = array();
 
-        /** @var Item $curItem */
+        /** @var array $curItem */
         $curItem = null;
         while (($row = $results->fetch_assoc()) != null) {
 
@@ -156,7 +153,7 @@ class MysqlDataAccessObject implements DataAccessObject {
         return $items;
     }
 
-    private function parseOrganization(array $curItem, array $row) {
+    private function parseOrganization(array &$curItem, array $row) {
 
         if (!empty($row[OrganizationFactory::ID])) {
 

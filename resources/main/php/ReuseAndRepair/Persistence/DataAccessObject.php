@@ -42,7 +42,7 @@ interface DataAccessObject {
     /**
      * Remove an organization at a given index from persistent memory
      *
-     * @param $id the index of the organization to delete
+     * @param int $id the index of the organization to delete
      * @return array the result
      */
     public function deleteOrganization($id);
@@ -50,7 +50,7 @@ interface DataAccessObject {
     /**
      * Commit a Category to persistent memory at the next index
      *
-     * @param Category $category the catetgory to insert
+     * @param Category $category the category to insert
      * @return array the result
      */
     public function insertCategory(Category $category);
@@ -66,7 +66,7 @@ interface DataAccessObject {
     /**
      * Remove a Category at a given index from persistent memory
      *
-     * @param $id the index of the category to delete
+     * @param int $id the index of the category to delete
      * @return array the result
      */
     public function deleteCategory($id);
@@ -90,7 +90,7 @@ interface DataAccessObject {
     /**
      * Remove an Item at a given index from persistent memory
      *
-     * @param $id the index of the item to delete
+     * @param int $id the index of the item to delete
      * @return array the result
      */
     public function deleteItem($id);

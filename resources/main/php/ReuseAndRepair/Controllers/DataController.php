@@ -10,6 +10,7 @@ namespace ReuseAndRepair\Controllers;
 
 use ReuseAndRepair\Persistence\DataAccessObject;
 use ReuseAndRepair\Persistence\Mysql\MysqlDataAccessObject;
+use ReuseAndRepair\Presenters\Presenter;
 use ReuseAndRepair\Presenters\JsonPresenter;
 use ReuseAndRepair\Services\AuthenticationService;
 use ReuseAndRepair\Services\AuthorizationService;
@@ -178,10 +179,11 @@ class DataController {
         $params = json_decode(file_get_contents("php://input"), true);
 
         try {
-            $response = $this->organizationsService->insertOrganization(
-                $this->authenticationService,
-                $this->authorizationService,
-                $params);
+            $this->presenter->presentResponse(
+                $this->organizationsService->insertOrganization(
+                    $this->authenticationService,
+                    $this->authorizationService,
+                    $params));
         }
         catch (ServiceException $e) {
             $this->presenter->presentException($e);
@@ -197,10 +199,11 @@ class DataController {
         $params = json_decode(file_get_contents("php://input"), true);
 
         try {
-            $response = $this->organizationsService->updateOrganization(
-                $this->authenticationService,
-                $this->authorizationService,
-                $params);
+            $this->presenter->presentResponse(
+                $this->organizationsService->updateOrganization(
+                    $this->authenticationService,
+                    $this->authorizationService,
+                    $params));
         }
         catch (ServiceException $e) {
             $this->presenter->presentException($e);
@@ -216,10 +219,11 @@ class DataController {
         $params = json_decode(file_get_contents("php://input"), true);
 
         try {
-            $response = $this->organizationsService->deleteOrganization(
-                $this->authenticationService,
-                $this->authorizationService,
-                $params);
+            $this->presenter->presentResponse(
+                $this->organizationsService->deleteOrganization(
+                    $this->authenticationService,
+                    $this->authorizationService,
+                    $params));
         }
         catch (ServiceException $e) {
             $this->presenter->presentException($e);
@@ -235,10 +239,11 @@ class DataController {
         $params = json_decode(file_get_contents("php://input"), true);
 
         try {
-            $response = $this->organizationsService->insertOrganization(
-                $this->authenticationService,
-                $this->authorizationService,
-                $params);
+            $this->presenter->presentResponse(
+                $this->organizationsService->insertOrganization(
+                    $this->authenticationService,
+                    $this->authorizationService,
+                    $params));
         }
         catch (ServiceException $e) {
             $this->presenter->presentException($e);
@@ -254,10 +259,11 @@ class DataController {
         $params = json_decode(file_get_contents("php://input"), true);
 
         try {
-            $response = $this->categoriesService->updateCategory(
-                $this->authenticationService,
-                $this->authorizationService,
-                $params);
+            $this->presenter->presentResponse(
+                $this->categoriesService->updateCategory(
+                    $this->authenticationService,
+                    $this->authorizationService,
+                    $params));
         }
         catch (ServiceException $e) {
             $this->presenter->presentException($e);
@@ -273,10 +279,11 @@ class DataController {
         $params = json_decode(file_get_contents("php://input"), true);
 
         try {
-            $response = $this->categoriesService->deleteCategory(
-                $this->authenticationService,
-                $this->authorizationService,
-                $params);
+            $this->presenter->presentResponse(
+                $this->categoriesService->deleteCategory(
+                    $this->authenticationService,
+                    $this->authorizationService,
+                    $params));
         }
         catch (ServiceException $e) {
             $this->presenter->presentException($e);
@@ -292,10 +299,11 @@ class DataController {
         $params = json_decode(file_get_contents("php://input"), true);
 
         try {
-            $response = $this->itemsService->insertItem(
-                $this->authenticationService,
-                $this->authorizationService,
-                $params);
+            $this->presenter->presentResponse(
+                $this->itemsService->insertItem(
+                    $this->authenticationService,
+                    $this->authorizationService,
+                    $params));
         }
         catch (ServiceException $e) {
             $this->presenter->presentException($e);
@@ -311,10 +319,11 @@ class DataController {
         $params = json_decode(file_get_contents("php://input"), true);
 
         try {
-            $response = $this->itemsService->updateItem(
-                $this->authenticationService,
-                $this->authorizationService,
-                $params);
+            $this->presenter->presentResponse(
+                $this->itemsService->updateItem(
+                    $this->authenticationService,
+                    $this->authorizationService,
+                    $params));
         }
         catch (ServiceException $e) {
             $this->presenter->presentException($e);
@@ -330,10 +339,11 @@ class DataController {
         $params = json_decode(file_get_contents("php://input"), true);
 
         try {
-            $response = $this->itemsService->deleteItem(
-                $this->authenticationService,
-                $this->authorizationService,
-                $params);
+            $this->presenter->presentResponse(
+                $this->itemsService->deleteItem(
+                    $this->authenticationService,
+                    $this->authorizationService,
+                    $params));
         }
         catch (ServiceException $e) {
             $this->presenter->presentException($e);
