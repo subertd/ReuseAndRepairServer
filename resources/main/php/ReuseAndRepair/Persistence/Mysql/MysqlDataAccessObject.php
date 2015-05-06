@@ -125,41 +125,60 @@ class MysqlDataAccessObject implements DataAccessObject {
         }
 
         // Parse rows into item hierarchy
-        try {
 
-            /** @var array $items */
-            $items = array();
+        /** @var array $items */
+        $items = array();
 
-            /** @var Item $curItem */
-            $curItem = null;
-            while (($row = $results->fetch_assoc()) != null) {
+        /** @var Item $curItem */
+        $curItem = null;
+        while (($row = $results->fetch_assoc()) != null) {
 
-                // If this row has a new item
-                if ($curItem == null || $row[ItemFactory::ID] != $curItem->getId()) {
+            // If this row has a new item
+            if ($curItem == null
+                || $row[ItemFactory::ID] != $curItem[ItemFactory::ID]) {
 
-                    // Put the previous item in the items array
-                    $curItem == null || array_push($items, (array) $curItem);
+                // Put the previous item in the items array
+                $curItem == null || array_push($items, $curItem);
 
-                    // Start a new Item instance
-                    $curItem = ItemFactory::getInstance($row);
-
-                    // Add the category
-                    $curItem->setCategory(CategoryFactory::getInstance($row));
-                }
-
-                // Add the organization, if any, to the current item
-                if (!empty($row[OrganizationFactory::ID])) {
-                    $organization = OrganizationFactory::getInstance($row);
-                    array_push($curItem->getOrganizations(), $organization);
-                }
+                // Start a new Item instance
+                $curItem = array(
+                    ItemFactory::ID => $row[ItemFactory::ID],
+                    ItemFactory::NAME => $row[ItemFactory::NAME],
+                    CategoryFactory::ID => $row[CategoryFactory::ID],
+                    CategoryFactory::NAME => $row[CategoryFactory::NAME],
+                    'organizations' => array()
+                );
             }
-        }
-        catch (ModelException $e) {
-            throw new PersistenceException(
-                "Unable to map data to model object schema", null, $e);
+
+            $this->parseOrganization($curItem, $row);
         }
 
         return $items;
+    }
+
+    private function parseOrganization(array $curItem, array $row) {
+
+        if (!empty($row[OrganizationFactory::ID])) {
+
+            $organization = array(
+                OrganizationFactory::ID =>
+                    $row[OrganizationFactory::ID],
+
+                OrganizationFactory::NAME =>
+                    $row[OrganizationFactory::NAME],
+
+                OrganizationFactory::PHONE_NUMBER =>
+                    $row[OrganizationFactory::PHONE_NUMBER],
+
+                OrganizationFactory::WEBSITE_URL =>
+                    $row[OrganizationFactory::WEBSITE_URL],
+
+                OrganizationFactory::PHYSICAL_ADDRESS =>
+                    $row[OrganizationFactory::PHYSICAL_ADDRESS]
+            );
+
+            array_push($curItem['organizations'], $organization);
+        }
     }
 
     public function insertOrganization(Organization $organization) {
