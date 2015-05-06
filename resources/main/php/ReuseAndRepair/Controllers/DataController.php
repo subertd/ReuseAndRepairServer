@@ -10,7 +10,7 @@ namespace ReuseAndRepair\Controllers;
 
 use ReuseAndRepair\Persistence\DataAccessObject;
 use ReuseAndRepair\Persistence\Mysql\MysqlDataAccessObject;
-use ReuseAndRepair\Presenters\JsonResponsePresenter;
+use ReuseAndRepair\Presenters\JsonPresenter;
 use ReuseAndRepair\Services\AuthenticationService;
 use ReuseAndRepair\Services\AuthorizationService;
 use ReuseAndRepair\Services\DatabaseSyncService;
@@ -26,7 +26,7 @@ use ReuseAndRepair\Services\ServiceException;
  * request to the appropriate services, and passing the response to the
  * appropriate presenter.
  *
- * @package ReuseAndRepair
+ * @package ReuseAndRepair\Controllers
  */
 class DataController {
 
@@ -34,6 +34,9 @@ class DataController {
     const ACTION_ORGANIZATION = "organization";
     const ACTION_CATEGORY = "category";
     const ACTION_ITEM = "item";
+
+    /** @var DataAccessObject */
+    private $dao;
 
     /**
      * @var AuthenticationService
@@ -66,31 +69,39 @@ class DataController {
     private $itemsService;
 
     /**
-     * @var JsonResponsePresenter
+     * @var Presenter
      */
-    private $jsonResponsePresenter;
+    private $presenter;
 
     public function __construct() {
 
         $this->authenticationService = new AuthenticationService();
         $this->authorizationService = new AuthorizationService();
 
-        /** @var DataAccessObject $dao */
-        $dao = new MysqlDataAccessObject();
+        $this->dao = new MysqlDataAccessObject();
 
-        $this->databaseSyncService = new DatabaseSyncService($dao);
+        $this->databaseSyncService = new DatabaseSyncService($this->dao);
 
-        $this->organizationsService = new OrganizationsService($dao);
-        $this->categoriesService = new CategoriesService($dao);
-        $this->itemsService = new ItemsService($dao);
+        $this->organizationsService = new OrganizationsService($this->dao);
+        $this->categoriesService = new CategoriesService($this->dao);
+        $this->itemsService = new ItemsService($this->dao);
 
-        $this->jsonResponsePresenter = new JsonResponsePresenter();
+        $this->presenter = new JsonPresenter();
     }
 
     /**
-     * handles an HTTP request
+     * Routes an HTTP request to the appropriate service layer objects
+     *
+     * The request type determines which operation to perform:
+     * -POST = create
+     * -GET = read
+     * -PUT = update
+     * -DELETE = delete
+     *
+     * and the action header determines which entity to perform the operation
+     * upon (i.e. organization, category, item, organization_item)
      */
-    public function handleHttpRequest() {
+    public function routeHttpRequest() {
 
         $headers = getallheaders();
 
@@ -141,11 +152,21 @@ class DataController {
                 }
                 break;
         }
+
+        $this->dao->close();
     }
 
+    /**
+     * gets all the data in the database
+     */
     private function syncDatabase() {
-        $this->jsonResponsePresenter->present(
-            $this->databaseSyncService->syncDatabase());
+        try {
+            $this->presenter->presentResponse(
+                $this->databaseSyncService->syncDatabase());
+        }
+        catch (ServiceException $e) {
+            $this->presenter->presentException($e);
+        }
     }
 
     /**
@@ -163,14 +184,8 @@ class DataController {
                 $params);
         }
         catch (ServiceException $e) {
-            $response = array(
-                'success' => false,
-                'message' => $e->getMessage(),
-                'code' =>$e->getCode()
-            );
+            $this->presenter->presentException($e);
         }
-
-        $this->jsonResponsePresenter->present($response);
     }
 
     /**
@@ -188,14 +203,8 @@ class DataController {
                 $params);
         }
         catch (ServiceException $e) {
-            $response = array(
-                'success' => false,
-                'message' => $e->getMessage(),
-                'code' =>$e->getCode()
-            );
+            $this->presenter->presentException($e);
         }
-
-        $this->jsonResponsePresenter->present($response);
     }
 
     /**
@@ -213,14 +222,8 @@ class DataController {
                 $params);
         }
         catch (ServiceException $e) {
-            $response = array(
-                'success' => false,
-                'message' => $e->getMessage(),
-                'code' => $e->getCode()
-            );
+            $this->presenter->presentException($e);
         }
-
-        $this->jsonResponsePresenter->present($response);
     }
 
     /**
@@ -238,14 +241,8 @@ class DataController {
                 $params);
         }
         catch (ServiceException $e) {
-            $response = array(
-                'success' => false,
-                'message' => $e->getMessage(),
-                'code' => $e->getCode()
-            );
+            $this->presenter->presentException($e);
         }
-
-        $this->jsonResponsePresenter->present($response);
     }
 
     /**
@@ -263,14 +260,8 @@ class DataController {
                 $params);
         }
         catch (ServiceException $e) {
-            $response = array(
-                'success' => false,
-                'message' => $e->getMessage(),
-                'code' => $e->getCode()
-            );
+            $this->presenter->presentException($e);
         }
-
-        $this->jsonResponsePresenter->present($response);
     }
 
     /**
@@ -288,14 +279,8 @@ class DataController {
                 $params);
         }
         catch (ServiceException $e) {
-            $response = array(
-                'success' => false,
-                'message' => $e->getMessage(),
-                'code' => $e->getCode()
-            );
+            $this->presenter->presentException($e);
         }
-
-        $this->jsonResponsePresenter->present($response);
     }
 
     /**
@@ -313,14 +298,8 @@ class DataController {
                 $params);
         }
         catch (ServiceException $e) {
-            $response = array(
-                'success' => false,
-                'message' => $e->getMessage(),
-                'code' => $e->getCode()
-            );
+            $this->presenter->presentException($e);
         }
-
-        $this->jsonResponsePresenter->present($response);
     }
 
     /**
@@ -338,14 +317,8 @@ class DataController {
                 $params);
         }
         catch (ServiceException $e) {
-            $response = array(
-                'success' => false,
-                'message' => $e->getMessage(),
-                'code' => $e->getCode()
-            );
+            $this->presenter->presentException($e);
         }
-
-        $this->jsonResponsePresenter->present($response);
     }
 
     /**
@@ -363,13 +336,7 @@ class DataController {
                 $params);
         }
         catch (ServiceException $e) {
-            $response = array(
-                'success' => false,
-                'message' => $e->getMessage(),
-                'code' => $e->getCode()
-            );
+            $this->presenter->presentException($e);
         }
-
-        $this->jsonResponsePresenter->present($response);
     }
 }

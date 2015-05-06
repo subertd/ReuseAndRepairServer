@@ -9,6 +9,7 @@
 namespace ReuseAndRepair\Services;
 
 use ReuseAndRepair\Persistence\DataAccessObject;
+use ReuseAndRepair\Persistence\PersistenceException;
 
 class DatabaseSyncService {
 
@@ -19,8 +20,12 @@ class DatabaseSyncService {
     }
 
     public function syncDatabase() {
-        // TODO parse HTTP request parameters
-
-        return $this->dao->syncDatabase();
+        try {
+            return $this->dao->syncDatabase();
+        }
+        catch (PersistenceException $e) {
+            throw new ServiceException(
+                "Unable to sync from database", null, $e);
+        }
     }
 }

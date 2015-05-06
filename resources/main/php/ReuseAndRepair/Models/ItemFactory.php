@@ -11,8 +11,8 @@ namespace ReuseAndRepair\Models;
 
 class ItemFactory {
 
-    const ID = "id";
-    const NAME = "name";
+    const ID = "itemId";
+    const NAME = "itemName";
     const CATEGORY_REF = "categoryRef";
 
     /**
@@ -33,6 +33,7 @@ class ItemFactory {
             || !is_numeric($params[self::CATEGORY_REF])
             || !( ( ( (float) $params[self::CATEGORY_REF]) % 1) == 0)
         ) {
+            print_r($params);
             throw new ModelException("Missing Parameters");
         }
 

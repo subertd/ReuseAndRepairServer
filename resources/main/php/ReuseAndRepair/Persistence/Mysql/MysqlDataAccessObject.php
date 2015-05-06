@@ -8,14 +8,24 @@
 
 namespace ReuseAndRepair\Persistence\Mysql;
 
+use ReuseAndRepair\Models\ModelException;
+use ReuseAndRepair\Models\OrganizationFactory;
 use ReuseAndRepair\Models\Organization;
+use ReuseAndRepair\Models\CategoryFactory;
 use ReuseAndRepair\Models\Category;
+use ReuseAndRepair\Models\ItemFactory;
 use ReuseAndRepair\Models\Item;
 use ReuseAndRepair\Persistence\DataAccessObject;
+use ReuseAndRepair\Persistence\PersistenceException;
 
+/**
+ * Class MysqlDataAccessObject
+ * @package ReuseAndRepair\Persistence\Mysql
+ *
+ * An implementation of DataAccessObject that uses the mysqli library to
+ * persist the data with MySQL
+ */
 class MysqlDataAccessObject implements DataAccessObject {
-
-    //const SYNC_DATABASE_STRING =
 
     const INSERT_ORGANIZATION_STRING = "INSERT INTO `cs419-g15`.`Organization` (
             `organization_name`,
@@ -58,7 +68,9 @@ class MysqlDataAccessObject implements DataAccessObject {
     const DELETE_ITEM_STRING = "DELETE FROM `cs419-g15`.`Item`
             WHERE `item_id` = ?";
 
-    /** @var \mysqli  */
+    /**
+     * @var \mysqli $mysqli
+     */
     private $mysqli;
 
     public function __construct() {
@@ -66,11 +78,88 @@ class MysqlDataAccessObject implements DataAccessObject {
         $this->mysqli = $mysqliFactory->getInstance();
     }
 
+    private function constructSyncDatabaseQuery() {
+
+        return "
+
+        SELECT
+        i.`item_id` AS " . ItemFactory::ID . ",
+        i.`item_name` AS " . ItemFactory::NAME . ",
+        c.`category_id` AS " . ItemFactory::CATEGORY_REF . ",
+        c.`category_id` AS " . CategoryFactory::ID . ",
+        c.`category_name` AS " . CategoryFactory::NAME . ",
+        o.`organization_id` AS " . OrganizationFactory::ID . ",
+        o.`organization_name` AS " . OrganizationFactory::NAME . ",
+        o.`phone_number` AS " . OrganizationFactory::PHONE_NUMBER . ",
+        o.`website_url` AS " . OrganizationFactory::WEBSITE_URL . ",
+        o.`physical_address` AS " . OrganizationFactory::PHYSICAL_ADDRESS . "
+
+        FROM
+        `cs419-g15`.`Item` i
+
+        # using left joins will eliminate categories with no items
+        # and organizations that do not reuse/rebuild any items
+        # while preserving items with no organizations that reuse/rebuild them
+        # this seems appropriate
+
+        # supply the category name for each item's category reference
+        LEFT JOIN `cs419-g15`.`Category` c ON i.`category_id` = c.`category_id`
+
+        # get all the relationships between items and organizations
+        LEFT JOIN `cs419-g15`.`Organization_Item` oi ON oi.`item_id` = i.`item_id`
+        LEFT JOIN `cs419-g15`.`Organization` o ON o.`organization_id` = oi.`organization_id`
+
+        ORDER BY " . ItemFactory::ID . "
+    ;";
+    }
+
     public function syncDatabase() {
-        return array(
-            'test'=>'Hello World'
-        );
-        // TODO make this query the database for a list of all organization-item associations and return it
+
+        $query = $this->constructSyncDatabaseQuery();
+
+        //echo "<br>$query<br>";
+
+        if (!$results = $this->mysqli->query($query)) {
+            throw new PersistenceException(
+                $this->mysqli->error, $this->mysqli->errno);
+        }
+
+        // Parse rows into item hierarchy
+        try {
+
+            /** @var array $items */
+            $items = array();
+
+            /** @var Item $curItem */
+            $curItem = null;
+            while (($row = $results->fetch_assoc()) != null) {
+
+                // If this row has a new item
+                if ($curItem == null || $row[ItemFactory::ID] != $curItem->getId()) {
+
+                    // Put the previous item in the items array
+                    $curItem == null || array_push($items, (array) $curItem);
+
+                    // Start a new Item instance
+                    $curItem = ItemFactory::getInstance($row);
+
+                    // Add the category
+                    $curItem->setCategory(CategoryFactory::getInstance($row));
+                }
+
+                // Add the organization, if any, to the current item
+                if (!empty($row[OrganizationFactory::ID])) {
+                    $organization = OrganizationFactory::getInstance($row);
+                    array_push($curItem->getOrganizations(), $organization);
+                }
+            }
+        }
+        catch (ModelException $e) {
+            throw new PersistenceException(
+                "Unable to map data to model object schema", null, $e);
+        }
+
+        return $items;
     }
 
     public function insertOrganization(Organization $organization) {
@@ -98,7 +187,7 @@ class MysqlDataAccessObject implements DataAccessObject {
             die("Unable to bind params " . $stmt->error);
         }
 
-        $result =  $stmt->execute();
+        $result = $stmt->execute();
 
         return array('success' => $result);
     }
@@ -279,5 +368,9 @@ class MysqlDataAccessObject implements DataAccessObject {
         $result =  $stmt->execute();
 
         return array('success' => $result);
+    }
+
+    public function close() {
+        $this->mysqli->close();
     }
 }

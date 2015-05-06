@@ -17,8 +17,8 @@ namespace ReuseAndRepair\Models;
  */
 class CategoryFactory {
 
-    const ID = "id";
-    const NAME = "name";
+    const ID = "categoryId";
+    const NAME = "categoryName";
 
     /**
      * Returns a new instance of a category, setting its fields from the

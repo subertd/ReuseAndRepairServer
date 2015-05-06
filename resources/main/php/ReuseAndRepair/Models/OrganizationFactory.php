@@ -17,11 +17,11 @@ namespace ReuseAndRepair\Models;
  */
 class OrganizationFactory {
 
-    const ID = "id";
-    const NAME = "name";
-    const PHONE_NUMBER = "phoneNumber";
-    const PHYSICAL_ADDRESS = "physicalAddress";
-    const WEBSITE_URL = "websiteUrl";
+    const ID = "organizationId";
+    const NAME = "organizationName";
+    const PHONE_NUMBER = "organizationPhoneNumber";
+    const PHYSICAL_ADDRESS = "organizationPhysicalAddress";
+    const WEBSITE_URL = "organizationWebsiteUrl";
 
     /**
      * Returns a new instance of an organization, setting its fields from
@@ -37,12 +37,9 @@ class OrganizationFactory {
         /** @var Organization $organization */
         $organization = new Organization();
 
-        if (empty($params[self::NAME])
-            || empty($params[self::PHONE_NUMBER])
-            || empty($params[self::WEBSITE_URL])
-            || empty($params[self::PHYSICAL_ADDRESS]))
+        if (empty($params[self::NAME]))
         {
-            throw new ModelException("Missing Parameters");
+            throw new ModelException("Missing Parameter " . self::NAME);
         }
 
         if (!empty($params[self::ID])

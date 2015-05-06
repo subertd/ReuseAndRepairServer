@@ -26,6 +26,12 @@ class Item {
     /** @var int */
     private $categoryRef;
 
+    /** @var Category */
+    private $category;
+
+    /** @var array */
+    private $organizations = array();
+
     /**
      * @return int
      */
@@ -72,5 +78,37 @@ class Item {
     public function setCategoryRef($categoryRef)
     {
         $this->categoryRef = $categoryRef;
+    }
+
+    /**
+     * @return Category
+     */
+    public function getCategory()
+    {
+        return $this->category;
+    }
+
+    /**
+     * @param Category $category
+     */
+    public function setCategory($category)
+    {
+        $this->category = $category;
+    }
+
+    /**
+     * @return array
+     */
+    public function getOrganizations()
+    {
+        return $this->organizations;
+    }
+
+    /**
+     * @param array $organizations
+     */
+    public function setOrganizations($organizations)
+    {
+        $this->organizations = $organizations;
     }
 }
