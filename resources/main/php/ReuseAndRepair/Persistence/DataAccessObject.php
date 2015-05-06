@@ -96,6 +96,37 @@ interface DataAccessObject {
     public function deleteItem($id);
 
     /**
+     * Commit an Organization-Item relationship to persistent memory
+     *
+     * @param int $organizationId
+     * @param int $itemId
+     * @param $additionalRepairInformation
+     * @return array the result
+     */
+    public function insertOrganizationItem($organizationId, $itemId,
+                                           $additionalRepairInformation);
+
+    /**
+     * Update the Organization-Item relationship in persistent memory
+     *
+     * @param $organizationId
+     * @param $itemId
+     * @param $additionalRepairInformation
+     * @return array the result
+     */
+    public function updateOrganizationItem($organizationId, $itemId,
+                                           $additionalRepairInformation);
+
+    /**
+     * Remove an Organization-Item relationship from persistent memory
+     *
+     * @param $organizationId
+     * @param $itemId
+     * @return array the result
+     */
+    public function deleteOrganizationItem($organizationId, $itemId);
+
+    /**
      * Close the connection to persistent memory
      *
      * Call this once, at the end of the server execution

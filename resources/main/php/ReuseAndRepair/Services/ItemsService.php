@@ -15,8 +15,6 @@ use ReuseAndRepair\Models\Item;
 
 class ItemsService {
 
-    const ID = "id";
-
     const MODEL_ERROR = "Unable to get an item model";
 
     /** @var DataAccessObject */
@@ -104,15 +102,15 @@ class ItemsService {
         AuthorizationService $authorizationService,
         array $params)
     {
-        if (empty($params[self::ID])
-            || !is_numeric($params[self::ID])
-            || !( ( ( (float) $params[self::ID]) % 1) == 0)
+        if (empty($params[ItemFactory::ID])
+            || !is_numeric($params[ItemFactory::ID])
+            || !( ( ( (float) $params[ItemFactory::ID]) % 1) == 0)
         ) {
             throw new ServiceException(
-                "Missing parameter" . self::ID);
+                "Missing parameter" . ItemFactory::ID);
         }
 
-        $id = (int) $params[self::ID];
+        $id = (int) $params[ItemFactory::ID];
 
         if ($authorizationService->isAuthorized(
             $authenticationService, $params))

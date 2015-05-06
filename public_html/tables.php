@@ -25,6 +25,7 @@ const CREATE_ORGANIZATION_ITEM_TABLE_QUERY =
     "CREATE TABLE `cs419-g15`.`Organization_Item` (
             `organization_id` INT NOT NULL,
             `item_id` INT NOT NULL,
+            `additional_repair_information` TEXT,
             FOREIGN KEY (`organization_id`) REFERENCES `cs419-g15`.`Organization`(`organization_id`) ON DELETE CASCADE,
             FOREIGN KEY (`item_id`) REFERENCES `cs419-g15`.`Item`(`item_id`) ON DELETE CASCADE,
             UNIQUE KEY (`organization_id`, `item_id`)

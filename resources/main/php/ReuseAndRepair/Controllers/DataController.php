@@ -93,8 +93,8 @@ class DataController {
         $this->organizationsService = new OrganizationsService($this->dao);
         $this->categoriesService = new CategoriesService($this->dao);
         $this->itemsService = new ItemsService($this->dao);
-        $this->organizationItemService
-            = new OrganizationItemService($this->dao);
+        $this->organizationItemsService
+            = new OrganizationItemsService($this->dao);
 
         $this->presenter = new JsonPresenter();
     }

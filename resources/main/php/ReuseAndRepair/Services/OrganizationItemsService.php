@@ -15,6 +15,8 @@ use ReuseAndRepair\Persistence\DataAccessObject;
 
 class OrganizationItemsService {
 
+    const ADDITIONAL_REPAIR_INFORMATION = "additionalRepairInformation";
+
     const MODEL_ERROR = "Unable to get an organizationItem model";
 
     /** @var DataAccessObject */
@@ -51,14 +53,17 @@ class OrganizationItemsService {
             throw new ServiceException("Missing parameters");
         }
 
-        $organization_id = (int) $params[OrganizationFactory::ID];
-        $item_id = (int) $params[ItemFactory::ID];
+        $organizationId = (int) $params[OrganizationFactory::ID];
+        $itemId = (int) $params[ItemFactory::ID];
+        $additionalRepairInformation
+            = isset($params[self::ADDITIONAL_REPAIR_INFORMATION]) ?
+                $params[self::ADDITIONAL_REPAIR_INFORMATION] : '';
 
         if ($authorizationService->isAuthorized(
             $authenticationService, $params))
         {
             return $this->dao->insertOrganizationItem(
-                $organization_id, $item_id);
+                $organizationId, $itemId, $additionalRepairInformation);
         }
 
         return array('success' => false);
@@ -90,14 +95,15 @@ class OrganizationItemsService {
             throw new ServiceException("Missing parameters");
         }
 
-        $organization_id = (int) $params[OrganizationFactory::ID];
-        $item_id = (int) $params[ItemFactory::ID];
+        $organizationId = (int) $params[OrganizationFactory::ID];
+        $itemId = (int) $params[ItemFactory::ID];
+        $additionalRepairInformation = $params[self::ADDITIONAL_REPAIR_INFORMATION];
 
         if ($authorizationService->isAuthorized(
             $authenticationService, $params))
         {
             return $this->dao->updateOrganizationItem(
-                $organization_id, $item_id);
+                $organizationId, $itemId, $additionalRepairInformation);
         }
 
         return array('success' => false);
