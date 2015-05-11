@@ -203,7 +203,38 @@ function insertRowsIntoTables($mysqli)
  * @param mysqli $mysqli
  */
 function insertRowsIntoOrganizationTable($mysqli) {
-    // TODO implement
+    $result = $mysqli->query(
+        "INSERT INTO  `cs419-g15`.`Organization` (
+    `organization_id` ,
+    `organization_name`,
+    `phone_number`,
+    `website_url`,
+    `physical_address`
+    )
+    VALUES
+        (NULL, 'Book binding', '(541) 757-9861', 'http://www.cornerstoneassociates.com/bj-bookbinding-about-us.html', 
+            '108 SW 3rd St, Corvallis, OR 97333'), 
+        (NULL, 'Cell Phone Sick Bay', '(541) 230-1785', NULL, '252 Sw Madison Ave, Suite 110, Corvallis, OR 97333'),
+        (NULL, 'Geeks N Nerds', '(541) 753-0018', 'http://www.computergeeksnnerds.com/', '950 Southeast Geary St Unit D 
+            Albany, OR 97321'), 
+        (NULL, 'Specialty Sewing By Leslie', '(541) 758-4556', 'http://www.specialtysewing.com/Leslie_Seamstress/Welcome.html', 
+            '225 SW Madison Ave Corvallis, OR 97333'), 
+        (NULL, 'Covallis Technical', '(541) 704-7009', 'http://www.corvallistechnical.com/', '966 NW Circle Blvd Corvallis, OR'), 
+        (NULL, 'Bellevue Computers', '541-757-3487', 'http://www.bellevuepc.com/', '1865 NW 9th St Corvallis, OR'), 
+        (NULL, 'OSU Repair Fair', '541-737-5398', 'http://fa.oregonstate.edu/surplus', 'Oregon State University Property Services                   Building 644 S.W. 13th St Corvallis, OR'), 
+        (NULL, 'P.K Furniture Repair & Refinishing', '541-230-1727', 'http://www.pkfurniturerefinishing.net/', '5270 NW Hwy 99 
+            Corvallis, Oregon 97330'), 
+        (NULL, 'Furniture Restoration Center', '(541) 929-6681', 'http://restorationsupplies.com/', '1321 Main St, Philomath, OR'),             (NULL, 'Power equipment', '(541) 757-8075', 'https://corvallispowerequipment.stihldealer.net/', 
+            '713 NE Circle Blvd Corvallis, OR 97330'), 
+        (NULL, 'Robnett''s', '(541) 753-5531', 'http://ww3.truevalue.com/robnetts/Home.aspx', '400 SW 2nd St Corvallis, OR 97333'), 
+        (NULL, 'Footwise', '(541) 757-0875', 'http://footwise.com/', '301 SW Madison Ave #100, Corvallis, OR 97333'), 
+        (NULL, 'Sedlack', '(541) 752-1498', 'http://www.sedlaksshoes.net/', '225 SW 2nd St, Corvallis, OR 97333'), 
+        (NULL, 'Foam Man', '(541) 754-9378', 'http://www.thefoammancorvallis.com/', '2511 NW 9th St, Corvallis, OR 97330');"
+    );
+    if ($result == 'TRUE')
+        echo "Table 'Organization' insertions successful.<br>";
+    else
+        echo "Table 'Organization' insertions fail.<br>";
 }
 
 /**
