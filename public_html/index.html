@@ -7,35 +7,44 @@
     <script src="javascript/server-proxy.js"></script>
 </head>
 <body>
-    <script type="text/javascript">
-        $(document).ready(function() {
-            console.debug("the document is ready");
-            var serverProxy = new ServerProxy();
-            serverProxy.syncDatabase(function(data, status) {
+<div id="target"></div>
+<!--<h1>Hello World</h1>
+<p>jQuery Failure</p>-->
+<script type="text/javascript">
+    $(document).ready(function() {
+        console.debug("the document is ready");
+
+        /*var serverProxy = new ServerProxy();
+        serverProxy.syncDatabase(
+            function(data, status) {
                 console.debug("Server callback: ", data, status);
-                $("p").html(JSON.stringify(data));
+                $("p").html(JSON.stringify(data),
+            function(error) {
+                console.log("Error syncing database", error);
             });
-
-
-            var cat = {
-                // set the properties of cat
-                // second property
-            }
-
-            serverProxy.insert("cat", cat,
-                function(data, status) {
-                    // what to do after AJAX success
-                },
-                function(error) {
-                    console.log(error);
-                }
-            );
-
-
-
         });
-    </script>
-    <h1>Hello World</h1>
-    <p>jQuery Failure</p>
+
+        var cat = {
+            // set the properties of cat
+            // second property
+        }
+
+        serverProxy.insert("cat", cat,
+            function(data, status) {
+                // what to do after AJAX success
+            },
+            function(error) {
+                console.log(error);
+            }
+        );
+        */
+
+        $(function() {
+            $("#target").load("partials/addItem.html", function() {
+                $(this).contents().unwrap();
+            })
+        })
+    });
+</script>
 </body>
 </html>

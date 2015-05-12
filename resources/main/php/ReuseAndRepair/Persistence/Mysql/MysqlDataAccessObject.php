@@ -40,7 +40,13 @@ class MysqlDataAccessObject implements DataAccessObject {
     const DELETE_ORGANIZATION_STRING = "DELETE FROM `cs419-g15`.`Organization`
             WHERE `organization_id` = ?";
 
-    const READ_ORGANIZATIONS_STRING = "SELECT * FROM `cs419-g15`.`Organization`";
+    const READ_ORGANIZATIONS_STRING = "SELECT
+        organization_id AS id,
+        organization_name AS name,
+        phone_number AS phoneNumber,
+        website_url AS websiteUrl,
+        physical_address AS physicalAddress
+      FROM `cs419-g15`.`Organization`";
 
     const INSERT_CATEGORY_STRING = "INSERT INTO `cs419-g15`.`Category` (
             `category_name`
@@ -53,7 +59,10 @@ class MysqlDataAccessObject implements DataAccessObject {
     const DELETE_CATEGORY_STRING = "DELETE FROM `cs419-g15`.`Category`
             WHERE `category_id` = ?";
 
-    const READ_CATEGORIES_STRING = "SELECT * FROM `cs419-g15`.`Category`";
+    const READ_CATEGORIES_STRING = "SELECT
+        category_id AS id,
+        category_name AS name
+      FROM `cs419-g15`.`Category`";
 
     const INSERT_ITEM_STRING = "INSERT INTO `cs419-g15`.`Item` (
             `item_name`,
@@ -68,7 +77,11 @@ class MysqlDataAccessObject implements DataAccessObject {
     const DELETE_ITEM_STRING = "DELETE FROM `cs419-g15`.`Item`
             WHERE `item_id` = ?";
 
-    const READ_ITEMS_STRING = "SELECT * FROM `cs419-g15`.`Item`";
+    const READ_ITEMS_STRING = "SELECT
+        item_id AS id,
+        item_name AS name,
+        category_id AS categoryRef
+      FROM `cs419-g15`.`Item`";
 
     const INSERT_ORGANIZATION_ITEM_STRING =
         "INSERT INTO `cs419-g15`.`Organization_Item` (
@@ -87,7 +100,10 @@ class MysqlDataAccessObject implements DataAccessObject {
         WHERE `organization_id` = ? AND `item_id` = ?";
 
     const READ_ORGANIZATION_ITEMS_STRING =
-        "SELECT * FROM `cs419-g15`.`Organization_Item`";
+        "SELECT
+            organization_id AS organizationRef,
+            item_id AS itemRef
+        FROM `cs419-g15`.`Organization_Item`";
 
     /**
      * @var \mysqli $mysqli
@@ -330,7 +346,7 @@ class MysqlDataAccessObject implements DataAccessObject {
 
     public function getOrganizations()
     {
-        return queryAsArray(self::READ_ORGANIZATIONS_STRING);
+        return $this->queryAsArray(self::READ_ORGANIZATIONS_STRING);
     }
 
     public function insertCategory(Category $category) {
@@ -402,7 +418,7 @@ class MysqlDataAccessObject implements DataAccessObject {
 
     public function getCategories()
     {
-        return queryAsArray(self::READ_CATEGORIES_STRING);
+        return $this->queryAsArray(self::READ_CATEGORIES_STRING);
     }
 
     public function insertItem(Item $item) {
@@ -480,7 +496,7 @@ class MysqlDataAccessObject implements DataAccessObject {
 
     public function getItems()
     {
-        return queryAsArray(self::READ_ITEMS_STRING);
+        return $this->queryAsArray(self::READ_ITEMS_STRING);
     }
 
     public function insertOrganizationItem(
@@ -547,7 +563,7 @@ class MysqlDataAccessObject implements DataAccessObject {
 
     public function getOrganizationItems()
     {
-        return queryAsArray(self::READ_ORGANIZATION_ITEMS_STRING);
+        return $this->queryAsArray(self::READ_ORGANIZATION_ITEMS_STRING);
     }
 
     public function close() {
