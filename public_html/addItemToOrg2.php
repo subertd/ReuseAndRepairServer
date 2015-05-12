@@ -7,12 +7,12 @@
 	$mysqli = new mysqli($serverAddress, $user, $password, $database);
 	$mysqli->select_db($database) or die ("Oops! DB not connected"); // select the database
 
-    $categoryId = "NULL";
-    $categoryName = $_POST['catName'];
+    $orgID = $_POST['orgID'];
+    $itemID = $_POST['itemID'];
 
-    echo "{'categoryId':'" . $categoryId . "', 'categoryName':'" . $categoryName. "'}";
+    echo "{'orgID':'" . $orgID . "', 'itemID':'" . $itemID . "'}";
 
-# ***   ADD TO Category table ***
+# ***   PUT TO Organization_Item table ***
 #
 #	$query = "INSERT INTO Category VALUES(NULL,'$catName')";
 #	$result = $mysqli->query($query);
