@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Corvallis Reuse and Repair App</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <script src="javascript/server-proxy.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+</head>
+<body class="container">
+
+<h4>Organizations</h4>
+<ul id="organizationsList" class="list-group"></ul>
+<button id="addOrganizationButton" class="btn btn-standard">Add Organization</button>
+<div id="addOrganizationModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Add a new Organization</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Organization Name</label><input class="form-control" type="text" id="addOrganizationName">
+                </div>
+                <div class="form-group">
+                    <button id="addOrganizationSubmitButton" class="btn btn-primary" type="button" data-dismiss="modal">
+                        Add Organization
+                    </button>
+                    <button class="btn btn-standard pull-right" type="button" data-dismiss="modal">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<h4>Categories</h4>
+<ul id="categoriesList" class="list-group"></ul>
+<button id="addCategoryButton" class="btn btn-standard" data-toggle="modal" data-target="#addCategoryModal">Add Category</button>
+<div id="addCategoryModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Add a New Category</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Category name</label><input class="form-control" type="text" id="addCategoryName">
+                </div>
+                <div class="form-group">
+                    <button id="addCategorySubmitButton" class="btn btn-primary" type="button" data-dismiss="modal">
+                        Add Category
+                    </button>
+                    <button class="btn btn-standard pull-right" type="button" data-dismiss="modal">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<h4>Items</h4>
+<ul id="itemsList" class="list-group"></ul>
+<button id="addItemButton" class="btn btn-standard" data-toggle="modal" data-target="#addItemModal">Add Item</button>
+<div id="addItemModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Add a New Item</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Item name</label><input class="form-control" type='text' id='addItemName'>
+
+                    <label>Category</label>
+                    <select class="form-control" id="addItemSelectCategory" name='categoryId'></select>
+                </div>
+                <div class="form-group">
+                    <input class="btn btn-primary" type='submit' name='submit'>
+                    <button class="btn btn-standard pull-right" type="button" data-dismiss="modal">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(document).ready()
+    {
+        var serverProxy = new ServerProxy();
+
+        var organizations = null;
+        var categories = null;
+        var items = null;
+        var organizationItems = null;
+
+        syncDatabase(); // when the page first loads, sync the database
+
+        function syncDatabase() {
+            serverProxy.syncDatabase(
+                    function (data, status) {
+                        organizations = data['organizations'];
+                        categories = data['categories'];
+                        items = data['items'];
+                        organizationItems = data['organizationItems'];
+
+                        populateOrganizationsList();
+                        populateCategoriesList();
+                        populateItemsList();
+                    },
+                    function (jqXHR, textStatus, errorThrown) {
+                        console.log("Error syncing database", textStatus, errorThrown);
+                    });
+        }
+
+        function syncOrganizations() {
+            serverProxy.getOrganizations(
+                function(data, status) {
+                    organizations = data;
+                    populateOrganizationsList();
+                },
+                function(jqXHR, textStatus, errorThrown) {
+                    console.log("Error syncing organizations", textStatus, errorThrown);
+                }
+            );
+        }
+
+        function syncCategories() {
+            serverProxy.getCategories(
+                function (data, status) {
+                    categories = data;
+                    populateCategoriesList();
+                },
+                function(jqXHR, textStatus, errorThrown) {
+                    console.log("Error syncing categories", textStatus, errorThrown);
+                }
+            );
+        }
+
+        function syncItems() {
+            serverProxy.getItems(
+                function(data, status) {
+                    items = data;
+                    populateItemsList();
+                },
+                function(jqXHR, textStatus, errorThrown) {
+                    console.log("Error syncing database", textStatus, errorThrown);
+                }
+            );
+        }
+
+        function populateOrganizationsList() {
+            organizations.forEach(function(organization) {
+                var listItem = $(document.createElement('li'));
+                listItem.addClass("list-group-item");
+                listItem.html(organization['name']);
+                $("#organizationsList").append(listItem);
+            });
+        }
+
+        function populateCategoriesList() {
+            categories.forEach(function(category) {
+                var listItem = $(document.createElement('li'));
+                listItem.addClass("list-group-item");
+                listItem.html(category['name']);
+                $("#categoriesList").append(listItem);
+
+                var categoryOption = $(document.createElement('option'));
+                categoryOption.attr("value", category['id']);
+                categoryOption.html(category['name']);
+                $("#addItemSelectCategory").append(categoryOption);
+            })
+        }
+
+        function populateItemsList() {
+            items.forEach(function(item) {
+                var listItem = $(document.createElement('li'));
+                listItem.addClass("list-group-item");
+                listItem.html(item['name']);
+                $("#itemsList").append(listItem);
+            })
+        }
+
+        $("#addOrganizationSubmitButton").click(function() {
+            var organization = {
+                'organizationName': $("#addOrganizationName").val(),
+                'phoneNumber': $("#addOrganizationPhoneNumber").val(),
+                'websiteUrl': $("#addOrganizationWebsiteUrl").val(),
+                'physicalAddress': $("#addOrganizationPhysicalAddress").val()
+            };
+
+            serverProxy.insertOrganization(organization,
+                function(data, status) {
+                    console.debug(data, status);
+                    syncOrganizations();
+                },
+                function(jqXHR, textStatus, errorThrown) {
+                    console.log("Error inserting organization", textStatus, errorThrown);
+                })
+            ;
+        });
+
+        $("#addCategorySubmitButton").click(function() {
+            var category = {
+                'categoryName': $("#addCategoryName").val()
+            };
+
+            serverProxy.insertCategory(category,
+                function(data, status) {
+                    console.debug(data, status);
+                    syncCategories();
+                },
+                    function (jqXHR, textStatus, errorThrown) {
+                        console.log("Error inserting category", textStatus, errorThrown);
+                }
+            );
+        });
+
+        $("#addItemSubmitButton").click(function() {
+            var item = {
+                'itemName': $("#addItemName").val(),
+                'categoryRef': $("#addItemCategoryRef").val()
+            };
+
+            serverProxy.insertItem(item,
+                function(data, status) {
+                    console.debug(data, status);
+                    syncItems();
+                },
+                function(jqXHR, textStatus, errorThrown) {
+                    console.log("Error inserting item", textStatus, errorThrown);
+                }
+            );
+        })
+    }
+</script>
+
+</body>
+</html>

@@ -285,7 +285,7 @@ class DataController {
 
         try {
             $this->presenter->presentResponse(
-                $this->organizationsService->insertOrganization(
+                $this->categoriesService->insertCategory(
                     $this->authenticationService,
                     $this->authorizationService,
                     $params));
