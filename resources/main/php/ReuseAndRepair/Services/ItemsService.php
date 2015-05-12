@@ -12,6 +12,7 @@ use ReuseAndRepair\Models\ModelException;
 use ReuseAndRepair\Persistence\DataAccessObject;
 use ReuseAndRepair\Models\ItemFactory;
 use ReuseAndRepair\Models\Item;
+use ReuseAndRepair\Persistence\PersistenceException;
 
 class ItemsService {
 
@@ -119,5 +120,19 @@ class ItemsService {
         }
 
         return array('success' => false);
+    }
+
+    /**
+     * gets a list of all items
+     * @return array the list of items
+     * @throws ServiceException if unable to get a list of items
+     */
+    public function getItems() {
+        try {
+            return $this->dao->getItems();
+        }
+        catch(PersistenceException $e) {
+            throw new ServiceException($e);
+        }
     }
 }

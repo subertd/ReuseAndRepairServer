@@ -48,6 +48,13 @@ interface DataAccessObject {
     public function deleteOrganization($id);
 
     /**
+     * Get an array of all organizations in the database
+     *
+     * @return array the result
+     */
+    public function getOrganizations();
+
+    /**
      * Commit a Category to persistent memory at the next index
      *
      * @param Category $category the category to insert
@@ -72,6 +79,13 @@ interface DataAccessObject {
     public function deleteCategory($id);
 
     /**
+     * Get an array of all categories in the database
+     *
+     * @return array the result
+     */
+    public function getCategories();
+
+    /**
      * Commit an Item to persistent memory at the next index
      *
      * @param Item $item the item to insert
@@ -94,6 +108,13 @@ interface DataAccessObject {
      * @return array the result
      */
     public function deleteItem($id);
+
+    /**
+     * Get an array of all items in the database
+     *
+     * @return array the result
+     */
+    public function getItems();
 
     /**
      * Commit an Organization-Item relationship to persistent memory
@@ -125,6 +146,13 @@ interface DataAccessObject {
      * @return array the result
      */
     public function deleteOrganizationItem($organizationId, $itemId);
+
+    /**
+     * Get an array of all organization-item relationships in the database
+     *
+     * @return array the result
+     */
+    public function getOrganizationItems();
 
     /**
      * Close the connection to persistent memory

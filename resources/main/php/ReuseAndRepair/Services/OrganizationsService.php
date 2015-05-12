@@ -12,6 +12,7 @@ use ReuseAndRepair\Persistence\DataAccessObject;
 use ReuseAndRepair\Models\OrganizationFactory;
 use ReuseAndRepair\Models\Organization;
 use ReuseAndRepair\Models\ModelException;
+use ReuseAndRepair\Persistence\PersistenceException;
 
 class OrganizationsService {
 
@@ -122,5 +123,19 @@ class OrganizationsService {
         }
 
         return array('success' => false);
+    }
+
+    /**
+     * gets a list of all organizations
+     * @return array the list of organizations
+     * @throws ServiceException if unable to get a list of organizations
+     */
+    public function getOrganizations() {
+        try {
+            return $this->dao->getOrganizations();
+        }
+        catch(PersistenceException $e) {
+            throw new ServiceException("Unable to get a list of organizations", $e);
+        }
     }
 }

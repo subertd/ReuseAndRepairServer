@@ -8,11 +8,8 @@
 
 namespace ReuseAndRepair\Persistence\Mysql;
 
-//use ReuseAndRepair\Models\OrganizationFactory;
 use ReuseAndRepair\Models\Organization;
-//use ReuseAndRepair\Models\CategoryFactory;
 use ReuseAndRepair\Models\Category;
-//use ReuseAndRepair\Models\ItemFactory;
 use ReuseAndRepair\Models\Item;
 use ReuseAndRepair\Persistence\DataAccessObject;
 use ReuseAndRepair\Persistence\PersistenceException;
@@ -33,8 +30,6 @@ class MysqlDataAccessObject implements DataAccessObject {
             `physical_address`
         ) VALUES (?, ?, ?, ?)";
 
-    const READ_ORGANIZATION_STRING = "SELECT * FROM `cs419-g15`.`Organization`";
-
     const UPDATE_ORGANIZATION_STRING = "UPDATE `cs419-g15`.`Organization` SET
             `organization_name` = ?,
             `phone_number` = ?,
@@ -45,11 +40,11 @@ class MysqlDataAccessObject implements DataAccessObject {
     const DELETE_ORGANIZATION_STRING = "DELETE FROM `cs419-g15`.`Organization`
             WHERE `organization_id` = ?";
 
+    const READ_ORGANIZATIONS_STRING = "SELECT * FROM `cs419-g15`.`Organization`";
+
     const INSERT_CATEGORY_STRING = "INSERT INTO `cs419-g15`.`Category` (
             `category_name`
         ) VALUES (?)";
-
-    const READ_CATEGORY_STRING = "SELECT * FROM `cs419-g15`.`Category`";
 
     const UPDATE_CATEGORY_STRING = "UPDATE `cs419-g15`.`Category` SET
             `category_name` = ?
@@ -58,12 +53,12 @@ class MysqlDataAccessObject implements DataAccessObject {
     const DELETE_CATEGORY_STRING = "DELETE FROM `cs419-g15`.`Category`
             WHERE `category_id` = ?";
 
+    const READ_CATEGORIES_STRING = "SELECT * FROM `cs419-g15`.`Category`";
+
     const INSERT_ITEM_STRING = "INSERT INTO `cs419-g15`.`Item` (
             `item_name`,
             `category_id`
         ) VALUES (?, ?)";
-
-    const READ_ITEM_STRING = "SELECT * FROM `cs419-g15`.`Item`";
 
     const UPDATE_ITEM_STRING = "UPDATE `cs419-g15`.`Item` SET
             `item_name` = ?,
@@ -73,15 +68,14 @@ class MysqlDataAccessObject implements DataAccessObject {
     const DELETE_ITEM_STRING = "DELETE FROM `cs419-g15`.`Item`
             WHERE `item_id` = ?";
 
+    const READ_ITEMS_STRING = "SELECT * FROM `cs419-g15`.`Item`";
+
     const INSERT_ORGANIZATION_ITEM_STRING =
         "INSERT INTO `cs419-g15`.`Organization_Item` (
             `organization_id`,
             `item_id`,
             `additional_repair_information`
         ) VALUES (?, ?, ?)";
-
-    const READ_ORGANIZATION_ITEM_STRING =
-        "SELECT * FROM `cs419-g15`.`Organization_Item`";
 
     const UPDATE_ORGANIZATION_ITEM_STRING =
         "UPDATE `cs419-g15`.`Organization_Item` SET
@@ -91,6 +85,9 @@ class MysqlDataAccessObject implements DataAccessObject {
     const DELETE_ORGANIZATION_ITEM_STRING =
         "DELETE FROM `cs419-g15`.`Organization_Item`
         WHERE `organization_id` = ? AND `item_id` = ?";
+
+    const READ_ORGANIZATION_ITEMS_STRING =
+        "SELECT * FROM `cs419-g15`.`Organization_Item`";
 
     /**
      * @var \mysqli $mysqli
@@ -108,13 +105,13 @@ class MysqlDataAccessObject implements DataAccessObject {
 
         $database = array(
             'organizations' => $this->queryAsArray(
-                self::READ_ORGANIZATION_STRING),
+                self::READ_ORGANIZATIONS_STRING),
             'categories' => $this->queryAsArray(
-                self::READ_CATEGORY_STRING),
+                self::READ_CATEGORIES_STRING),
             'items' => $this->queryAsArray(
-                self::READ_ITEM_STRING),
+                self::READ_ITEMS_STRING),
             'organizationItems' => $this->queryAsArray(
-                self::READ_ORGANIZATION_ITEM_STRING)
+                self::READ_ORGANIZATION_ITEMS_STRING)
         );
 
         $this->mysqli->commit(); // end transaction
@@ -124,19 +121,16 @@ class MysqlDataAccessObject implements DataAccessObject {
 
     private function queryAsArray($query)
     {
-
-        if (!($result
-            = $this->mysqli->query($query))
-        ) {
-            throw new PersistenceException(
-                $this->mysqli->error, $this->mysqli->errno);
+        if (!($result = $this->mysqli->query($query)))
+        {
+            throw new PersistenceException($this->mysqli->error, $this->mysqli->errno);
         }
 
         return $this->resultToArray($result);
     }
 
-    private function resultToArray(\mysqli_result $result) {
-
+    private function resultToArray(\mysqli_result $result)
+    {
         $array = array();
         while(($row = $result->fetch_assoc()) != null) {
             array_push($array, $row);
@@ -246,8 +240,9 @@ class MysqlDataAccessObject implements DataAccessObject {
         }
     }
 */
-    public function insertOrganization(Organization $organization) {
 
+    public function insertOrganization(Organization $organization)
+    {
         /** @var string $name */
         $name = $organization->getName();
 
@@ -271,13 +266,16 @@ class MysqlDataAccessObject implements DataAccessObject {
             die("Unable to bind params " . $stmt->error);
         }
 
-        $result = $stmt->execute();
+        if(!($result = $stmt->execute())) {
+            throw new PersistenceException($stmt->error, $stmt->errno);
+        }
+
 
         return array('success' => $result);
     }
 
-    public function updateOrganization(Organization $organization) {
-
+    public function updateOrganization(Organization $organization)
+    {
         /** @var int $id */
         $id = $organization->getId();
 
@@ -304,7 +302,9 @@ class MysqlDataAccessObject implements DataAccessObject {
             die("Unable to bind params " . $stmt->error);
         }
 
-        $result =  $stmt->execute();
+        if(!($result = $stmt->execute())) {
+            throw new PersistenceException($stmt->error, $stmt->errno);
+        }
 
         return array('success' => $result);
     }
@@ -321,9 +321,16 @@ class MysqlDataAccessObject implements DataAccessObject {
             die("Unable to bind params " . $stmt->error);
         }
 
-        $result =  $stmt->execute();
+        if(!($result = $stmt->execute())) {
+            throw new PersistenceException($stmt->error, $stmt->errno);
+        }
 
         return array('success' => $result);
+    }
+
+    public function getOrganizations()
+    {
+        return queryAsArray(self::READ_ORGANIZATIONS_STRING);
     }
 
     public function insertCategory(Category $category) {
@@ -341,7 +348,9 @@ class MysqlDataAccessObject implements DataAccessObject {
             die("Unable to bind params " . $stmt->error);
         }
 
-        $result =  $stmt->execute();
+        if(!($result = $stmt->execute())) {
+            throw new PersistenceException($stmt->error, $stmt->errno);
+        }
 
         return array('success' => $result);
     }
@@ -365,7 +374,9 @@ class MysqlDataAccessObject implements DataAccessObject {
             die("Unable to bind params " . $stmt->error);
         }
 
-        $result =  $stmt->execute();
+        if(!($result = $stmt->execute())) {
+            throw new PersistenceException($stmt->error, $stmt->errno);
+        }
 
         return array('success' => $result);
     }
@@ -382,9 +393,16 @@ class MysqlDataAccessObject implements DataAccessObject {
             die("Unable to bind params " . $stmt->error);
         }
 
-        $result =  $stmt->execute();
+        if(!($result = $stmt->execute())) {
+            throw new PersistenceException($stmt->error, $stmt->errno);
+        }
 
         return array('success' => $result);
+    }
+
+    public function getCategories()
+    {
+        return queryAsArray(self::READ_CATEGORIES_STRING);
     }
 
     public function insertItem(Item $item) {
@@ -405,7 +423,9 @@ class MysqlDataAccessObject implements DataAccessObject {
             die("Unable to bind params " . $stmt->error);
         }
 
-        $result =  $stmt->execute();
+        if(!($result = $stmt->execute())) {
+            throw new PersistenceException($stmt->error, $stmt->errno);
+        }
 
         return array('success' => $result);
     }
@@ -432,7 +452,9 @@ class MysqlDataAccessObject implements DataAccessObject {
             die("Unable to bind params " . $stmt->error);
         }
 
-        $result =  $stmt->execute();
+        if(!($result = $stmt->execute())) {
+            throw new PersistenceException($stmt->error, $stmt->errno);
+        }
 
         return array('success' => $result);
     }
@@ -449,9 +471,16 @@ class MysqlDataAccessObject implements DataAccessObject {
             die("Unable to bind params " . $stmt->error);
         }
 
-        $result =  $stmt->execute();
+        if(!($result = $stmt->execute())) {
+            throw new PersistenceException($stmt->error, $stmt->errno);
+        }
 
         return array('success' => $result);
+    }
+
+    public function getItems()
+    {
+        return queryAsArray(self::READ_ITEMS_STRING);
     }
 
     public function insertOrganizationItem(
@@ -469,9 +498,11 @@ class MysqlDataAccessObject implements DataAccessObject {
             die("Unable to bind params " . $stmt->error);
         }
 
-        $result = $stmt->execute();
+        if(!($result = $stmt->execute())) {
+            throw new PersistenceException($stmt->error, $stmt->errno);
+        }
 
-        return array('success' => $result, 'mysqli_error' => $this->mysqli->error, 'mysqli_errno' => $this->mysqli->errno);
+        return array('success' => $result);
     }
 
     public function updateOrganizationItem(
@@ -507,9 +538,16 @@ class MysqlDataAccessObject implements DataAccessObject {
             die("Unable to bind params " . $stmt->error);
         }
 
-        $result = $stmt->execute();
+        if(!($result = $stmt->execute())) {
+            throw new PersistenceException($stmt->error, $stmt->errno);
+        }
 
         return array('success' => $result);
+    }
+
+    public function getOrganizationItems()
+    {
+        return queryAsArray(self::READ_ORGANIZATION_ITEMS_STRING);
     }
 
     public function close() {

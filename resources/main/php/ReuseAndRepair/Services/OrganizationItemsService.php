@@ -12,6 +12,7 @@ namespace ReuseAndRepair\Services;
 use ReuseAndRepair\Models\ItemFactory;
 use ReuseAndRepair\Models\OrganizationFactory;
 use ReuseAndRepair\Persistence\DataAccessObject;
+use ReuseAndRepair\Persistence\PersistenceException;
 
 class OrganizationItemsService {
 
@@ -136,5 +137,19 @@ class OrganizationItemsService {
         }
 
         return array('success' => false);
+    }
+
+    /**
+     * get a list of all organization-item relationships
+     * @return array the list of organization-item relationships
+     * @throws ServiceException if unable to get a list of organization-item relationships
+     */
+    public function getOrganizationItems() {
+        try {
+            return $this->dao->getOrganizationItems();
+        }
+        catch (PersistenceException $e) {
+            throw new ServiceException("Unable to get a list of organization-item relationships", $e);
+        }
     }
 }

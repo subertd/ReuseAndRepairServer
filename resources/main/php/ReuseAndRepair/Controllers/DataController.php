@@ -33,6 +33,7 @@ use ReuseAndRepair\Services\ServiceException;
 class DataController {
 
     const ACTION = "action";
+    const ACTION_SYNC = "sync";
     const ACTION_ORGANIZATION = "organization";
     const ACTION_CATEGORY = "category";
     const ACTION_ITEM = "item";
@@ -113,22 +114,39 @@ class DataController {
      */
     public function routeHttpRequest() {
 
-        $headers = getallheaders();
+        $headers = getallheaders(); // gets the headers of the HTTP request
+        $action = isset($headers[self::ACTION]) ? $headers[self::ACTION] : null;
 
         switch($_SERVER['REQUEST_METHOD']) {
             case 'GET':
-                $this->syncDatabase();
+                switch($action) {
+                    case self::ACTION_ORGANIZATION:
+                        $this->getOrganizations();
+                        break;
+                    case self::ACTION_CATEGORY:
+                        $this->getCategories();
+                        break;
+                    case self::ACTION_ITEM:
+                        $this->getItems();
+                        break;
+                    case self::ACTION_ORGANIZATION_ITEM:
+                        $this->getOrganizationItems();
+                        break;
+                    case self::ACTION_SYNC:
+                    default:
+                        $this->syncDatabase();
+                        break;
+                }
                 break;
             case 'POST':
-                $action = $headers[DataController::ACTION];
                 switch($action) {
-                    case DataController::ACTION_ORGANIZATION:
+                    case self::ACTION_ORGANIZATION:
                         $this->insertOrganization();
                         break;
-                    case DataController::ACTION_CATEGORY:
+                    case self::ACTION_CATEGORY:
                         $this->insertCategory();
                         break;
-                    case DataController::ACTION_ITEM:
+                    case self::ACTION_ITEM:
                         $this->insertItem();
                         break;
                     case self::ACTION_ORGANIZATION_ITEM:
@@ -137,15 +155,14 @@ class DataController {
                 }
                 break;
             case 'PUT':
-                $action = $headers[DataController::ACTION];
                 switch($action) {
-                    case DataController::ACTION_ORGANIZATION:
+                    case self::ACTION_ORGANIZATION:
                         $this->updateOrganization();
                         break;
-                    case DataController::ACTION_CATEGORY:
+                    case self::ACTION_CATEGORY:
                         $this->updateCategory();
                         break;
-                    case DataController::ACTION_ITEM:
+                    case self::ACTION_ITEM:
                         $this->updateItem();
                         break;
                     case self::ACTION_ORGANIZATION_ITEM:
@@ -153,15 +170,14 @@ class DataController {
                 }
                 break;
             case 'DELETE':
-                $action = $headers[DataController::ACTION];
                 switch($action) {
-                    case DataController::ACTION_ORGANIZATION:
+                    case self::ACTION_ORGANIZATION:
                         $this->deleteOrganization();
                         break;
-                    case DataController::ACTION_CATEGORY:
+                    case self::ACTION_CATEGORY:
                         $this->deleteCategory();
                         break;
-                    case DataController::ACTION_ITEM:
+                    case self::ACTION_ITEM:
                         $this->deleteItem();
                         break;
                     case self::ACTION_ORGANIZATION_ITEM:
@@ -247,6 +263,19 @@ class DataController {
     }
 
     /**
+     * gets a list of all organizations
+     */
+    private function getOrganizations() {
+        try {
+            $this->presenter->presentResponse(
+                $this->organizationsService->getOrganizations());
+        }
+        catch (ServiceException $e) {
+            $this->presenter->presentException($e);
+        }
+    }
+
+    /**
      * inserts a category
      */
     private function insertCategory() {
@@ -300,6 +329,19 @@ class DataController {
                     $this->authenticationService,
                     $this->authorizationService,
                     $params));
+        }
+        catch (ServiceException $e) {
+            $this->presenter->presentException($e);
+        }
+    }
+
+    /**
+     * gets a list of all categories
+     */
+    private function getCategories() {
+        try {
+            $this->presenter->presentResponse(
+                $this->categoriesService->getCategories());
         }
         catch (ServiceException $e) {
             $this->presenter->presentException($e);
@@ -367,6 +409,19 @@ class DataController {
     }
 
     /**
+     * gets a list of all items
+     */
+    private function getItems() {
+        try {
+            $this->presenter->presentResponse(
+                $this->itemsService->getItems());
+        }
+        catch (ServiceException $e) {
+            $this->presenter->presentException($e);
+        }
+    }
+
+    /**
      * Inserts a new organization-item relationship
      */
     private function insertOrganizationItem() {
@@ -420,6 +475,19 @@ class DataController {
                     $this->authenticationService,
                     $this->authorizationService,
                     $params));
+        }
+        catch (ServiceException $e) {
+            $this->presenter->presentException($e);
+        }
+    }
+
+    /**
+     * gets a list of all organization-item relationships
+     */
+    private function getOrganizationItems() {
+        try {
+            $this->presenter->presentResponse(
+                $this->organizationItemsService->getOrganizationItems());
         }
         catch (ServiceException $e) {
             $this->presenter->presentException($e);

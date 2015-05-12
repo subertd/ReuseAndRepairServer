@@ -12,6 +12,7 @@ use ReuseAndRepair\Models\ModelException;
 use ReuseAndRepair\Persistence\DataAccessObject;
 use ReuseAndRepair\Models\CategoryFactory;
 use ReuseAndRepair\Models\Category;
+use ReuseAndRepair\Persistence\PersistenceException;
 
 class CategoriesService {
 
@@ -122,5 +123,19 @@ class CategoriesService {
         }
 
         return array('success' => false);
+    }
+
+    /**
+     * gets a list of all categories
+     * @return array the list of all categories
+     * @throws ServiceException if unable to get a list of categories
+     */
+    public function getCategories() {
+        try {
+            return $this->dao->getCategories();
+        }
+        catch(PersistenceException $e) {
+            throw new ServiceException("Unable to get a list of categories", $e);
+        }
     }
 }
