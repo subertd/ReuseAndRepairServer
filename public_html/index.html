@@ -15,6 +15,24 @@
                 console.debug("Server callback: ", data, status);
                 $("p").html(JSON.stringify(data));
             });
+
+
+            var cat = {
+                // set the properties of cat
+                // second property
+            }
+
+            serverProxy.insert("cat", cat,
+                function(data, status) {
+                    // what to do after AJAX success
+                },
+                function(error) {
+                    console.log(error);
+                }
+            );
+
+
+
         });
     </script>
     <h1>Hello World</h1>

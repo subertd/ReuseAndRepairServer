@@ -36,7 +36,7 @@ function ServerProxy() {
                 success: callback
             });
         },
-        insert: function(type, organization, callback) {
+        insert: function(type, model, callback, errorCallback) {
             $.ajax({
                 url: serverUrl,
                 method: "post",
@@ -44,14 +44,12 @@ function ServerProxy() {
                     "action" : type,
                     "contentType": "application/json"
                 },
-                data: organization,
+                data: JSON.stringify(model),
                 dataType: 'json',
 
                 success: callback,
-                error: function(error) {
-                    console.log(error);
-                }
-            })
+                error: errorCallback
+            });
         }
     }
 }
