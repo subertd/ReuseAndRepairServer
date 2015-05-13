@@ -1,0 +1,81 @@
+<!--
+ - addOrganizationModal
+ -
+ - an html partial that builds an add organization modal
+ -
+ - @depends jQuery
+ - @depends ServerProxy serverProxy
+ - @depends array organizations
+ - @depends function populateOrganizationsList
+-->
+
+<div id="addOrganizationModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Add a new Organization</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="addOrganizationName">Organization Name</label>
+                    <input class="form-control" type="text" id="addOrganizationName">
+                </div>
+                <div class="form-group">
+                    <label for="addOrganizationPhoneNumber">Phone Number</label>
+                    <input class="form-control" type="text" id="addOrganizationPhoneNumber">
+                </div>
+                <div class="form-group">
+                    <label for="addOrganizationWebsiteUrl">Website URL</label>
+                    <input class="form-control" type="text" id="addOrganizationWebsiteUrl">
+                </div>
+                <div class="form-group">
+                    <label for="addOrganizationPhysicalAddress">Physical Address</label>
+                    <input class="form-control" type="text" id="addOrganizationPhysicalAddress">
+                </div>
+                <div class="form-group">
+                    <button id="addOrganizationSubmitButton" class="btn btn-primary" type="button" data-dismiss="modal">
+                        Add Organization
+                    </button>
+                    <button class="btn btn-standard pull-right" type="button" data-dismiss="modal">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function() {
+        $("#addOrganizationSubmitButton").click(function() {
+            var organization = {
+                'organizationName': $("#addOrganizationName").val(),
+                'phoneNumber': $("#addOrganizationPhoneNumber").val(),
+                'websiteUrl': $("#addOrganizationWebsiteUrl").val(),
+                'physicalAddress': $("#addOrganizationPhysicalAddress").val()
+            };
+
+            serverProxy.insertOrganization(organization,
+                function(data, status) {
+                    console.debug("AJAX success for insertOrganization", data, status);
+                    syncOrganizations();
+                },
+                function(jqXHR, textStatus, errorThrown) {
+                    console.log("Error inserting organization", textStatus, errorThrown);
+                }
+            );
+        });
+    });
+
+    function syncOrganizations() {
+        serverProxy.getOrganizations(
+            function(data, status) {
+                console.debug("AJAX success for syncOrganizations", data, status);
+                organizations = data;
+                populateOrganizationsList();
+            },
+            function(jqXHR, textStatus, errorThrown) {
+                console.log("Error syncing organizations", textStatus, errorThrown);
+            }
+        );
+    }
+</script>

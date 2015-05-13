@@ -15,70 +15,35 @@
 <button id="addOrganizationButton" class="btn btn-standard" data-toggle="modal" data-target="#addOrganizationModal">
     Add Organization
 </button>
-<div id="addOrganizationModal" class="modal fade" role="dialog">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title">Add a new Organization</h4>
-            </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label for="addOrganizationName">Organization Name</label>
-                    <input class="form-control" type="text" id="addOrganizationName">
-                </div>
-                <div class="form-group">
-                    <label for="addOrganizationPhoneNumber">Phone Number</label>
-                    <input class="form-control" type="text" id="addOrganizationPhoneNumber">
-                </div>
-                <div class="form-group">
-                    <label for="addOrganizationWebsiteUrl">Website URL</label>
-                    <input class="form-control" type="text" id="addOrganizationWebsiteUrl">
-                </div>
-                <div class="form-group">
-                    <label for="addOrganizationPhysicalAddress">Physical Address</label>
-                    <input class="form-control" type="text" id="addOrganizationPhysicalAddress">
-                </div>
-                <div class="form-group">
-                    <button id="addOrganizationSubmitButton" class="btn btn-primary" type="button" data-dismiss="modal">
-                        Add Organization
-                    </button>
-                    <button class="btn btn-standard pull-right" type="button" data-dismiss="modal">
-                        Cancel
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+<div id="addOrganizationModalTarget"></div>
+<script type="text/javascript">
+    /**
+     * @citation http://stackoverflow.com/questions/18908531/true-client-side-html-includes
+     */
+    $(function(){
+        $("#addOrganizationModalTarget").load("partials/addOrganizationModal.html", function(){
+            $(this).contents().unwrap();
+        });
+    });
+</script>
 
 <h4>Categories</h4>
 <ul id="categoriesList" class="list-group"></ul>
 <button id="addCategoryButton" class="btn btn-standard" data-toggle="modal" data-target="#addCategoryModal">
     Add Category
 </button>
-<div id="addCategoryModal" class="modal fade" role="dialog">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title">Add a New Category</h4>
-            </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label for="addCategoryName">Category name</label>
-                    <input class="form-control" type="text" id="addCategoryName">
-                </div>
-                <div class="form-group">
-                    <button id="addCategorySubmitButton" class="btn btn-primary" type="button" data-dismiss="modal">
-                        Add Category
-                    </button>
-                    <button class="btn btn-standard pull-right" type="button" data-dismiss="modal">
-                        Cancel
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+<div id="addCategoryModalTarget"></div>
+<script type="text/javascript">
+    /**
+     * @citation http://stackoverflow.com/questions/18908531/true-client-side-html-includes
+     */
+    $(function(){
+        $("#addCategoryModalTarget").load("partials/addCategoryModal.html", function(){
+            $(this).contents().unwrap();
+        });
+    });
+</script>
+
 <div id="updateCategoryModal" class="modal fade" role="dialog">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -108,205 +73,101 @@
 <button id="addItemButton" class="btn btn-standard" data-toggle="modal" data-target="#addItemModal">
     Add Item
 </button>
-<div id="addItemModal" class="modal fade" role="dialog">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title">Add a New Item</h4>
-            </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label for="addItemName">Item name</label>
-                    <input class="form-control" type='text' id='addItemName'>
-
-                    <label for="addItemSelectCategory">Category</label>
-                    <select class="form-control" id="addItemSelectCategory" name='categoryId'></select>
-                </div>
-                <div class="form-group">
-                    <input id="addItemSubmitButton" class="btn btn-primary" type='submit' name='button' data-dismiss="modal">
-                    <button class="btn btn-standard pull-right" type="button" data-dismiss="modal">
-                        Cancel
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+<div id="addItemModalTarget"></div>
+<script type="text/javascript">
+    /**
+     * @citation http://stackoverflow.com/questions/18908531/true-client-side-html-includes
+     */
+    $(function(){
+        $("#addItemModalTarget").load("partials/addItemModal.html", function(){
+            $(this).contents().unwrap();
+        });
+    });</script>
 
 <script type="text/javascript">
-    $(document).ready(function() {
-        var serverProxy = new ServerProxy();
 
-        var organizations = null;
-        var categories = null;
-        var items = null;
-        var organizationItems = null;
+    var serverProxy = new ServerProxy();
 
-        syncDatabase(); // when the page first loads, sync the database
+    var organizations = null;
+    var categories = null;
+    var items = null;
+    var organizationItems = null;
 
-        function syncDatabase() {
-            serverProxy.syncDatabase(
-                    function (data, status) {
-                        console.debug("AJAX success for syncDatabase", data, status);
-                        organizations = data['organizations'];
-                        categories = data['categories'];
-                        items = data['items'];
-                        organizationItems = data['organizationItems'];
-
-                        populateOrganizationsList();
-                        populateCategoriesList();
-                        populateItemsList();
-                    },
-                    function (jqXHR, textStatus, errorThrown) {
-                        console.log("Error syncing database", textStatus, errorThrown);
-                    });
-        }
-
-        function syncOrganizations() {
-            serverProxy.getOrganizations(
-                function(data, status) {
-                    console.debug("AJAX success for syncOrganizations", data, status);
-                    organizations = data;
-                    populateOrganizationsList();
-                },
-                function(jqXHR, textStatus, errorThrown) {
-                    console.log("Error syncing organizations", textStatus, errorThrown);
-                }
-            );
-        }
-
-        function syncCategories() {
-            serverProxy.getCategories(
+    function syncDatabase() {
+        serverProxy.syncDatabase(
                 function (data, status) {
-                    console.debug("AJAX success for syncCategories", data, status);
-                    categories = data;
-                    populateCategoriesList();
-                },
-                function(jqXHR, textStatus, errorThrown) {
-                    console.log("Error syncing categories", textStatus, errorThrown);
-                }
-            );
-        }
+                    console.debug("AJAX success for syncDatabase", data, status);
+                    organizations = data['organizations'];
+                    categories = data['categories'];
+                    items = data['items'];
+                    organizationItems = data['organizationItems'];
 
-        function syncItems() {
-            serverProxy.getItems(
-                function(data, status) {
-                    console.debug("AJAX success for syncItems", data, status);
-                    items = data;
+                    populateOrganizationsList();
+                    populateCategoriesList();
                     populateItemsList();
                 },
-                function(jqXHR, textStatus, errorThrown) {
+                function (jqXHR, textStatus, errorThrown) {
                     console.log("Error syncing database", textStatus, errorThrown);
-                }
-            );
-        }
+                });
+    }
 
-        function populateOrganizationsList() {
-            organizations.forEach(function(organization) {
-                var listItem = $(document.createElement('li'));
-                listItem.addClass("list-group-item");
-                listItem.html(organization['name']);
-                $("#organizationsList").append(listItem);
-            });
-        }
-
-        function populateCategoriesList() {
-            categories.forEach(function(category) {
-                var listItem = $(document.createElement('li'));
-                listItem.addClass("list-group-item");
-                listItem.html(category['name']);
-                $("#categoriesList").append(listItem);
-
-                // Populate the form field in addItem for select category
-                var categoryOption = $(document.createElement('option'));
-                categoryOption.attr("value", category['id']);
-                categoryOption.html(category['name']);
-                $("#addItemSelectCategory").append(categoryOption);
-            });
-        }
-
-        function populateItemsList() {
-
-            items.sort(function(lhs, rhs) {
-                return lhs.categoryRef - rhs.categoryRef;
-            })
-
-            var curCategoryRef = null;
-            items.forEach(function(item) {
-
-                if (curCategoryRef == null || item.categoryRef != curCategoryRef) {
-                    curCategoryRef = item.categoryRef;
-                    var listItemGroup = $(document.createElement('li'));
-                    listItemGroup.addClass("list-group-item");
-
-                    var category = ($.grep(categories, function(e) {
-                        return e.id == item['categoryRef'];
-                    }))[0];
-
-                    var categoryName = category['name'];
-
-                    listItemGroup.html("<h4>" + categoryName + "</h4>");
-                    $("#itemsList").append(listItemGroup);
-                }
-
-                var listItem = $(document.createElement('li'));
-                listItem.addClass("list-group-item");
-                listItem.html(item['name']);
-                $("#itemsList").append(listItem);
-            });
-        }
-
-        $("#addOrganizationSubmitButton").click(function() {
-            var organization = {
-                'organizationName': $("#addOrganizationName").val(),
-                'phoneNumber': $("#addOrganizationPhoneNumber").val(),
-                'websiteUrl': $("#addOrganizationWebsiteUrl").val(),
-                'physicalAddress': $("#addOrganizationPhysicalAddress").val()
-            };
-
-            serverProxy.insertOrganization(organization,
-                function(data, status) {
-                    console.debug("AJAX success for insertOrganization", data, status);
-                    syncOrganizations();
-                },
-                function(jqXHR, textStatus, errorThrown) {
-                    console.log("Error inserting organization", textStatus, errorThrown);
-                }
-            );
+    function populateOrganizationsList() {
+        organizations.forEach(function(organization) {
+            var listItem = $(document.createElement('li'));
+            listItem.addClass("list-group-item");
+            listItem.html(organization['name']);
+            $("#organizationsList").append(listItem);
         });
+    }
 
-        $("#addCategorySubmitButton").click(function() {
-            var category = {
-                'categoryName': $("#addCategoryName").val()
-            };
+    function populateCategoriesList() {
+        categories.forEach(function(category) {
+            var listItem = $(document.createElement('li'));
+            listItem.addClass("list-group-item");
+            listItem.html(category['name']);
+            $("#categoriesList").append(listItem);
 
-            serverProxy.insertCategory(category,
-                function(data, status) {
-                    console.debug("AJAX success for insertCategory", data, status);
-                    syncCategories();
-                },
-                    function (jqXHR, textStatus, errorThrown) {
-                        console.log("Error inserting category", textStatus, errorThrown);
-                }
-            );
+            // Populate the form field in addItem for select category
+            var categoryOption = $(document.createElement('option'));
+            categoryOption.attr("value", category['id']);
+            categoryOption.html(category['name']);
+            $("#addItemSelectCategory").append(categoryOption);
         });
+    }
 
-        $("#addItemSubmitButton").click(function() {
-            var item = {
-                'itemName': $("#addItemName").val(),
-                'categoryRef': $("#addItemSelectCategory").val()
-            };
+    function populateItemsList() {
 
-            serverProxy.insertItem(item,
-                function(data, status) {
-                    console.debug("AJAX success for insertItem", data, status);
-                    syncItems();
-                },
-                function(jqXHR, textStatus, errorThrown) {
-                    console.log("Error inserting item", textStatus, errorThrown);
-                }
-            );
+        items.sort(function(lhs, rhs) {
+            return lhs.categoryRef - rhs.categoryRef;
+        })
+
+        var curCategoryRef = null;
+        items.forEach(function(item) {
+
+            if (curCategoryRef == null || item.categoryRef != curCategoryRef) {
+                curCategoryRef = item.categoryRef;
+                var listItemGroup = $(document.createElement('li'));
+                listItemGroup.addClass("list-group-item");
+
+                var category = ($.grep(categories, function(e) {
+                    return e.id == item['categoryRef'];
+                }))[0];
+
+                var categoryName = category['name'];
+
+                listItemGroup.html("<h4>" + categoryName + "</h4>");
+                $("#itemsList").append(listItemGroup);
+            }
+
+            var listItem = $(document.createElement('li'));
+            listItem.addClass("list-group-item");
+            listItem.html(item['name']);
+            $("#itemsList").append(listItem);
         });
+    }
+
+    $(document).ready(function() {
+        syncDatabase(); // when the page first loads, sync the database
     });
 </script>
 

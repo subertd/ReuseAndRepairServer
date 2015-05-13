@@ -1,0 +1,67 @@
+<!--
+ - addCategoryModal
+ -
+ - an html partial that builds an add category modal
+ -
+ - @depends jQuery
+ - @depends ServerProxy serverProxy
+ - @depends array categories
+ - @depends function populateCategoriesList
+-->
+
+<div id="addCategoryModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Add a New Category</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="addCategoryName">Category name</label>
+                    <input class="form-control" type="text" id="addCategoryName">
+                </div>
+                <div class="form-group">
+                    <button id="addCategorySubmitButton" class="btn btn-primary" type="button" data-dismiss="modal">
+                        Add Category
+                    </button>
+                    <button class="btn btn-standard pull-right" type="button" data-dismiss="modal">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function() {
+
+        $("#addCategorySubmitButton").click(function () {
+            var category = {
+                'categoryName': $("#addCategoryName").val()
+            };
+
+            serverProxy.insertCategory(category,
+                    function (data, status) {
+                        console.debug("AJAX success for insertCategory", data, status);
+                        syncCategories();
+                    },
+                    function (jqXHR, textStatus, errorThrown) {
+                        console.log("Error inserting category", textStatus, errorThrown);
+                    }
+            );
+        });
+    });
+
+    function syncCategories() {
+        serverProxy.getCategories(
+                function (data, status) {
+                    console.debug("AJAX success for syncCategories", data, status);
+                    categories = data;
+                    populateCategoriesList();
+                },
+                function(jqXHR, textStatus, errorThrown) {
+                    console.log("Error syncing categories", textStatus, errorThrown);
+                }
+        );
+    }
+</script>
