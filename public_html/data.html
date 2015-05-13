@@ -226,7 +226,29 @@
         }
 
         function populateItemsList() {
+
+            items.sort(function(lhs, rhs) {
+                return lhs.categoryRef > rhs.categoryRef;
+            })
+
+            var curCategoryRef = null;
             items.forEach(function(item) {
+
+                if (curCategoryRef == null || item.categoryRef != curCategoryRef) {
+                    curCategoryRef = item.categoryRef;
+                    var listItemGroup = $(document.createElement('li'));
+                    listItemGroup.addClass("list-group-item");
+
+                    var category = ($.grep(categories, function(e) {
+                        return e.id == item['categoryRef'];
+                    }))[0];
+
+                    var categoryName = category['name'];
+
+                    listItemGroup.html("<h4>" + categoryName + "</h4>");
+                    $("#itemsList").append(listItemGroup);
+                }
+
                 var listItem = $(document.createElement('li'));
                 listItem.addClass("list-group-item");
                 listItem.html(item['name']);
