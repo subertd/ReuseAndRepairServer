@@ -50,9 +50,9 @@ class OrganizationFactory {
         }
 
         $organization->setName($params[self::NAME]);
-        $organization->setPhoneNumber($params[self::PHONE_NUMBER]);
-        $organization->setWebsiteUrl($params[self::WEBSITE_URL]);
-        $organization->setPhysicalAddress($params[self::PHYSICAL_ADDRESS]);
+        $organization->setPhoneNumber(isset($params[self::PHONE_NUMBER]) ? $params[self::PHONE_NUMBER] : "");
+        $organization->setWebsiteUrl(isset($params[self::WEBSITE_URL]) ? $params[self::WEBSITE_URL] : "");
+        $organization->setPhysicalAddress(isset($params[self::PHYSICAL_ADDRESS]) ? $params[self::PHYSICAL_ADDRESS] : "");
 
         return $organization;
     }

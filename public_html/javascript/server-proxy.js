@@ -7,26 +7,12 @@
  *
  * handles transactions with the server
  *
- * @constructor resolves the constant SERVER_URL based on local environment
+ * @constructor resolves the server url
  * @depends jQuery
  */
 function ServerProxy() {
 
-    const CONFIG_PATH = "javascript/local-config.json";
-
-    var serverUrl = null;
-
-    $.ajax({
-        url: CONFIG_PATH,
-        dataType: 'json',
-        async: false,
-        success: function(data) {
-            serverUrl = data['serverUrl'];
-        },
-        error: function(error) {
-            console.log("Error getting local-config.json", error);
-        }
-    });
+    var serverUrl = "data.php";
 
     var ajaxToServer = function(method, type, model, callback, errorCallback) {
         $.ajax({

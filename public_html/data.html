@@ -12,7 +12,9 @@
 
 <h4>Organizations</h4>
 <ul id="organizationsList" class="list-group"></ul>
-<button id="addOrganizationButton" class="btn btn-standard">Add Organization</button>
+<button id="addOrganizationButton" class="btn btn-standard" data-toggle="modal" data-target="#addOrganizationModal">
+    Add Organization
+</button>
 <div id="addOrganizationModal" class="modal fade" role="dialog">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -21,7 +23,20 @@
             </div>
             <div class="modal-body">
                 <div class="form-group">
-                    <label>Organization Name</label><input class="form-control" type="text" id="addOrganizationName">
+                    <label for="addOrganizationName">Organization Name</label>
+                    <input class="form-control" type="text" id="addOrganizationName">
+                </div>
+                <div class="form-group">
+                    <label for="addOrganizationPhoneNumber">Phone Number</label>
+                    <input class="form-control" type="text" id="addOrganizationPhoneNumber">
+                </div>
+                <div class="form-group">
+                    <label for="addOrganizationWebsiteUrl">Website URL</label>
+                    <input class="form-control" type="text" id="addOrganizationWebsiteUrl">
+                </div>
+                <div class="form-group">
+                    <label for="addOrganizationPhysicalAddress">Physical Address</label>
+                    <input class="form-control" type="text" id="addOrganizationPhysicalAddress">
                 </div>
                 <div class="form-group">
                     <button id="addOrganizationSubmitButton" class="btn btn-primary" type="button" data-dismiss="modal">
@@ -38,7 +53,9 @@
 
 <h4>Categories</h4>
 <ul id="categoriesList" class="list-group"></ul>
-<button id="addCategoryButton" class="btn btn-standard" data-toggle="modal" data-target="#addCategoryModal">Add Category</button>
+<button id="addCategoryButton" class="btn btn-standard" data-toggle="modal" data-target="#addCategoryModal">
+    Add Category
+</button>
 <div id="addCategoryModal" class="modal fade" role="dialog">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -47,7 +64,8 @@
             </div>
             <div class="modal-body">
                 <div class="form-group">
-                    <label>Category name</label><input class="form-control" type="text" id="addCategoryName">
+                    <label for="addCategoryName">Category name</label>
+                    <input class="form-control" type="text" id="addCategoryName">
                 </div>
                 <div class="form-group">
                     <button id="addCategorySubmitButton" class="btn btn-primary" type="button" data-dismiss="modal">
@@ -61,10 +79,35 @@
         </div>
     </div>
 </div>
+<div id="updateCategoryModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Edit Category</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="updateCategoryName">Category name</label>
+                    <input class="form-control" type="text" id="updateCategoryName">
+                </div>
+                <div class="form-group">
+                    <button id="updateCategorySubmitButton" class="btn btn-primary" type="button" data-dismiss="modal">
+                        Add Category
+                    </button>
+                    <button class="btn btn-standard pull-right" type="button" data-dismiss="modal">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 <h4>Items</h4>
 <ul id="itemsList" class="list-group"></ul>
-<button id="addItemButton" class="btn btn-standard" data-toggle="modal" data-target="#addItemModal">Add Item</button>
+<button id="addItemButton" class="btn btn-standard" data-toggle="modal" data-target="#addItemModal">
+    Add Item
+</button>
 <div id="addItemModal" class="modal fade" role="dialog">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -73,13 +116,14 @@
             </div>
             <div class="modal-body">
                 <div class="form-group">
-                    <label>Item name</label><input class="form-control" type='text' id='addItemName'>
+                    <label for="addItemName">Item name</label>
+                    <input class="form-control" type='text' id='addItemName'>
 
-                    <label>Category</label>
+                    <label for="addItemSelectCategory">Category</label>
                     <select class="form-control" id="addItemSelectCategory" name='categoryId'></select>
                 </div>
                 <div class="form-group">
-                    <input class="btn btn-primary" type='submit' name='submit'>
+                    <input id="addItemSubmitButton" class="btn btn-primary" type='submit' name='button' data-dismiss="modal">
                     <button class="btn btn-standard pull-right" type="button" data-dismiss="modal">
                         Cancel
                     </button>
@@ -90,8 +134,7 @@
 </div>
 
 <script type="text/javascript">
-    $(document).ready()
-    {
+    $(document).ready(function() {
         var serverProxy = new ServerProxy();
 
         var organizations = null;
@@ -104,6 +147,7 @@
         function syncDatabase() {
             serverProxy.syncDatabase(
                     function (data, status) {
+                        console.debug("AJAX success for syncDatabase", data, status);
                         organizations = data['organizations'];
                         categories = data['categories'];
                         items = data['items'];
@@ -121,6 +165,7 @@
         function syncOrganizations() {
             serverProxy.getOrganizations(
                 function(data, status) {
+                    console.debug("AJAX success for syncOrganizations", data, status);
                     organizations = data;
                     populateOrganizationsList();
                 },
@@ -133,6 +178,7 @@
         function syncCategories() {
             serverProxy.getCategories(
                 function (data, status) {
+                    console.debug("AJAX success for syncCategories", data, status);
                     categories = data;
                     populateCategoriesList();
                 },
@@ -145,6 +191,7 @@
         function syncItems() {
             serverProxy.getItems(
                 function(data, status) {
+                    console.debug("AJAX success for syncItems", data, status);
                     items = data;
                     populateItemsList();
                 },
@@ -170,11 +217,12 @@
                 listItem.html(category['name']);
                 $("#categoriesList").append(listItem);
 
+                // Populate the form field in addItem for select category
                 var categoryOption = $(document.createElement('option'));
                 categoryOption.attr("value", category['id']);
                 categoryOption.html(category['name']);
                 $("#addItemSelectCategory").append(categoryOption);
-            })
+            });
         }
 
         function populateItemsList() {
@@ -183,7 +231,7 @@
                 listItem.addClass("list-group-item");
                 listItem.html(item['name']);
                 $("#itemsList").append(listItem);
-            })
+            });
         }
 
         $("#addOrganizationSubmitButton").click(function() {
@@ -196,13 +244,13 @@
 
             serverProxy.insertOrganization(organization,
                 function(data, status) {
-                    console.debug(data, status);
+                    console.debug("AJAX success for insertOrganization", data, status);
                     syncOrganizations();
                 },
                 function(jqXHR, textStatus, errorThrown) {
                     console.log("Error inserting organization", textStatus, errorThrown);
-                })
-            ;
+                }
+            );
         });
 
         $("#addCategorySubmitButton").click(function() {
@@ -212,7 +260,7 @@
 
             serverProxy.insertCategory(category,
                 function(data, status) {
-                    console.debug(data, status);
+                    console.debug("AJAX success for insertCategory", data, status);
                     syncCategories();
                 },
                     function (jqXHR, textStatus, errorThrown) {
@@ -224,20 +272,20 @@
         $("#addItemSubmitButton").click(function() {
             var item = {
                 'itemName': $("#addItemName").val(),
-                'categoryRef': $("#addItemCategoryRef").val()
+                'categoryRef': $("#addItemSelectCategory").val()
             };
 
             serverProxy.insertItem(item,
                 function(data, status) {
-                    console.debug(data, status);
+                    console.debug("AJAX success for insertItem", data, status);
                     syncItems();
                 },
                 function(jqXHR, textStatus, errorThrown) {
                     console.log("Error inserting item", textStatus, errorThrown);
                 }
             );
-        })
-    }
+        });
+    });
 </script>
 
 </body>
