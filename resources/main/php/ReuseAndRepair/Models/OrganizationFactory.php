@@ -19,9 +19,9 @@ class OrganizationFactory {
 
     const ID = "organizationId";
     const NAME = "organizationName";
-    const PHONE_NUMBER = "organizationPhoneNumber";
-    const PHYSICAL_ADDRESS = "organizationPhysicalAddress";
-    const WEBSITE_URL = "organizationWebsiteUrl";
+    const PHONE_NUMBER = "phoneNumber";
+    const PHYSICAL_ADDRESS = "physicalAddress";
+    const WEBSITE_URL = "websiteUrl";
 
     /**
      * Returns a new instance of an organization, setting its fields from

@@ -228,7 +228,7 @@
         function populateItemsList() {
 
             items.sort(function(lhs, rhs) {
-                return lhs.categoryRef > rhs.categoryRef;
+                return lhs.categoryRef - rhs.categoryRef;
             })
 
             var curCategoryRef = null;
