@@ -13,6 +13,8 @@
 
     echo "{'itemId':'" . $itemId . "', 'itemName':'" . $itemName . "', 'categoryRef':'" . $categoryRef . "'}";
 
+# ***   ADD TO Item table ***
+#
 #	$query = "INSERT INTO Category VALUES(NULL,'$catName')";
 #	$result = $mysqli->query($query);
 #	if($result)
