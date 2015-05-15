@@ -52,6 +52,9 @@ class ItemsService {
         catch (ModelException $e) {
             throw new ServiceException(self::MODEL_ERROR, null, $e);
         }
+        catch (PersistenceException $e) {
+            throw new ServiceException("Unable to add the item to persisted memory", null, $e);
+        }
 
         return array('success' => false);
     }
@@ -83,6 +86,9 @@ class ItemsService {
         }
         catch (ModelException $e) {
             throw new ServiceException(self::MODEL_ERROR, null, $e);
+        }
+        catch (PersistenceException $e) {
+            throw new ServiceException("Unable to update the item in persisted memory", null, $e);
         }
 
         return array('success' => false);
@@ -116,7 +122,12 @@ class ItemsService {
         if ($authorizationService->isAuthorized(
             $authenticationService, $params))
         {
-            return $this->dao->deleteItem($id);
+            try {
+                return $this->dao->deleteItem($id);
+            }
+            catch (PersistenceException $e) {
+                throw new ServiceException("Unable to remove the item from persisted memory", null, $e);
+            }
         }
 
         return array('success' => false);
@@ -132,7 +143,7 @@ class ItemsService {
             return $this->dao->getItems();
         }
         catch(PersistenceException $e) {
-            throw new ServiceException($e);
+            throw new ServiceException("Unable to get the items from persisted memory", null, $e);
         }
     }
 }

@@ -9,7 +9,7 @@
  - @depends function populateItemsList
 -->
 
-<div id="addItemModal" class="modal fade" role="dialog">
+<div id="addItemModal" class="modal hide fade" role="dialog">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -51,5 +51,11 @@
                 }
             );
         });
+    });
+
+    $("#addItemButton").click(function() {
+        console.debug("Populating categories list in form selector");
+
+
     });
 </script>

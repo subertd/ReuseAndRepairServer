@@ -135,7 +135,7 @@ class CategoriesService {
             return $this->dao->getCategories();
         }
         catch(PersistenceException $e) {
-            throw new ServiceException("Unable to get a list of categories", $e);
+            throw new ServiceException("Unable to get a list of categories", null, $e);
         }
     }
 }

@@ -20,6 +20,8 @@ use ReuseAndRepair\Persistence\PersistenceException;
  *
  * An implementation of DataAccessObject that uses the mysqli library to
  * persist the data with MySQL
+ *
+ * Note: documentation for public methods can be found in DataAccessObject
  */
 class MysqlDataAccessObject implements DataAccessObject {
 
@@ -65,13 +67,11 @@ class MysqlDataAccessObject implements DataAccessObject {
       FROM `cs419-g15`.`Category`";
 
     const INSERT_ITEM_STRING = "INSERT INTO `cs419-g15`.`Item` (
-            `item_name`,
-            `category_id`
-        ) VALUES (?, ?)";
+            `item_name`
+        ) VALUES (?)";
 
     const UPDATE_ITEM_STRING = "UPDATE `cs419-g15`.`Item` SET
-            `item_name` = ?,
-            `category_id` = ?
+            `item_name` = ?
             WHERE `item_id` = ?";
 
     const DELETE_ITEM_STRING = "DELETE FROM `cs419-g15`.`Item`
@@ -79,8 +79,7 @@ class MysqlDataAccessObject implements DataAccessObject {
 
     const READ_ITEMS_STRING = "SELECT
         item_id AS id,
-        item_name AS name,
-        category_id AS categoryRef
+        item_name AS name
       FROM `cs419-g15`.`Item`";
 
     const INSERT_ORGANIZATION_ITEM_STRING =
@@ -105,6 +104,15 @@ class MysqlDataAccessObject implements DataAccessObject {
             item_id AS itemRef
         FROM `cs419-g15`.`Organization_Item`";
 
+    const READ_ITEM_CATEGORIES_STRING = "SELECT
+        item_id AS itemId,
+        category_id AS categoryId
+      FROM `cs419-g15`.`Item_Category`";
+
+    const DELETE_ITEM_CATEGORIES_FOR_ITEM_STRING =
+        "DELETE FROM `cs419-g15`.`Item_Category`
+        WHERE `item_id` = ?";
+
     /**
      * @var \mysqli $mysqli
      */
@@ -127,7 +135,9 @@ class MysqlDataAccessObject implements DataAccessObject {
             'items' => $this->queryAsArray(
                 self::READ_ITEMS_STRING),
             'organizationItems' => $this->queryAsArray(
-                self::READ_ORGANIZATION_ITEMS_STRING)
+                self::READ_ORGANIZATION_ITEMS_STRING),
+            'itemCategories' => $this->queryAsArray(
+                self::READ_ITEM_CATEGORIES_STRING)
         );
 
         $this->mysqli->commit(); // end transaction
@@ -153,109 +163,6 @@ class MysqlDataAccessObject implements DataAccessObject {
         }
         return $array;
     }
-
-    /*
-    private function constructGetItemsDatabaseQuery() {
-
-        return "
-
-        SELECT
-        i.`item_id` AS " . ItemFactory::ID . ",
-        i.`item_name` AS " . ItemFactory::NAME . ",
-        c.`category_id` AS " . ItemFactory::CATEGORY_REF . ",
-        c.`category_id` AS " . CategoryFactory::ID . ",
-        c.`category_name` AS " . CategoryFactory::NAME . ",
-        o.`organization_id` AS " . OrganizationFactory::ID . ",
-        o.`organization_name` AS " . OrganizationFactory::NAME . ",
-        o.`phone_number` AS " . OrganizationFactory::PHONE_NUMBER . ",
-        o.`website_url` AS " . OrganizationFactory::WEBSITE_URL . ",
-        o.`physical_address` AS " . OrganizationFactory::PHYSICAL_ADDRESS . "
-
-        FROM
-        `cs419-g15`.`Item` i
-
-        # using left joins will eliminate categories with no items
-        # and organizations that do not reuse/rebuild any items
-        # while preserving items with no organizations that reuse/rebuild them
-        # this seems appropriate
-
-        # supply the category name for each item's category reference
-        LEFT JOIN `cs419-g15`.`Category` c ON i.`category_id` = c.`category_id`
-
-        # get all the relationships between items and organizations
-        LEFT JOIN `cs419-g15`.`Organization_Item` oi ON oi.`item_id` = i.`item_id`
-        LEFT JOIN `cs419-g15`.`Organization` o ON o.`organization_id` = oi.`organization_id`
-
-        ORDER BY " . ItemFactory::ID . "
-    ;";
-    }
-
-    public function getItems() {
-
-        $query = $this->constructGetItemsDatabaseQuery();
-
-        if (!$results = $this->mysqli->query($query)) {
-            throw new PersistenceException(
-                $this->mysqli->error, $this->mysqli->errno);
-        }
-
-        // Parse rows into item hierarchy
-
-        /** @var array $items /
-        $items = array();
-
-        /** @var array $curItem /
-        $curItem = null;
-        while (($row = $results->fetch_assoc()) != null) {
-
-            // If this row has a new item
-            if ($curItem == null
-                || $row[ItemFactory::ID] != $curItem[ItemFactory::ID]) {
-
-                // Put the previous item in the items array
-                $curItem == null || array_push($items, $curItem);
-
-                // Start a new Item instance
-                $curItem = array(
-                    ItemFactory::ID => $row[ItemFactory::ID],
-                    ItemFactory::NAME => $row[ItemFactory::NAME],
-                    CategoryFactory::ID => $row[CategoryFactory::ID],
-                    CategoryFactory::NAME => $row[CategoryFactory::NAME],
-                    'organizations' => array()
-                );
-            }
-
-            $this->parseOrganization($curItem, $row);
-        }
-
-        return $items;
-    }
-
-    private function parseOrganization(array &$curItem, array $row) {
-
-        if (!empty($row[OrganizationFactory::ID])) {
-
-            $organization = array(
-                OrganizationFactory::ID =>
-                    $row[OrganizationFactory::ID],
-
-                OrganizationFactory::NAME =>
-                    $row[OrganizationFactory::NAME],
-
-                OrganizationFactory::PHONE_NUMBER =>
-                    $row[OrganizationFactory::PHONE_NUMBER],
-
-                OrganizationFactory::WEBSITE_URL =>
-                    $row[OrganizationFactory::WEBSITE_URL],
-
-                OrganizationFactory::PHYSICAL_ADDRESS =>
-                    $row[OrganizationFactory::PHYSICAL_ADDRESS]
-            );
-
-            array_push($curItem['organizations'], $organization);
-        }
-    }
-*/
 
     public function insertOrganization(Organization $organization)
     {
@@ -423,30 +330,104 @@ class MysqlDataAccessObject implements DataAccessObject {
 
     public function insertItem(Item $item) {
 
+        $this->mysqli->autocommit(false);
+
+        try {
+            $this->insertItemToItemTable($item);
+            $this->clearItemCategoriesForItem($item);
+            $this->setItemCategoriesForItem($item);
+
+            $this->mysqli->commit();
+
+            return array('success' => true);
+        }
+        catch (MysqliException $e) {
+            $this->mysqli->rollback();
+            throw new PersistenceException("Unable to persist item", null, $e);
+        }
+    }
+
+    /**
+     * @param Item $item the item to insert
+     * @throws MysqliException
+     */
+    private function insertItemToItemTable(Item $item) {
+
         /** @var string $name */
         $name = $item->getName();
 
-        /** @var int $categoryRef */
-        $categoryRef = $item->getCategoryRef();
-
-        if (!($stmt = $this->mysqli->prepare(self::INSERT_ITEM_STRING)))
-        {
-            die("Unable to prepare statement " . $this->mysqli->error);
+        if (!($stmt = $this->mysqli->prepare(self::INSERT_ITEM_STRING))) {
+            throw new MysqliException("Unable to prepare statement for insert item" . $this->mysqli->error);
         }
 
-        if (!$stmt->bind_param("si", $name, $categoryRef))
-        {
-            die("Unable to bind params " . $stmt->error);
+        if (!$stmt->bind_param("s", $name)) {
+            throw new MysqliException("Unable to bind params for insert item" . $stmt->error);
         }
 
-        if(!($result = $stmt->execute())) {
-            throw new PersistenceException($stmt->error, $stmt->errno);
+        if (!($result = $stmt->execute())) {
+            throw new MysqliException($stmt->error, $stmt->errno);
         }
 
-        return array('success' => $result);
+        $item->setId($stmt->insert_id);
     }
 
-    public function updateItem(Item $item) {
+    /**
+     * @param Item $item the item who's category relationships are to be cleared
+     * @throws MysqliException if there is a problem executing the sql
+     */
+    private function clearItemCategoriesForItem(Item $item) {
+
+        /** @var int $itemId */
+        $itemId = $item->getId();
+
+        if (!($stmt = $this->mysqli->prepare(self::DELETE_ITEM_CATEGORIES_FOR_ITEM_STRING))) {
+            throw new MysqliException(
+                "Unable to prepare statement for delete all item category relationships for an item");
+        }
+        if (!($stmt->bind_param("i", $itemId))) {
+            throw new MysqliException("Unable to bind params for delete all item category relationships for an item");
+        }
+        if (!($result = $stmt->execute())) {
+            throw new MysqliException($stmt->error, $stmt->errno);
+        }
+    }
+
+    /**
+     * @param Item $item the item to set item-category relationships for
+     * @throws MysqliException if there is a problem executing the sql
+     */
+    private function setItemCategoriesForItem(Item $item) {
+
+        /** @var int $itemId */
+        $itemId = $item->getId();
+
+        /** @var array $categoryRefs */
+        $categoryRefs = $item->getCategoryRefs();
+
+        $sql =
+            "INSERT INTO `cs419-g15`.`Item_Category` (
+            `item_id`,
+            `category_id`
+        ) VALUES ";
+
+        foreach ($categoryRefs as $index=>$categoryRef) {
+            $safeCategoryId = (int)$categoryRef;
+            if ($index > 0) { $sql .= ", "; }
+            $sql .= "($itemId, $safeCategoryId)";
+        }
+
+        $sql .= ";";
+
+        if (!($result = $this->mysqli->query($sql))) {
+            throw new MysqliException($this->mysqli->error, $this->mysqli->errno);
+        }
+    }
+
+    /**
+     * @param Item $item the item to update
+     * @throws MysqliException if there is a problem executing the sql
+     */
+    private function updateItemInItemTable(Item $item) {
 
         /** @var int $id */
         $id = $item->getId();
@@ -454,25 +435,31 @@ class MysqlDataAccessObject implements DataAccessObject {
         /** @var string $name */
         $name = $item->getName();
 
-        /** @var int $categoryRef */
-        $categoryRef = $item->getCategoryRef();
-
-        if (!($stmt = $this->mysqli->prepare(self::UPDATE_ITEM_STRING)))
-        {
-            die("Unable to prepare statement " . $this->mysqli->error);
+        if (!($stmt = $this->mysqli->prepare(self::UPDATE_ITEM_STRING))) {
+            die("Unable to prepare statement for update item in item table" . $this->mysqli->error);
         }
 
-        if (!$stmt->bind_param("sii",
-            $name,$categoryRef, $id))
-        {
-            die("Unable to bind params " . $stmt->error);
+        if (!$stmt->bind_param("si", $name, $id)) {
+            throw new MysqliException($stmt->error, $stmt->errno);
         }
 
-        if(!($result = $stmt->execute())) {
-            throw new PersistenceException($stmt->error, $stmt->errno);
+        if (!($result = $stmt->execute())) {
+            throw new MysqliException($stmt->error, $stmt->errno);
         }
+    }
 
-        return array('success' => $result);
+    public function updateItem(Item $item) {
+
+        try {
+            $this->updateItemInItemTable($item);
+            $this->clearItemCategoriesForItem($item);
+            $this->setItemCategoriesForItem($item);
+
+            return array('success' => true);
+        }
+        catch(MysqliException $e) {
+            throw new PersistenceException("Unable to update item", null, $e);
+        }
     }
 
     public function deleteItem($id) {

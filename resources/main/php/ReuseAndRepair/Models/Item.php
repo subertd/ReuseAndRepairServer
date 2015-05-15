@@ -23,8 +23,8 @@ class Item {
     /** @var string */
     private $name;
 
-    /** @var int */
-    private $categoryRef;
+    /** @var array */
+    private $categoryRefs;
 
     /**
      * @return int
@@ -59,18 +59,18 @@ class Item {
     }
 
     /**
-     * @return int
+     * @return array
      */
-    public function getCategoryRef()
+    public function getCategoryRefs()
     {
-        return $this->categoryRef;
+        return $this->categoryRefs;
     }
 
     /**
-     * @param int $categoryRef
+     * @param array $categoryRef
      */
-    public function setCategoryRef($categoryRef)
+    public function setCategoryRefs($categoryRefs)
     {
-        $this->categoryRef = $categoryRef;
+        $this->categoryRefs = $categoryRefs;
     }
 }

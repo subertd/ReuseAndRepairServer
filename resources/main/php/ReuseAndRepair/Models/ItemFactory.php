@@ -13,7 +13,7 @@ class ItemFactory {
 
     const ID = "itemId";
     const NAME = "itemName";
-    const CATEGORY_REF = "categoryRef";
+    const CATEGORY_REFS = "categoryRefs";
 
     /**
      * Returns a new instance of an item, setting its fields from the parameters
@@ -29,12 +29,10 @@ class ItemFactory {
         $item = new Item();
 
         if (empty($params[self::NAME])
-            || empty($params[self::CATEGORY_REF])
-            || !is_numeric($params[self::CATEGORY_REF])
-            || !( ( ( (float) $params[self::CATEGORY_REF]) % 1) == 0)
+            || empty($params[self::CATEGORY_REFS])
+            || !is_array($params[self::CATEGORY_REFS])
         ) {
-            print_r($params);
-            throw new ModelException("Missing Parameters");
+            throw new ModelException("Missing or malformed parameters");
         }
 
         if (!empty($params[self::ID])
@@ -45,7 +43,7 @@ class ItemFactory {
         }
 
         $item->setName($params[self::NAME]);
-        $item->setCategoryRef( (int) $params[self::CATEGORY_REF]);
+        $item->setCategoryRefs($params[self::CATEGORY_REFS]);
 
         return $item;
     }
