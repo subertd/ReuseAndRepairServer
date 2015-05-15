@@ -117,6 +117,13 @@ interface DataAccessObject {
     public function getItems();
 
     /**
+     * Get an array of all item-category relationships in the database
+     *
+     * @return array
+     */
+    public function getItemCategories();
+
+    /**
      * Commit an Organization-Item relationship to persistent memory
      *
      * @param int $organizationId

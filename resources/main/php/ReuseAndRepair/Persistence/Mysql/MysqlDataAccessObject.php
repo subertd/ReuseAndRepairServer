@@ -462,6 +462,11 @@ class MysqlDataAccessObject implements DataAccessObject {
         }
     }
 
+    public function getItemCategories()
+    {
+        return $this->queryAsArray(self::READ_ITEM_CATEGORIES_STRING);
+    }
+
     public function deleteItem($id) {
 
         if (!($stmt = $this->mysqli->prepare(self::DELETE_ITEM_STRING)))

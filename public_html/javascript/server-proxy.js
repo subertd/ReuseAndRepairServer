@@ -84,6 +84,10 @@ function ServerProxy() {
         },
         getOrganizationItems: function(callback, errorCallback) {
             ajaxToServer("get", "organizationItem", null, callback, errorCallback);
+        },
+
+        getOrganizationItems: function(callback, errorCallback) {
+            ajaxToServer("get", "itemCategory", null, callback, errorCallback);
         }
     }
 }

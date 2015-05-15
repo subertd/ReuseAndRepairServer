@@ -19,6 +19,7 @@ use ReuseAndRepair\Services\OrganizationsService;
 use ReuseAndRepair\Services\CategoriesService;
 use ReuseAndRepair\Services\ItemsService;
 use ReuseAndRepair\Services\OrganizationItemsService;
+use ReuseAndRepair\Services\ItemCategoriesService;
 use ReuseAndRepair\Services\ServiceException;
 
 /**
@@ -37,7 +38,8 @@ class DataController {
     const ACTION_ORGANIZATION = "organization";
     const ACTION_CATEGORY = "category";
     const ACTION_ITEM = "item";
-    const ACTION_ORGANIZATION_ITEM = "organization_item";
+    const ACTION_ORGANIZATION_ITEM = "organizationItem";
+    const ACTION_ITEM_CATEGORY = "itemCategory";
 
     /** @var DataAccessObject */
     private $dao;
@@ -78,6 +80,11 @@ class DataController {
     private $organizationItemsService;
 
     /**
+     * @var ItemCategoriesService
+     */
+    private $itemCategoriesService;
+
+    /**
      * @var Presenter
      */
     private $presenter;
@@ -94,8 +101,8 @@ class DataController {
         $this->organizationsService = new OrganizationsService($this->dao);
         $this->categoriesService = new CategoriesService($this->dao);
         $this->itemsService = new ItemsService($this->dao);
-        $this->organizationItemsService
-            = new OrganizationItemsService($this->dao);
+        $this->organizationItemsService = new OrganizationItemsService($this->dao);
+        $this->itemCategoriesService = new ItemCategoriesService($this->dao);
 
         $this->presenter = new JsonPresenter();
     }
@@ -110,7 +117,7 @@ class DataController {
      * -DELETE = delete
      *
      * and the action header determines which entity to perform the operation
-     * upon (i.e. organization, category, item, organization_item)
+     * upon (i.e. organization, category, item, organizationItem, itemCategory)
      */
     public function routeHttpRequest() {
 
@@ -131,6 +138,9 @@ class DataController {
                         break;
                     case self::ACTION_ORGANIZATION_ITEM:
                         $this->getOrganizationItems();
+                        break;
+                    case self::ACTION_ITEM_CATEGORY:
+                        $this->getItemCategory();
                         break;
                     case self::ACTION_SYNC:
                     default:
@@ -167,6 +177,7 @@ class DataController {
                         break;
                     case self::ACTION_ORGANIZATION_ITEM:
                         $this->updateOrganizationItem();
+                        break;
                 }
                 break;
             case 'DELETE':
@@ -182,6 +193,7 @@ class DataController {
                         break;
                     case self::ACTION_ORGANIZATION_ITEM:
                         $this->deleteOrganizationItem();
+                        break;
                 }
                 break;
         }
@@ -454,7 +466,8 @@ class DataController {
                 $this->organizationItemsService->updateOrganizationItem(
                     $this->authenticationService,
                     $this->authorizationService,
-                    $params));
+                    $params)
+            );
         }
         catch (ServiceException $e) {
             $this->presenter->presentException($e);
@@ -474,7 +487,8 @@ class DataController {
                 $this->organizationItemsService->deleteOrganizationItem(
                     $this->authenticationService,
                     $this->authorizationService,
-                    $params));
+                    $params)
+            );
         }
         catch (ServiceException $e) {
             $this->presenter->presentException($e);
@@ -488,6 +502,19 @@ class DataController {
         try {
             $this->presenter->presentResponse(
                 $this->organizationItemsService->getOrganizationItems());
+        }
+        catch (ServiceException $e) {
+            $this->presenter->presentException($e);
+        }
+    }
+
+    /**
+     * gets a list of all item-category relationships
+     */
+    private function getItemCategory() {
+        try {
+            $this->presenter->presentResponse(
+                $this->itemCategoriesService->getItemCategories());
         }
         catch (ServiceException $e) {
             $this->presenter->presentException($e);
