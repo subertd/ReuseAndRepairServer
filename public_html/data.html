@@ -275,6 +275,7 @@
     var organizations = null;
     var categories = null;
     var items = null;
+    var itemCategories = null;
     var organizationItems = null;
 
     function syncDatabase() {
@@ -284,6 +285,7 @@
                 organizations = data['organizations'];
                 categories = data['categories'];
                 items = data['items'];
+                itemCategories = data['itemCategories'];
                 organizationItems = data['organizationItems'];
 
                 populateOrganizationsList();
