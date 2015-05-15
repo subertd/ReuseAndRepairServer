@@ -52,17 +52,4 @@
             );
         });
     });
-
-    function syncItems() {
-        serverProxy.getItems(
-            function(data, status) {
-                console.debug("AJAX success for syncItems", data, status);
-                items = data;
-                populateItemsList();
-            },
-            function(jqXHR, textStatus, errorThrown) {
-                console.log("Error syncing database", textStatus, errorThrown);
-            }
-        );
-    }
 </script>

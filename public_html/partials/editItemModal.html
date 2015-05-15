@@ -1,0 +1,62 @@
+<!--
+ - editItemModal
+ -
+ - an html partial that builds an edit item modal
+ -
+ - @depends jQuery
+ - @depends ServerProxy serverProxy
+ - @depends function syncItems
+-->
+
+<div id="editItemModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Edit Item</h4>
+            </div>
+            <div class="modal-body">
+                <input class="hidden" type="number" id="editItemId">
+                <div class="form-group">
+                    <label for="editItemName">Item Name</label>
+                    <input class="form-control" type="text" id="editItemName">
+                </div>
+                <div class="form-group">
+                    <label for="editItemSelectCategory">Category</label>
+                    <select class="form-control" id="editItemSelectCategory" name="categoryId"></select>
+                </div>
+                <div class="form-group">
+                    <button id="editItemSubmitButton" class="btn btn-primary" type="button" data-dismiss="modal">
+                        Submit Changes
+                    </button>
+                    <button class="btn btn-standard pull-right" type="button" data-dismiss="modal">
+                        Reset
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function() {
+        console.debug("Calling document ready in editItemModal");
+
+        $("#editItemSubmitButton").click(function() {
+
+            var item = {
+                'itemId': $("#editItemId").val(),
+                'itemName': $("#editItemName").val(),
+                'categoryRef': $("#editItemSelectCategory").val()
+            };
+
+            serverProxy.updateItem(item,
+                function(data, status) {
+                    console.debug("AJAX success for updateItem", data, status);
+                    syncCategories();
+                },
+                function(jqXHR, textStatus, errorThrown) {
+                    console.log("Error updating item", textStatus, errorThrown);
+                }
+            );
+        });
+    });
+</script>

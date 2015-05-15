@@ -5,8 +5,7 @@
  -
  - @depends jQuery
  - @depends ServerProxy serverProxy
- - @depends array categories
- - @depends function populateCategoriesList
+ - @depends function syncCategories
 -->
 
 <div id="addCategoryModal" class="modal fade" role="dialog">
@@ -41,27 +40,14 @@
             };
 
             serverProxy.insertCategory(category,
-                    function (data, status) {
-                        console.debug("AJAX success for insertCategory", data, status);
-                        syncCategories();
-                    },
-                    function (jqXHR, textStatus, errorThrown) {
-                        console.log("Error inserting category", textStatus, errorThrown);
-                    }
+                function (data, status) {
+                    console.debug("AJAX success for insertCategory", data, status);
+                    syncCategories();
+                },
+                function (jqXHR, textStatus, errorThrown) {
+                    console.log("Error inserting category", textStatus, errorThrown);
+                }
             );
         });
     });
-
-    function syncCategories() {
-        serverProxy.getCategories(
-                function (data, status) {
-                    console.debug("AJAX success for syncCategories", data, status);
-                    categories = data;
-                    populateCategoriesList();
-                },
-                function(jqXHR, textStatus, errorThrown) {
-                    console.log("Error syncing categories", textStatus, errorThrown);
-                }
-        );
-    }
 </script>

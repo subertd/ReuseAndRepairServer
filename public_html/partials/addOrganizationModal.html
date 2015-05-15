@@ -5,8 +5,7 @@
  -
  - @depends jQuery
  - @depends ServerProxy serverProxy
- - @depends array organizations
- - @depends function populateOrganizationsList
+ - @depends function syncOrganizations
 -->
 
 <div id="addOrganizationModal" class="modal fade" role="dialog">
@@ -65,17 +64,4 @@
             );
         });
     });
-
-    function syncOrganizations() {
-        serverProxy.getOrganizations(
-            function(data, status) {
-                console.debug("AJAX success for syncOrganizations", data, status);
-                organizations = data;
-                populateOrganizationsList();
-            },
-            function(jqXHR, textStatus, errorThrown) {
-                console.log("Error syncing organizations", textStatus, errorThrown);
-            }
-        );
-    }
 </script>

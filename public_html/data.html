@@ -16,12 +16,69 @@
     Add Organization
 </button>
 <div id="addOrganizationModalTarget"></div>
+<div id="editOrganizationModalTarget"></div>
 <script type="text/javascript">
+
+    $(document).ready(function() {
+        /**
+         * show the modal and populate the form with existing values
+         */
+        $("#organizationsList").on('click', 'li', function() {
+            console.debug("click detected for organizations list element ", this.value);
+
+            var curOrganizationId = this.value;
+            var curOrganization = ($.grep(organizations, function(e) {
+                return e.id == curOrganizationId;
+            }))[0];
+
+            $("#editOrganizationId").val(curOrganizationId);
+            $("#editOrganizationName").val(curOrganization.name);
+            $("#editOrganizationPhoneNumber").val(curOrganization.phoneNumber);
+            $("#editOrganizationWebsiteUrl").val(curOrganization.websiteUrl);
+            $("#editOrganizationPhysicalAddress").val(curOrganization.physicalAddress);
+
+            $("#editOrganizationModal").modal('show');
+        });
+    });
+
+    function syncOrganizations() {
+        serverProxy.getOrganizations(
+            function(data, status) {
+                console.debug("AJAX success for syncOrganizations", data, status);
+                organizations = data;
+                populateOrganizationsList();
+            },
+            function(jqXHR, textStatus, errorThrown) {
+                console.log("Error syncing organizations", textStatus, errorThrown);
+            }
+        );
+    }
+
+    function populateOrganizationsList() {
+        $("#organizationsList").empty();
+        organizations.forEach(function(organization) {
+            var listItem = $(document.createElement('li'));
+            listItem.addClass("list-group-item");
+            listItem.attr("value", organization['id']);
+            listItem.html(organization['name']);
+            $("#organizationsList").append(listItem);
+        });
+    }
+
     /**
      * @citation http://stackoverflow.com/questions/18908531/true-client-side-html-includes
      */
     $(function(){
         $("#addOrganizationModalTarget").load("partials/addOrganizationModal.html", function(){
+            $(this).contents().unwrap();
+        });
+    });
+
+    /**
+     * @citation http://stackoverflow.com/questions/18908531/true-client-side-html-includes
+     */
+    $(function(){
+        $("#editOrganizationModalTarget").load("partials/editOrganizationModal.html", function(){
             $(this).contents().unwrap();
         });
     });
@@ -33,97 +90,50 @@
     Add Category
 </button>
 <div id="addCategoryModalTarget"></div>
+<div id="editCategoryModalTarget"></div>
 <script type="text/javascript">
-    /**
-     * @citation http://stackoverflow.com/questions/18908531/true-client-side-html-includes
-     */
-    $(function(){
-        $("#addCategoryModalTarget").load("partials/addCategoryModal.html", function(){
-            $(this).contents().unwrap();
+
+    $(document).ready(function() {
+        /**
+         * show the modal and populate the form with existing values
+         */
+        $("#categoriesList").on('click', 'li', function() {
+
+            console.debug("click detected for categories list element ", this.value);
+
+            var curCategoryId = this.value;
+            var curCategory = ($.grep(categories, function(e) {
+                return e.id == curCategoryId;
+            }))[0];
+
+            $("#editCategoryId").val(curCategoryId);
+            $("#editCategoryName").val(curCategory.name);
+
+            $("#editCategoryModal").modal('show');
         });
     });
-</script>
 
-<div id="updateCategoryModal" class="modal fade" role="dialog">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title">Edit Category</h4>
-            </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label for="updateCategoryName">Category name</label>
-                    <input class="form-control" type="text" id="updateCategoryName">
-                </div>
-                <div class="form-group">
-                    <button id="updateCategorySubmitButton" class="btn btn-primary" type="button" data-dismiss="modal">
-                        Add Category
-                    </button>
-                    <button class="btn btn-standard pull-right" type="button" data-dismiss="modal">
-                        Cancel
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<h4>Items</h4>
-<ul id="itemsList" class="list-group"></ul>
-<button id="addItemButton" class="btn btn-standard" data-toggle="modal" data-target="#addItemModal">
-    Add Item
-</button>
-<div id="addItemModalTarget"></div>
-<script type="text/javascript">
-    /**
-     * @citation http://stackoverflow.com/questions/18908531/true-client-side-html-includes
-     */
-    $(function(){
-        $("#addItemModalTarget").load("partials/addItemModal.html", function(){
-            $(this).contents().unwrap();
-        });
-    });</script>
-
-<script type="text/javascript">
-
-    var serverProxy = new ServerProxy();
-
-    var organizations = null;
-    var categories = null;
-    var items = null;
-    var organizationItems = null;
-
-    function syncDatabase() {
-        serverProxy.syncDatabase(
-                function (data, status) {
-                    console.debug("AJAX success for syncDatabase", data, status);
-                    organizations = data['organizations'];
-                    categories = data['categories'];
-                    items = data['items'];
-                    organizationItems = data['organizationItems'];
-
-                    populateOrganizationsList();
-                    populateCategoriesList();
-                    populateItemsList();
-                },
-                function (jqXHR, textStatus, errorThrown) {
-                    console.log("Error syncing database", textStatus, errorThrown);
-                });
-    }
-
-    function populateOrganizationsList() {
-        organizations.forEach(function(organization) {
-            var listItem = $(document.createElement('li'));
-            listItem.addClass("list-group-item");
-            listItem.html(organization['name']);
-            $("#organizationsList").append(listItem);
-        });
+    function syncCategories() {
+        serverProxy.getCategories(
+            function (data, status) {
+                console.debug("AJAX success for syncCategories", data, status);
+                categories = data;
+                populateCategoriesList();
+            },
+            function(jqXHR, textStatus, errorThrown) {
+                console.log("Error syncing categories", textStatus, errorThrown);
+            }
+        );
     }
 
     function populateCategoriesList() {
+        $("#categoriesList").empty();
+        //$("#addItemSelectCategory").empty();
+        $("#editItemSelectCategory").empty();
         categories.forEach(function(category) {
             var listItem = $(document.createElement('li'));
             listItem.addClass("list-group-item");
+            listItem.attr("value", category['id']);
             listItem.html(category['name']);
             $("#categoriesList").append(listItem);
 
@@ -132,18 +142,89 @@
             categoryOption.attr("value", category['id']);
             categoryOption.html(category['name']);
             $("#addItemSelectCategory").append(categoryOption);
+
+            // Populate the form field in editItem for select category
+            var categoryOption = $(document.createElement('option'));
+            categoryOption.attr("value", category['id']);
+            categoryOption.html(category['name']);
+            $("#editItemSelectCategory").append(categoryOption);
         });
+    }
+
+    /**
+     * @citation http://stackoverflow.com/questions/18908531/true-client-side-html-includes
+     */
+    $(function(){
+        $("#addCategoryModalTarget").load("partials/addCategoryModal.html", function(){
+            $(this).contents().unwrap();
+        });
+    });
+
+    /**
+     * @citation http://stackoverflow.com/questions/18908531/true-client-side-html-includes
+     */
+    $(function(){
+        $("#editCategoryModalTarget").load("partials/editCategoryModal.html", function(){
+            $(this).contents().unwrap();
+        });
+    });
+</script>
+
+<h4>Items</h4>
+<ul id="itemsList" class="list-group"></ul>
+<button id="addItemButton" class="btn btn-standard" data-toggle="modal" data-target="#addItemModal">
+    Add Item
+</button>
+<div id="addItemModalTarget"></div>
+<div id="editItemModalTarget"></div>
+<script type="text/javascript">
+
+    $(document).ready(function() {
+        /**
+         * show the modal and populate the form with existing values
+         */
+        $("#itemsList").on('click', 'li', function() {
+
+            console.debug("click detected for items list element ", this.value);
+
+            var curItemId = this.value;
+            var curItem = ($.grep(items, function(e) {
+                return e.id == curItemId;
+            }))[0];
+
+            $("#editItemId").val(curItemId);
+            $("#editItemName").val(curItem.name);
+
+            $("#editItemModal").modal('show');
+        });
+    });
+
+    function syncItems() {
+        serverProxy.getItems(
+                function(data, status) {
+                    console.debug("AJAX success for syncItems", data, status);
+                    items = data;
+                    populateItemsList();
+                },
+                function(jqXHR, textStatus, errorThrown) {
+                    console.log("Error syncing database", textStatus, errorThrown);
+                }
+        );
     }
 
     function populateItemsList() {
 
         items.sort(function(lhs, rhs) {
             return lhs.categoryRef - rhs.categoryRef;
-        })
+        });
 
         var curCategoryRef = null;
+        $("#itemsList").empty();
         items.forEach(function(item) {
 
+            var itemsList = $("#itemsList");
+
+            // If this item is of a new category, place a category marker above it
             if (curCategoryRef == null || item.categoryRef != curCategoryRef) {
                 curCategoryRef = item.categoryRef;
                 var listItemGroup = $(document.createElement('li'));
@@ -156,14 +237,63 @@
                 var categoryName = category['name'];
 
                 listItemGroup.html("<h4>" + categoryName + "</h4>");
-                $("#itemsList").append(listItemGroup);
+                itemsList.append(listItemGroup);
             }
 
+            // Configure the list item
             var listItem = $(document.createElement('li'));
             listItem.addClass("list-group-item");
+            listItem.attr("value", item['id']);
             listItem.html(item['name']);
-            $("#itemsList").append(listItem);
+            itemsList.append(listItem);
         });
+    }
+
+    /**
+     * @citation http://stackoverflow.com/questions/18908531/true-client-side-html-includes
+     */
+    $(function(){
+        $("#addItemModalTarget").load("partials/addItemModal.html", function(){
+            $(this).contents().unwrap();
+        });
+    });
+
+    /**
+     * @citation http://stackoverflow.com/questions/18908531/true-client-side-html-includes
+     */
+    $(function(){
+        $("#editItemModalTarget").load("partials/editItemModal.html", function(){
+            $(this).contents().unwrap();
+        });
+    });
+</script>
+
+<script type="text/javascript">
+
+    var serverProxy = new ServerProxy();
+
+    var organizations = null;
+    var categories = null;
+    var items = null;
+    var organizationItems = null;
+
+    function syncDatabase() {
+        serverProxy.syncDatabase(
+            function (data, status) {
+                console.debug("AJAX success for syncDatabase", data, status);
+                organizations = data['organizations'];
+                categories = data['categories'];
+                items = data['items'];
+                organizationItems = data['organizationItems'];
+
+                populateOrganizationsList();
+                populateCategoriesList();
+                populateItemsList();
+            },
+            function (jqXHR, textStatus, errorThrown) {
+                console.log("Error syncing database", textStatus, errorThrown);
+            }
+        );
     }
 
     $(document).ready(function() {

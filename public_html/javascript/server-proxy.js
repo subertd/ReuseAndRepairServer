@@ -27,7 +27,7 @@ function ServerProxy() {
             success: callback,
             error: errorCallback
         });
-    }
+    };
 
     return {
         syncDatabase: function(callback, errorCallback) {
