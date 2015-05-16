@@ -1,4 +1,4 @@
-SET FOREIGN_KEY_CHECKS = 0;
+#SET FOREIGN_KEY_CHECKS = 0;
 
 INSERT INTO  `cs419-g15`.`Organization` (
     `organization_id` ,
@@ -315,7 +315,7 @@ INSERT INTO  `cs419-g15`.`Item` (
     ;
 
 	
-INSERT INTO  `cs419-g15`.`Category_Item` (
+INSERT INTO  `cs419-g15`.`Item_Category` (
     `category_id` ,
     `item_id`
     )
@@ -495,8 +495,8 @@ INSERT INTO  `cs419-g15`.`Category_Item` (
 (15,173),
 (15,174),
 (15,175),
-(15,176),
-(15,177)
+(15,176)#,
+#(15,177) there is no item with this index
 	;
 
 INSERT INTO  `cs419-g15`.`Organization_Repair_Item` (
@@ -2927,4 +2927,4 @@ INSERT INTO  `cs419-g15`.`Organization_Reuse_Item` (
 	;
 
 
-SET FOREIGN_KEY_CHECKS = 1;
+#SET FOREIGN_KEY_CHECKS = 1;
