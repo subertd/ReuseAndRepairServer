@@ -189,7 +189,7 @@
          */
         $("#itemsList").on('click', 'li', function() {
 
-            console.debug("click detected for items list element ", this.value);
+            console.log("click detected for items list element ", this.value);
 
             var curItemId = this.value;
             var curItem = ($.grep(items, function(e) {
@@ -202,7 +202,7 @@
             $("#editItemModal").modal('show');
         });
     });
-
+/*
     function syncItems() {
         serverProxy.getItems(
                 function(data, status) {
@@ -215,7 +215,7 @@
                 }
         );
     }
-
+*/
     function populateItemsList() {
 
         // Alphabetize by name
