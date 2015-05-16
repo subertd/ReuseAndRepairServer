@@ -32,6 +32,12 @@ class Organization {
     /** @var  string */
     private $physicalAddress;
 
+    /** @var array */
+    private $reuseItemRelationships;
+
+    /** @var array */
+    private $repairItemRelationships;
+
     /**
      * @return int
      */
@@ -110,5 +116,37 @@ class Organization {
     public function setPhysicalAddress($physicalAddress)
     {
         $this->physicalAddress = $physicalAddress;
+    }
+
+    /**
+     * @return array
+     */
+    public function getReuseItemRelationships()
+    {
+        return $this->reuseItemRelationships;
+    }
+
+    /**
+     * @param array $reuseItemRelationships
+     */
+    public function setReuseItemRelationships($reuseItemRelationships)
+    {
+        $this->reuseItemRelationships = $reuseItemRelationships;
+    }
+
+    /**
+     * @return array
+     */
+    public function getRepairItemRelationships()
+    {
+        return $this->repairItemRelationships;
+    }
+
+    /**
+     * @param array $repairItemRelationships
+     */
+    public function setRepairItemRelationships($repairItemRelationships)
+    {
+        $this->repairItemRelationships = $repairItemRelationships;
     }
 }

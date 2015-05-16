@@ -22,6 +22,8 @@ class OrganizationFactory {
     const PHONE_NUMBER = "phoneNumber";
     const PHYSICAL_ADDRESS = "physicalAddress";
     const WEBSITE_URL = "websiteUrl";
+    const REUSE_ITEM_RELATIONSHIPS = "reuseItemRelationships";
+    const REPAIR_ITEM_RELATIONSHIPS = "repairItemRelationships";
 
     /**
      * Returns a new instance of an organization, setting its fields from
@@ -53,6 +55,20 @@ class OrganizationFactory {
         $organization->setPhoneNumber(isset($params[self::PHONE_NUMBER]) ? $params[self::PHONE_NUMBER] : "");
         $organization->setWebsiteUrl(isset($params[self::WEBSITE_URL]) ? $params[self::WEBSITE_URL] : "");
         $organization->setPhysicalAddress(isset($params[self::PHYSICAL_ADDRESS]) ? $params[self::PHYSICAL_ADDRESS] : "");
+
+        if (isset($params[self::REUSE_ITEM_RELATIONSHIPS]) && is_array($params[self::REUSE_ITEM_RELATIONSHIPS])) {
+            $organization->setReuseItemRelationships($params[self::REUSE_ITEM_RELATIONSHIPS]);
+        }
+        else {
+            $organization->setReuseItemRelationships(array());
+        }
+
+        if (isset($params[self::REPAIR_ITEM_RELATIONSHIPS]) && is_array($params[self::REPAIR_ITEM_RELATIONSHIPS])) {
+            $organization->setRepairItemRelationships($params[self::REPAIR_ITEM_RELATIONSHIPS]);
+        }
+        else {
+            $organization->setRepairItemRelationships(array());
+        }
 
         return $organization;
     }

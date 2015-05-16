@@ -18,8 +18,6 @@ use ReuseAndRepair\Services\DatabaseSyncService;
 use ReuseAndRepair\Services\OrganizationsService;
 use ReuseAndRepair\Services\CategoriesService;
 use ReuseAndRepair\Services\ItemsService;
-use ReuseAndRepair\Services\OrganizationItemsService;
-use ReuseAndRepair\Services\ItemCategoriesService;
 use ReuseAndRepair\Services\ServiceException;
 
 /**
@@ -38,7 +36,7 @@ class DataController {
     const ACTION_ORGANIZATION = "organization";
     const ACTION_CATEGORY = "category";
     const ACTION_ITEM = "item";
-    const ACTION_ORGANIZATION_ITEM = "organizationItem";
+    const ACTION_ORGANIZATION_REUSE_ITEM = "organizationItem";
     const ACTION_ITEM_CATEGORY = "itemCategory";
 
     /** @var DataAccessObject */
@@ -75,16 +73,6 @@ class DataController {
     private $itemsService;
 
     /**
-     * @var OrganizationItemsService
-     */
-    private $organizationItemsService;
-
-    /**
-     * @var ItemCategoriesService
-     */
-    private $itemCategoriesService;
-
-    /**
      * @var Presenter
      */
     private $presenter;
@@ -101,8 +89,6 @@ class DataController {
         $this->organizationsService = new OrganizationsService($this->dao);
         $this->categoriesService = new CategoriesService($this->dao);
         $this->itemsService = new ItemsService($this->dao);
-        $this->organizationItemsService = new OrganizationItemsService($this->dao);
-        $this->itemCategoriesService = new ItemCategoriesService($this->dao);
 
         $this->presenter = new JsonPresenter();
     }
@@ -136,12 +122,6 @@ class DataController {
                     case self::ACTION_ITEM:
                         $this->getItems();
                         break;
-                    case self::ACTION_ORGANIZATION_ITEM:
-                        $this->getOrganizationItems();
-                        break;
-                    case self::ACTION_ITEM_CATEGORY:
-                        $this->getItemCategory();
-                        break;
                     case self::ACTION_SYNC:
                     default:
                         $this->syncDatabase();
@@ -159,9 +139,6 @@ class DataController {
                     case self::ACTION_ITEM:
                         $this->insertItem();
                         break;
-                    case self::ACTION_ORGANIZATION_ITEM:
-                        $this->insertOrganizationItem();
-                        break;
                 }
                 break;
             case 'PUT':
@@ -175,9 +152,6 @@ class DataController {
                     case self::ACTION_ITEM:
                         $this->updateItem();
                         break;
-                    case self::ACTION_ORGANIZATION_ITEM:
-                        $this->updateOrganizationItem();
-                        break;
                 }
                 break;
             case 'DELETE':
@@ -190,9 +164,6 @@ class DataController {
                         break;
                     case self::ACTION_ITEM:
                         $this->deleteItem();
-                        break;
-                    case self::ACTION_ORGANIZATION_ITEM:
-                        $this->deleteOrganizationItem();
                         break;
                 }
                 break;
@@ -427,94 +398,6 @@ class DataController {
         try {
             $this->presenter->presentResponse(
                 $this->itemsService->getItems());
-        }
-        catch (ServiceException $e) {
-            $this->presenter->presentException($e);
-        }
-    }
-
-    /**
-     * Inserts a new organization-item relationship
-     */
-    private function insertOrganizationItem() {
-
-        /** @var array $params */
-        $params = json_decode(file_get_contents("php://input"), true);
-
-        try {
-            $this->presenter->presentResponse(
-                $this->organizationItemsService->insertOrganizationItem(
-                    $this->authenticationService,
-                    $this->authorizationService,
-                    $params));
-        }
-        catch (ServiceException $e) {
-            $this->presenter->presentException($e);
-        }
-    }
-
-    /**
-     * Updates an existing organization-item relationship
-     */
-    private function updateOrganizationItem() {
-
-        /** @var array $params */
-        $params = json_decode(file_get_contents("php://input"), true);
-
-        try {
-            $this->presenter->presentResponse(
-                $this->organizationItemsService->updateOrganizationItem(
-                    $this->authenticationService,
-                    $this->authorizationService,
-                    $params)
-            );
-        }
-        catch (ServiceException $e) {
-            $this->presenter->presentException($e);
-        }
-    }
-
-    /**
-     * Deletes an organization-item relationship
-     */
-    private function deleteOrganizationItem() {
-
-        /** @var array $params */
-        $params = json_decode(file_get_contents("php://input"), true);
-
-        try {
-            $this->presenter->presentResponse(
-                $this->organizationItemsService->deleteOrganizationItem(
-                    $this->authenticationService,
-                    $this->authorizationService,
-                    $params)
-            );
-        }
-        catch (ServiceException $e) {
-            $this->presenter->presentException($e);
-        }
-    }
-
-    /**
-     * gets a list of all organization-item relationships
-     */
-    private function getOrganizationItems() {
-        try {
-            $this->presenter->presentResponse(
-                $this->organizationItemsService->getOrganizationItems());
-        }
-        catch (ServiceException $e) {
-            $this->presenter->presentException($e);
-        }
-    }
-
-    /**
-     * gets a list of all item-category relationships
-     */
-    private function getItemCategory() {
-        try {
-            $this->presenter->presentResponse(
-                $this->itemCategoriesService->getItemCategories());
         }
         catch (ServiceException $e) {
             $this->presenter->presentException($e);
