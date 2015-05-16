@@ -29,7 +29,6 @@ class ItemFactory {
         $item = new Item();
 
         if (empty($params[self::NAME])
-            || empty($params[self::CATEGORY_REFS])
             || !is_array($params[self::CATEGORY_REFS])
         ) {
             throw new ModelException("Missing or malformed parameters");

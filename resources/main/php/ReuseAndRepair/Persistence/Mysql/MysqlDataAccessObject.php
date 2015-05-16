@@ -404,6 +404,10 @@ class MysqlDataAccessObject implements DataAccessObject {
         /** @var array $categoryRefs */
         $categoryRefs = $item->getCategoryRefs();
 
+        if (count($categoryRefs) == 0) {
+            return;
+        }
+
         $sql =
             "INSERT INTO `cs419-g15`.`Item_Category` (
             `item_id`,

@@ -6,10 +6,12 @@
  - @depends jQuery
  - @depends ServerProxy serverProxy
  - @depends array items
+ - @depends array categories
+ - @depends array itemCategories
  - @depends function populateItemsList
 -->
 
-<div id="addItemModal" class="modal hide fade" role="dialog">
+<div id="addItemModal" class="modal fade" role="dialog">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -19,13 +21,26 @@
                 <div class="form-group">
                     <label for="addItemName">Item name</label>
                     <input class="form-control" type='text' id='addItemName'>
-
-                    <label for="addItemSelectCategory">Category</label>
+                </div>
+                <div class="form-group">
+                    <legend>Categories</legend>
+                    <ul id="addItemCategoriesList" class="list-group"></ul>
+                </div>
+                <div class="form-group">
+                    <label for="addItemSelectCategory">Select Category</label>
                     <select class="form-control" id="addItemSelectCategory" name='categoryId'></select>
                 </div>
                 <div class="form-group">
-                    <input id="addItemSubmitButton" class="btn btn-primary" type='submit' name='button' data-dismiss="modal">
-                    <button class="btn btn-standard pull-right" type="button" data-dismiss="modal">
+                    <button class="btn btn-info" id="addItemAddCategory">Add Category</button>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="form-group">
+                    <button id="addItemSubmitButton" class="btn btn-primary" type='submit'>
+                        Add Item
+                    </button>
+                    <button id="addItemCancelButton" class="btn btn-standard pull-right" type="button"
+                            data-dismiss="modal">
                         Cancel
                     </button>
                 </div>
@@ -34,17 +49,93 @@
     </div>
 </div>
 <script type="text/javascript">
+
+    var addItemCategories = []; // A list of categories to be associated with the new item
+
+    // On clicking the button to open this modal, set up a selector with all the category options
+    $("#addItemButton").click(function() {
+
+        categories.forEach(function(category) {
+            var categoryOption = $(document.createElement('option'));
+            categoryOption.val(category['id']);
+            categoryOption.html(category['name']);
+            $("#addItemSelectCategory").append(categoryOption)
+        });
+    });
+
+    function populateAddItemCategoriesList() {
+
+        // Set up a list of all categories that the item will have associated with it
+        var categoriesList = $("#addItemCategoriesList");
+        categoriesList.empty();
+        addItemCategories.forEach(function(category) {
+
+            var listItem = $(document.createElement('li'));
+            listItem.addClass("list-group-item");
+            listItem.val(category.id);
+            listItem.html(category.name);
+            categoriesList.append(listItem);
+        });
+    }
+
+    // When the Add Category button is pressed, add the selected category to the list and refresh the list data
+    // on the form
+    $("#addItemAddCategory").click(function() {
+        console.log("Detecting a click of the addItemAddCategory button");
+
+        var categoryId = $("#addItemSelectCategory").val();
+        var category = $.grep(categories, function(_category) {
+            return _category['id'] == categoryId;
+        })[0];
+
+        if ($.inArray(category, addItemCategories, 0) == -1) {
+            addItemCategories.push(category);
+        }
+        populateAddItemCategoriesList();
+    });
+
+    // When clicking on a categories list item, remove it from the list of categories to be associated with the new item
+    $("#addItemCategoriesList").on('click', 'li', function() {
+        console.log("Click detected on an addItemCategoriesList item: ", this.value);
+
+        var categoryId = this.value;
+
+        var category = $.grep(addItemCategories, function(_category) {
+            console.log("'" + _category, _category['id'] + "' == '" + categoryId + "': '" + _category['id'] == categoryId + "'");
+            return _category['id'] == categoryId;
+        })[0];
+
+        var arrayIndex = $.inArray(category, addItemCategories, 0);
+
+        addItemCategories.splice(arrayIndex, 1);
+
+        populateAddItemCategoriesList();
+    })
+
+    // When the submit form button is pressed, use ajax to persist the new item and refresh the client data
     $(document).ready(function() {
         $("#addItemSubmitButton").click(function() {
+
+            var categoryRefs = [];
+            addItemCategories.forEach(function(category) {
+                categoryRefs.push(category.id);
+            })
+
             var item = {
                 'itemName': $("#addItemName").val(),
-                'categoryRef': $("#addItemSelectCategory").val()
+                'categoryRefs': categoryRefs
             };
 
             serverProxy.insertItem(item,
                 function(data, status) {
                     console.debug("AJAX success for insertItem", data, status);
-                    syncItems();
+                    if (data['success']) {
+                        resetAddItemModal();
+                        syncDatabase();
+                    }
+                    else {
+                        alert("Unable to add item");
+                    }
                 },
                 function(jqXHR, textStatus, errorThrown) {
                     console.log("Error inserting item", textStatus, errorThrown);
@@ -53,9 +144,21 @@
         });
     });
 
-    $("#addItemButton").click(function() {
-        console.debug("Populating categories list in form selector");
+    $(document).ready(function() {
+        $("#addItemCancelButton").click(function() {
+            resetAddItemModal();
+            $("#addItemModal").modal("hide");
+        })
+    })
 
+    function resetAddItemModal() {
+        console.log("entering resetAddItemModal()");
 
-    });
+        $("#addItemModal").modal('hide');
+        addItemCategories = [];
+        $("#addItemCategoriesList").empty();
+        $("#addItemName").val("");
+        $("#addItemSelectCategory").val("0");
+    }
+
 </script>

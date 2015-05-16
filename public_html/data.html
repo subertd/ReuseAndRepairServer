@@ -102,9 +102,9 @@
             console.debug("click detected for categories list element ", this.value);
 
             var curCategoryId = this.value;
-            var curCategory = ($.grep(categories, function(e) {
-                return e.id == curCategoryId;
-            }))[0];
+            var curCategory = $.grep(categories, function(category) {
+                return category.id == curCategoryId;
+            })[0];
 
             $("#editCategoryId").val(curCategoryId);
             $("#editCategoryName").val(curCategory.name);
@@ -129,13 +129,16 @@
     function populateCategoriesList() {
         $("#categoriesList").empty();
         //$("#addItemSelectCategory").empty();
-        $("#editItemSelectCategory").empty();
+        //$("#editItemSelectCategory").empty();
         categories.forEach(function(category) {
             var listItem = $(document.createElement('li'));
             listItem.addClass("list-group-item");
             listItem.attr("value", category['id']);
             listItem.html(category['name']);
             $("#categoriesList").append(listItem);
+
+            /*
+            Testing out putting this in the form code
 
             // Populate the form field in addItem for select category
             var categoryOption = $(document.createElement('option'));
@@ -148,6 +151,7 @@
             categoryOption.attr("value", category['id']);
             categoryOption.html(category['name']);
             $("#editItemSelectCategory").append(categoryOption);
+            */
         });
     }
 
@@ -214,38 +218,31 @@
 
     function populateItemsList() {
 
+        // Alphabetize by name
         items.sort(function(lhs, rhs) {
-            return lhs.categoryRef - rhs.categoryRef;
+            var nameL = lhs['name'].toUpperCase();
+            var nameR = rhs['name'].toUpperCase();
+
+            if (nameL < nameR) {
+                return -1;
+            }
+            else if (nameL > nameR) {
+                return 1;
+            }
+            else {
+                return 0;
+            }
         });
 
+        // Append each item to the list
         var curCategoryRef = null;
         $("#itemsList").empty();
         items.forEach(function(item) {
-
-            var itemsList = $("#itemsList");
-
-            // If this item is of a new category, place a category marker above it
-            if (curCategoryRef == null || item.categoryRef != curCategoryRef) {
-                curCategoryRef = item.categoryRef;
-                var listItemGroup = $(document.createElement('li'));
-                listItemGroup.addClass("list-group-item");
-
-                var category = ($.grep(categories, function(e) {
-                    return e.id == item['categoryRef'];
-                }))[0];
-
-                var categoryName = category['name'];
-
-                listItemGroup.html("<h4>" + categoryName + "</h4>");
-                itemsList.append(listItemGroup);
-            }
-
-            // Configure the list item
             var listItem = $(document.createElement('li'));
             listItem.addClass("list-group-item");
             listItem.attr("value", item['id']);
             listItem.html(item['name']);
-            itemsList.append(listItem);
+            $("#itemsList").append(listItem);
         });
     }
 
