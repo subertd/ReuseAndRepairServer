@@ -66,7 +66,7 @@ function ServerProxy() {
         updateItem: function(item, callback, errorCallback) {
             ajaxToServer("put", "item", item, callback, errorCallback);
         },
-        deleteItem: function(item, callbitemack, errorCallback) {
+        deleteItem: function(item, callback, errorCallback) {
             ajaxToServer("delete", "item", item, callback, errorCallback);
         },
         getItems: function(callback, errorCallback) {

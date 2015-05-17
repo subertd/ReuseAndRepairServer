@@ -23,12 +23,13 @@
                 <script type="text/javascript">
 
 $(document).ready(function() {
+
+    var organizationsList = $("#organizationsList");
+
     /**
      * show the modal and populate the form with existing values
      */
-    $("#organizationsList").on('click', 'li span.edit', function() {
-        console.log("click detected for organizations list element ", $(this).parent().val());
-
+    organizationsList.on('click', 'li span.edit', function() {
         var curOrganizationId = $(this).parent().val();
         var curOrganization = ($.grep(organizations, function(e) {
             return e.id == curOrganizationId;
@@ -43,7 +44,7 @@ $(document).ready(function() {
         $("#editOrganizationModal").modal('show');
     });
 
-    $("#organizationsList").on('click', 'li span.remove', function() {
+    organizationsList.on('click', 'li span.remove', function() {
 
         var index = $(this).parent().val();
 
@@ -85,7 +86,7 @@ function populateOrganizationsList() {
         var listItem = $(document.createElement('li'));
         listItem.addClass("list-group-item");
         listItem.attr("value", organization['id']);
-        listItem.html("<span class='edit'>" + organization['name'] + "</span><span class='badge remove'><span class='glyphicon glyphicon-remove aria-hidden='true'></span></div>");
+        listItem.html("<span class='edit'>" + organization['name'] + "</span><span class='badge remove'><span class='glyphicon glyphicon-remove' aria-hidden='true'></span></div>");
         $("#organizationsList").append(listItem);
     });
 }
@@ -122,13 +123,11 @@ $(function(){
 
 $(document).ready(function() {
     /**
-     * show the modal and populate the form with existing values
+     * show the edit item modal and populate the form with existing values
      */
-    $("#categoriesList").on('click', 'li', function() {
+    $("#categoriesList").on('click', 'li span.edit', function() {
 
-        console.debug("click detected for categories list element ", this.value);
-
-        var curCategoryId = this.value;
+        var curCategoryId = $(this).parent().val();
         var curCategory = $.grep(categories, function(category) {
             return category.id == curCategoryId;
         })[0];
@@ -138,12 +137,31 @@ $(document).ready(function() {
 
         $("#editCategoryModal").modal('show');
     });
+
+    $("#categoriesList").on('click', 'li span.remove', function() {
+
+        serverProxy.deleteCategory(
+            { 'id': $(this).parent().val() },
+            function(data, status) {
+                console.log("AJAX success for delete category", data, status);
+                if (data['success']) {
+                    syncDatabase();
+                }
+                else {
+                    alert("Unable to delete category");
+                }
+            },
+            function(jqXHR, textStatus, errorThrown) {
+                console.log("Error deleting category", textStatus, errorThrown);
+            }
+        );
+    })
 });
 
 function syncCategories() {
     serverProxy.getCategories(
         function (data, status) {
-            console.debug("AJAX success for syncCategories", data, status);
+            console.log("AJAX success for syncCategories", data, status);
             categories = data;
             populateCategoriesList();
         },
@@ -155,13 +173,11 @@ function syncCategories() {
 
 function populateCategoriesList() {
     $("#categoriesList").empty();
-    //$("#addItemSelectCategory").empty();
-    //$("#editItemSelectCategory").empty();
     categories.forEach(function(category) {
         var listItem = $(document.createElement('li'));
         listItem.addClass("list-group-item");
         listItem.attr("value", category['id']);
-        listItem.html(category['name']);
+        listItem.html("<span class='edit'>" + category['name'] + "</span><span class='badge remove'><span class='glyphicon glyphicon-remove'></span></span>");
         $("#categoriesList").append(listItem);
     });
 }
@@ -197,14 +213,11 @@ $(function(){
                 <script type="text/javascript">
 
 $(document).ready(function() {
-    /**
-     * show the modal and populate the form with existing values
-     */
-    $("#itemsList").on('click', 'li', function() {
 
-        console.log("click detected for items list element ", this.value);
+    // When an item list item is clicked, show the modal to edit the item
+    $("#itemsList").on('click', 'li span.edit', function() {
 
-        var curItemId = this.value;
+        var curItemId = $(this).parent().val();
         var curItem = ($.grep(items, function(e) {
             return e.id == curItemId;
         }))[0];
@@ -214,6 +227,26 @@ $(document).ready(function() {
 
         $("#editItemModal").modal('show');
     });
+
+    // When the remove button of an item list item is clicked, use AJAX to remove the item and refresh the list
+    $("#itemsList").on('click', 'li span.remove', function() {
+        serverProxy.deleteItem(
+            { 'itemId': $(this).parent().val() },
+            function(data, status) {
+                console.log("AJAX success for deleteItem", data, status);
+                if (data['success']) {
+                    syncDatabase();
+                }
+                else {
+                    alert("Unable to dete the item");
+                    // TODO use AJAX alerts
+                }
+            },
+            function(jqXHR, textStatus, errorThrown) {
+                console.log("Error deleting item", textStatus, errorThrown);
+            }
+        );
+    })
 });
 
 function populateItemsList() {
@@ -240,7 +273,7 @@ function populateItemsList() {
         var listItem = $(document.createElement('li'));
         listItem.addClass("list-group-item");
         listItem.attr("value", item['id']);
-        listItem.html(item['name']);
+        listItem.html("<span class='edit'>" + item['name'] + "</span><span class='badge remove'><span class='glyphicon glyphicon-remove'</span></span>");
         $("#itemsList").append(listItem);
     });
 }
@@ -278,7 +311,7 @@ var organizationItems = null;
 function syncDatabase() {
     serverProxy.syncDatabase(
         function (data, status) {
-            console.debug("AJAX success for syncDatabase", data, status);
+            console.log("AJAX success for syncDatabase", data, status);
             organizations = data['organizations'];
             categories = data['categories'];
             items = data['items'];
