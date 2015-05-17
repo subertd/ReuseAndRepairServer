@@ -308,12 +308,12 @@ $(function(){
 
 var serverProxy = new ServerProxy();
 
-var organizations = null;
-var categories = null;
-var items = null;
-var itemCategories = null;
-var organizationReuseItems = null;
-var organizationRepairItems = null;
+var organizations = [];
+var categories = [];
+var items = [];
+var itemCategories = [];
+var organizationReuseItems = [];
+var organizationRepairItems = [];
 
 function syncDatabase() {
     serverProxy.syncDatabase(
