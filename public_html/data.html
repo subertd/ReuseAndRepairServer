@@ -319,7 +319,7 @@ function syncDatabase() {
     serverProxy.syncDatabase(
         function (data, status) {
             console.log("AJAX success for syncDatabase", data, status);
-            console.log(data['success']);
+
             if (data['success']) {
                 organizations = data['organizations'];
                 categories = data['categories'];
