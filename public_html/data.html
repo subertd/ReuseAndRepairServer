@@ -122,10 +122,11 @@ $(function(){
                 <script type="text/javascript">
 
 $(document).ready(function() {
-    /**
-     * show the edit item modal and populate the form with existing values
-     */
-    $("#categoriesList").on('click', 'li span.edit', function() {
+
+    var categoriesList = $("#categoriesList");
+
+    // When a categories list item is clicked, open the edit category modal
+    categoriesList.on('click', 'li span.edit', function() {
 
         var curCategoryId = $(this).parent().val();
         var curCategory = $.grep(categories, function(category) {
@@ -138,7 +139,9 @@ $(document).ready(function() {
         $("#editCategoryModal").modal('show');
     });
 
-    $("#categoriesList").on('click', 'li span.remove', function() {
+    // When the remove button for a categories list item is pressed, use AJAX to remove the category from the server
+    // and refresh the list
+    categoriesList.on('click', 'li span.remove', function() {
 
         serverProxy.deleteCategory(
             { 'id': $(this).parent().val() },
@@ -149,6 +152,7 @@ $(document).ready(function() {
                 }
                 else {
                     alert("Unable to delete category");
+                    // TODO use bootstrap alerts
                 }
             },
             function(jqXHR, textStatus, errorThrown) {
@@ -214,8 +218,10 @@ $(function(){
 
 $(document).ready(function() {
 
+    var itemsList = $("#itemsList");
+
     // When an item list item is clicked, show the modal to edit the item
-    $("#itemsList").on('click', 'li span.edit', function() {
+    itemsList.on('click', 'li span.edit', function() {
 
         var curItemId = $(this).parent().val();
         var curItem = ($.grep(items, function(e) {
@@ -229,7 +235,7 @@ $(document).ready(function() {
     });
 
     // When the remove button of an item list item is clicked, use AJAX to remove the item and refresh the list
-    $("#itemsList").on('click', 'li span.remove', function() {
+    itemsList.on('click', 'li span.remove', function() {
         serverProxy.deleteItem(
             { 'itemId': $(this).parent().val() },
             function(data, status) {
@@ -238,8 +244,8 @@ $(document).ready(function() {
                     syncDatabase();
                 }
                 else {
-                    alert("Unable to dete the item");
-                    // TODO use AJAX alerts
+                    alert("Unable to delete the item");
+                    // TODO use bootstrap alerts
                 }
             },
             function(jqXHR, textStatus, errorThrown) {
@@ -306,7 +312,8 @@ var organizations = null;
 var categories = null;
 var items = null;
 var itemCategories = null;
-var organizationItems = null;
+var organizationReuseItems = null;
+var organizationRepairItems = null;
 
 function syncDatabase() {
     serverProxy.syncDatabase(
