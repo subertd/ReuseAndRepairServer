@@ -12,46 +12,47 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title">Add a new Organization</h4>
+                <h2 class="modal-title">Add a New Organization</h2>
             </div>
             <div class="modal-body">
-                <div class="form-group">
+                <fieldset class="form-group">
                     <label for="addOrganizationName">Organization Name</label>
                     <input class="form-control" type="text" id="addOrganizationName">
-                </div>
-                <div class="form-group">
+                </fieldset>
+                <fieldset class="form-group">
                     <label for="addOrganizationPhoneNumber">Phone Number</label>
                     <input class="form-control" type="text" id="addOrganizationPhoneNumber">
-                </div>
-                <div class="form-group">
+                </fieldset>
+                <fieldset class="form-group">
                     <label for="addOrganizationWebsiteUrl">Website URL</label>
                     <input class="form-control" type="text" id="addOrganizationWebsiteUrl">
-                </div>
-                <div class="form-group">
+                </fieldset>
+                <fieldset class="form-group">
                     <label for="addOrganizationPhysicalAddress">Physical Address</label>
                     <input class="form-control" type="text" id="addOrganizationPhysicalAddress">
-                </div>
-                <div class="form-group">
+                </fieldset>
+                <fieldset class="form-group">
                     <legend>Items Reused</legend>
                     <ul id="addOrganizationReuseItemsList" class="list-group"></ul>
-                </div>
-                <div class="form-group">
+                </fieldset>
+                <fieldset class="form-group">
                     <legend>Items Repaired</legend>
                     <ul id="addOrganizationRepairItemsList" class="list-group"></ul>
-                </div>
-                <div class="form-group">
+                </fieldset>
+                <fieldset class="form-group">
+                    <label for="addOrganizationSelectItem">Select Item</label>
                     <select id="addOrganizationSelectItem" class="form-control"></select>
-                </div>
-                <div class="form-group">
+                </fieldset>
+                <fieldset class="form-group">
                     <button id="addOrganizationAddReuseItem" class="btn btn-info">Reuse Item</button>
                     <button id="addOrganizationAddRepairItem" class="btn btn-info">Repair Item</button>
-                </div>
+                </fieldset>
             </div>
             <div class="modal-footer">
                 <button id="addOrganizationSubmitButton" class="btn btn-primary pull-left" type="button">
                     Add Organization
                 </button>
-                <button id="addOrganizationCancelButton" class="btn btn-standard pull-right" type="button" data-dismiss="modal">
+                <button id="addOrganizationCancelButton" class="btn btn-standard pull-right" type="button">
                     Cancel
                 </button>
             </div>
@@ -59,6 +60,8 @@
     </div>
 </div>
 <script type="text/javascript">
+
+$(document).ready(function() {
 
     var addOrganizationReuseItems = []; // A list of items that this organization reuses
     var addOrganizationRepairItems = []; // A list of items that this organization repairs
@@ -76,7 +79,7 @@
         });
     });
 
-    // Set up a list of all items that the organization reuses
+    // Set up a list of all items that the new organization is to reuse
     function populateAddOrganizationReuseItemsList() {
         console.log("entering populateAddOrganizationReuseItemList");
 
@@ -92,6 +95,7 @@
         });
     }
 
+    // Set up a list of all items that the new organization is to repair
     function populateAddOrganizationRepairItemsList() {
 
         // Set up a list of all items that the organization repairs
@@ -109,7 +113,6 @@
 
     // When the Reuse Item button is pressed, add the selected item to the list and refresh the list data on the form
     $("#addOrganizationAddReuseItem").click(function() {
-        console.log("Detecting a click of the addOrganizationReuseItem button");
 
         var itemId = $("#addOrganizationSelectItem").val();
         var item = $.grep(items, function(_item) {
@@ -124,7 +127,6 @@
 
     // When the Repair Item button is pressed, add the selected item to the list and refresh the list data on the form
     $("#addOrganizationAddRepairItem").click(function() {
-        console.log("Detecting a click of the addOrganizationRepairItem button");
 
         var itemId = $("#addOrganizationSelectItem").val();
         var item = $.grep(items, function(_item) {
@@ -139,7 +141,6 @@
 
     // When clicking on a reuse list item, remove it from the list of items to be reused by the new organization
     $("#addOrganizationReuseItemsList").on('click', 'li', function() {
-        console.log("Click detected on an addOrganizationReuseItemsList item: ", this.value);
 
         var itemId = this.value;
 
@@ -156,7 +157,6 @@
 
     // When clicking on a repair list item, remove it from the list of items to be repaired by the new organization
     $("#addOrganizationRepairItemsList").on('click', 'li', function() {
-        console.log("Click detected on an addOrganizationRepairItemsList item: ", this.value);
 
         var itemId = this.value;
 
@@ -171,65 +171,68 @@
         populateAddOrganizationRepairItemsList();
     });
 
-    $(document).ready(function() {
+    // When the submit form button is pressed, use ajax to persist the new organization and refresh the client data
+    $("#addOrganizationSubmitButton").click(function() {
 
-        // When the submit form button is pressed, use ajax to persist the new organization and refresh the client data
-        $("#addOrganizationSubmitButton").click(function() {
-
-            // Get the reuse item relationships as an array of relationships
-            var reuseItemRelationships = [];
-            addOrganizationReuseItems.forEach(function(item) {
-                reuseItemRelationships.push({
-                    'itemId': item['id']
-                });
+        // Get the reuse item relationships as an array of relationships
+        var reuseItemRelationships = [];
+        addOrganizationReuseItems.forEach(function(item) {
+            reuseItemRelationships.push({
+                'itemId': item['id']
             });
-
-            // Get the repair item relationships as an array of relationships
-            var repairItemRelationships = [];
-            addOrganizationRepairItems.forEach(function(item) {
-                repairItemRelationships.push({
-                    'itemId': item['id'],
-                    'additionalRepairInfo': item['additionalRepairInfo']
-                });
-            });
-
-            // compound the data model
-            var organization = {
-                'organizationName': $("#addOrganizationName").val(),
-                'phoneNumber': $("#addOrganizationPhoneNumber").val(),
-                'websiteUrl': $("#addOrganizationWebsiteUrl").val(),
-                'physicalAddress': $("#addOrganizationPhysicalAddress").val(),
-                'reuseItemRelationships': reuseItemRelationships,
-                'repairItemRelationships': repairItemRelationships
-            };
-
-            // Make AJAX request
-            serverProxy.insertOrganization(organization,
-                function(data, status) {
-                    console.log("AJAX success for insertOrganization", data, status);
-                    if (data, success) {
-                        resetAddOrganizationModal();
-                        syncDatabase();
-                    }
-                    else {
-                        alert("Unable to add the organization");
-                        // TODO use bootstrap alerts
-                    }
-                },
-                function(jqXHR, textStatus, errorThrown) {
-                    console.log("Error inserting organization", textStatus, errorThrown);
-                }
-            );
         });
 
-        function resetAddOrganizationModal() {
-            console.log("entering resetAddOrganizationModal");
+        // Get the repair item relationships as an array of relationships
+        var repairItemRelationships = [];
+        addOrganizationRepairItems.forEach(function(item) {
+            repairItemRelationships.push({
+                'itemId': item['id'],
+                'additionalRepairInfo': item['additionalRepairInfo']
+            });
+        });
 
-            $("#addOrganizationModal").modal('hide');
-            addOrganizationReuseItems = [];
-            addOrganizationRepairItems = [];
-            $("#addOrganizationReuseItemsList").empty();
-            $("#addOrganizationRepairItemsList").empty();
-        }
+        // compound the data model
+        var organization = {
+            'organizationName': $("#addOrganizationName").val(),
+            'phoneNumber': $("#addOrganizationPhoneNumber").val(),
+            'websiteUrl': $("#addOrganizationWebsiteUrl").val(),
+            'physicalAddress': $("#addOrganizationPhysicalAddress").val(),
+            'reuseItemRelationships': reuseItemRelationships,
+            'repairItemRelationships': repairItemRelationships
+        };
+
+        // Make AJAX request
+        serverProxy.insertOrganization(organization,
+            function(data, status) {
+                console.log("AJAX success for insertOrganization", data, status);
+                if (data['success']) {
+                    resetAddOrganizationModal();
+                    syncDatabase();
+                }
+                else {
+                    alert("Unable to add the organization");
+                    // TODO use bootstrap alerts
+                }
+            },
+            function(jqXHR, textStatus, errorThrown) {
+                console.log("Error inserting organization", textStatus, errorThrown);
+            }
+        );
     });
+
+    // The cancel button clears and closes the form
+    $("#addOrganizationCancelButton").click(function() {
+        resetAddOrganizationModal();
+    });
+
+    // clear and close the form
+    function resetAddOrganizationModal() {
+        $("#addOrganizationModal").modal('hide');
+        addOrganizationReuseItems = [];
+        addOrganizationRepairItems = [];
+        $("#addOrganizationReuseItemsList").empty();
+        $("#addOrganizationRepairItemsList").empty();
+    }
+});
+
 </script>

@@ -12,41 +12,42 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title">Edit Organization</h4>
+                <h2 class="modal-title">Edit Organization</h2>
             </div>
             <div class="modal-body">
-                <input class="hidden" type="number" id="editOrganizationId">
-                <div class="form-group">
+                <label class="sr-only">Id<input class="hidden" type="number" id="editOrganizationId"></label>
+                <fieldset class="form-group">
                     <label for="editOrganizationName">Organization Name</label>
                     <input class="form-control" type="text" id="editOrganizationName">
-                </div>
-                <div class="form-group">
+                </fieldset>
+                <fieldset class="form-group">
                     <label for="editOrganizationPhoneNumber">Phone Number</label>
                     <input class="form-control" type="text" id="editOrganizationPhoneNumber">
-                </div>
-                <div class="form-group">
+                </fieldset>
+                <fieldset class="form-group">
                     <label for="editOrganizationWebsiteUrl">Website URL</label>
                     <input class="form-control" type="text" id="editOrganizationWebsiteUrl">
-                </div>
-                <div class="form-group">
+                </fieldset>
+                <fieldset class="form-group">
                     <label for="editOrganizationPhysicalAddress">Physical Address</label>
                     <input class="form-control" type="text" id="editOrganizationPhysicalAddress">
-                </div>
-                <div class="form-group">
+                </fieldset>
+                <fieldset class="form-group">
                     <legend>Items Reused</legend>
                     <ul id="editOrganizationReuseItemsList" class="list-group"></ul>
-                </div>
-                <div class="form-group">
+                </fieldset>
+                <fieldset class="form-group">
                     <legend>Items Repaired</legend>
                     <ul id="editOrganizationRepairItemsList" class="list-group"></ul>
-                </div>
-                <div class="form-group">
+                </fieldset>
+                <fieldset class="form-group">
+                    <label for="editOrganizationSelectItem">Select Item</label>
                     <select id="editOrganizationSelectItem" class="form-control"></select>
-                </div>
-                <div class="form-group">
+                </fieldset>
+                <fieldset class="form-group">
                     <button id="editOrganizationAddReuseItem" class="btn btn-info">Reuse Item</button>
                     <button id="editOrganizationAddRepairItem" class="btn btn-info">Repair Item</button>
-                </div>
+                </fieldset>
             </div>
             <div class="modal-footer">
                 <button id="editOrganizationSubmitButton" class="btn btn-primary pull-left" type="button">
@@ -61,203 +62,190 @@
 </div>
 <script type="text/javascript">
 
+$(document).ready(function() {
+    console.log("Calling document ready in editOrganizationModal");
+
     var editOrganizationReuseItems = []; // A list of items that this organization reuses
     var editOrganizationRepairItems = []; // A list of items that this organization reuses
 
-    $(document).ready(function() {
-        console.log("Calling document ready in editOrganizationModal");
+    // On opening the modal
+    $("#organizationsList").on('click', 'li', function () {
 
-        // On opening the modal
-        $("#organizationsList").on('click', 'li', function () {
-
-            // Set up a selector with all the item options
-            items.forEach(function (item) {
-                var itemOption = $(document.createElement('option'));
-                itemOption.val(item['id']);
-                itemOption.html(item['name']);
-                $("#editOrganizationSelectItem").append(itemOption);
-            });
-
-            // Pre-fill editOrganizationReuseItems
-            var matchingOrganizationReuseItems = $.grep(organizationReuseItems, function (organizationReuseItem) {
-                return organizationReuseItem['organizationId'] == $("#editOrganizationId").val();
-            });
-            matchingOrganizationReuseItems.forEach(function (organizationItem) {
-
-                var item = $.grep(items, function (_item) {
-                    return _item['id'] == organizationItem['itemId'];
-                })[0];
-
-                editOrganizationReuseItems.push(item);
-            });
-            populateEditOrganizationReuseItemsList();
-
-            // Pre-fill editOrganizationRepairItems
-            var matchingOrganizationRepairItems = $.grep(organizationRepairItems, function (organizationRepairItem) {
-                return organizationRepairItem['organizationId'] == $("#editOrganizationId").val();
-            });
-            matchingOrganizationRepairItems.forEach(function (organizationItem) {
-
-                var item = $.grep(items, function (_item) {
-                    return _item['id'] == organizationItem['itemId'];
-                })[0];
-
-                editOrganizationRepairItems.push(item);
-            });
-            populateEditOrganizationRepairItemsList();
+        // Set up a selector with all the item options
+        items.forEach(function (item) {
+            var itemOption = $(document.createElement('option'));
+            itemOption.val(item['id']);
+            itemOption.html(item['name']);
+            $("#editOrganizationSelectItem").append(itemOption);
         });
 
-        function populateEditOrganizationReuseItemsList() {
-
-            // Set up a list of all items that the organization is to reuse
-            var itemsList = $("#editOrganizationReuseItemsList");
-            itemsList.empty();
-            editOrganizationReuseItems.forEach(function (item) {
-
-                var listItem = $(document.createElement('li'));
-                listItem.addClass("list-group-item");
-                listItem.val(item['id']);
-                listItem.html(item['name']);
-                itemsList.append(listItem);
-            });
-        }
-
-        function populateEditOrganizationRepairItemsList() {
-
-            // Set up a list of all items that the organization is to repair
-            var itemsList = $("#editOrganizationRepairItemsList");
-            itemsList.empty();
-            editOrganizationRepairItems.forEach(function (item) {
-
-                var listItem = $(document.createElement('li'));
-                listItem.addClass("list-group-item");
-                listItem.val(item['id']);
-                listItem.html(item['name']);
-                itemsList.append(listItem);
-            });
-        }
-
-        $("#editOrganizationSubmitButton").click(function () {
-
-            var organization = {
-                'organizationId': $("#editOrganizationId").val(),
-                'organizationName': $("#editOrganizationName").val(),
-                'phoneNumber': $("#editOrganizationPhoneNumber").val(),
-                'websiteUrl': $("#editOrganizationWebsiteUrl").val(),
-                'physicalAddress': $("#editOrganizationPhysicalAddress").val()
-            };
-
-            serverProxy.updateOrganization(organization,
-                    function (data, status) {
-                        console.debug("AJAX success for updateOrganization", data, status);
-                        syncOrganizations();
-                    },
-                    function (jqXHR, textStatus, errorThrown) {
-                        console.log("Error updating organization", textStatus, errorThrown);
-                    }
-            );
+        // Pre-fill editOrganizationReuseItems
+        var matchingOrganizationReuseItems = $.grep(organizationReuseItems, function (organizationReuseItem) {
+            return organizationReuseItem['organizationId'] == $("#editOrganizationId").val();
         });
+        matchingOrganizationReuseItems.forEach(function (organizationItem) {
 
-        // When the Reuse Item button is pressed, add the selected item to the list and refresh the list data on the form
-        $("#editOrganizationAddReuseItem").click(function () {
-            console.log("Detecting a click of the editOrganizationReuseItem button");
-
-            var itemId = $("#editOrganizationSelectItem").val();
             var item = $.grep(items, function (_item) {
-                return _item['id'] == itemId;
+                return _item['id'] == organizationItem['itemId'];
             })[0];
 
-            if ($.inArray(item, editOrganizationReuseItems, 0) == -1) {
-                editOrganizationReuseItems.push(item);
-            }
-            populateEditOrganizationReuseItemsList();
+            editOrganizationReuseItems.push(item);
         });
+        populateEditOrganizationReuseItemsList();
 
-        // When the Repair Item button is pressed, add the selected item to the list and refresh the list data on the form
-        $("#editOrganizationAddRepairItem").click(function () {
-            console.log("Detecting a click of the editOrganizationRepairItem button");
+        // Pre-fill editOrganizationRepairItems
+        var matchingOrganizationRepairItems = $.grep(organizationRepairItems, function (organizationRepairItem) {
+            return organizationRepairItem['organizationId'] == $("#editOrganizationId").val();
+        });
+        matchingOrganizationRepairItems.forEach(function (organizationItem) {
 
-            var itemId = $("#editOrganizationSelectItem").val();
             var item = $.grep(items, function (_item) {
-                return _item['id'] == itemId;
+                return _item['id'] == organizationItem['itemId'];
             })[0];
 
-            if ($.inArray(item, editOrganizationRepairItems, 0) == -1) {
-                editOrganizationRepairItems.push(item);
-            }
-            populateEditOrganizationRepairItemsList();
+            editOrganizationRepairItems.push(item);
         });
-
-        // When clicking on a reuse list item, remove it from the list of items to be reused by the organization
-        $("#editOrganizationReuseItemsList").on('click', 'li', function () {
-            console.log("Click detected on an editOrganizationReuseItemsList item: ", this.value);
-
-            var itemId = this.value;
-
-            var item = $.grep(editOrganizationReuseItems, function (_item) {
-                return _item['id'] == itemId;
-            })[0];
-
-            var arrayIndex = $.inArray(item, editOrganizationReuseItems, 0);
-
-            editOrganizationReuseItems.splice(arrayIndex, 1);
-
-            populateEditOrganizationReuseItemsList();
-        });
-
-        // When clicking on a repair list item, remove it from the list of items to be repaired by the organization
-        $("#editOrganizationRepairItemsList").on('click', 'li', function () {
-            console.log("Click detected on an editOrganizationRepairItemsList item: ", this.value);
-
-            var itemId = this.value;
-
-            var item = $.grep(editOrganizationRepairItems, function (_item) {
-                return _item['id'] == itemId;
-            })[0];
-
-            var arrayIndex = $.inArray(item, editOrganizationRepairItems, 0);
-
-            editOrganizationRepairItems.splice(arrayIndex, 1);
-
-            populateEditOrganizationRepairItemsList();
-        });
-
-        // When the submit form button is pressed, use ajax to persist the updated item and refresh the client data
-        $("#editOrganizationSubmitButton").click(function() {
-
-            var reuseItemRelationships = [];
-            editOrganizationReuseItems.forEach(function (item) {
-                reuseItemRelationships.push({
-                    'itemId': item['id']
-                });
-            });
-
-            var repairItemRelationships = [];
-            editOrganizationRepairItems.forEach(function (item) {
-                repairItemRelationships.push({
-                    'itemId': item['id'],
-                    'additionalRepairInfo': item['additionalRepairInfo']
-                });
-            });
-
-            var organization = {
-                'organizationName': $("#editOrganizationName").val(),
-                'phoneNumber': $("#editOrganizationPhoneNumber").val(),
-                'websiteUrl': $("#editOrganizationWebsiteUrl").val(),
-                'physicalAddress': $("#editOrganizationPhysicalAddress").val(),
-                'reuseItemRelationships': reuseItemRelationships,
-                'repairItemRelationships': repairItemRelationships
-            };
-
-            serverProxy.updateOrganization(organization,
-                function (data, status) {
-                    console.log("AJAX success for updateOrganization", data, status);
-                    syncDatabase();
-                },
-                function (jqXHR, textStatus, errorThrown) {
-                    console.log("Error updating organization", textStatus, errorThrown);
-                }
-            );
-        });
+        populateEditOrganizationRepairItemsList();
     });
+
+    function populateEditOrganizationReuseItemsList() {
+
+        // Set up a list of all items that the organization is to reuse
+        var itemsList = $("#editOrganizationReuseItemsList");
+        itemsList.empty();
+        editOrganizationReuseItems.forEach(function (item) {
+
+            var listItem = $(document.createElement('li'));
+            listItem.addClass("list-group-item");
+            listItem.val(item['id']);
+            listItem.html(item['name']);
+            itemsList.append(listItem);
+        });
+    }
+
+    function populateEditOrganizationRepairItemsList() {
+
+        // Set up a list of all items that the organization is to repair
+        var itemsList = $("#editOrganizationRepairItemsList");
+        itemsList.empty();
+        editOrganizationRepairItems.forEach(function (item) {
+
+            var listItem = $(document.createElement('li'));
+            listItem.addClass("list-group-item");
+            listItem.val(item['id']);
+            listItem.html(item['name']);
+            itemsList.append(listItem);
+        });
+    }
+
+    // When the Reuse Item button is pressed, add the selected item to the list and refresh the list data on the form
+    $("#editOrganizationAddReuseItem").click(function () {
+        console.log("Detecting a click of the editOrganizationReuseItem button");
+
+        var itemId = $("#editOrganizationSelectItem").val();
+        var item = $.grep(items, function (_item) {
+            return _item['id'] == itemId;
+        })[0];
+
+        if ($.inArray(item, editOrganizationReuseItems, 0) == -1) {
+            editOrganizationReuseItems.push(item);
+        }
+        populateEditOrganizationReuseItemsList();
+    });
+
+    // When the Repair Item button is pressed, add the selected item to the list and refresh the list data on the form
+    $("#editOrganizationAddRepairItem").click(function () {
+        console.log("Detecting a click of the editOrganizationRepairItem button");
+
+        var itemId = $("#editOrganizationSelectItem").val();
+        var item = $.grep(items, function (_item) {
+            return _item['id'] == itemId;
+        })[0];
+
+        if ($.inArray(item, editOrganizationRepairItems, 0) == -1) {
+            editOrganizationRepairItems.push(item);
+        }
+        populateEditOrganizationRepairItemsList();
+    });
+
+    // When clicking on a reuse list item, remove it from the list of items to be reused by the organization
+    $("#editOrganizationReuseItemsList").on('click', 'li', function () {
+        console.log("Click detected on an editOrganizationReuseItemsList item: ", this.value);
+
+        var itemId = this.value;
+
+        var item = $.grep(editOrganizationReuseItems, function (_item) {
+            return _item['id'] == itemId;
+        })[0];
+
+        var arrayIndex = $.inArray(item, editOrganizationReuseItems, 0);
+
+        editOrganizationReuseItems.splice(arrayIndex, 1);
+
+        populateEditOrganizationReuseItemsList();
+    });
+
+    // When clicking on a repair list item, remove it from the list of items to be repaired by the organization
+    $("#editOrganizationRepairItemsList").on('click', 'li', function () {
+        console.log("Click detected on an editOrganizationRepairItemsList item: ", this.value);
+
+        var itemId = this.value;
+
+        var item = $.grep(editOrganizationRepairItems, function (_item) {
+            return _item['id'] == itemId;
+        })[0];
+
+        var arrayIndex = $.inArray(item, editOrganizationRepairItems, 0);
+
+        editOrganizationRepairItems.splice(arrayIndex, 1);
+
+        populateEditOrganizationRepairItemsList();
+    });
+
+    // When the submit form button is pressed, use ajax to persist the updated item and refresh the client data
+    $("#editOrganizationSubmitButton").click(function() {
+
+        var reuseItemRelationships = [];
+        editOrganizationReuseItems.forEach(function (item) {
+            reuseItemRelationships.push({
+                'itemId': item['id']
+            });
+        });
+
+        var repairItemRelationships = [];
+        editOrganizationRepairItems.forEach(function (item) {
+            repairItemRelationships.push({
+                'itemId': item['id'],
+                'additionalRepairInfo': item['additionalRepairInfo']
+            });
+        });
+
+        var organization = {
+            'organizationName': $("#editOrganizationName").val(),
+            'phoneNumber': $("#editOrganizationPhoneNumber").val(),
+            'websiteUrl': $("#editOrganizationWebsiteUrl").val(),
+            'physicalAddress': $("#editOrganizationPhysicalAddress").val(),
+            'reuseItemRelationships': reuseItemRelationships,
+            'repairItemRelationships': repairItemRelationships
+        };
+
+        serverProxy.updateOrganization(organization,
+            function (data, status) {
+                console.log("AJAX success for updateOrganization", data, status);
+                if (data['success']) {
+                    resetEditOrganizationModal();
+                    syncDatabase();
+                }
+                else {
+                    alert("Unable to update the organization");
+                    // TODO use bootstrap alerts
+                }
+            },
+            function (jqXHR, textStatus, errorThrown) {
+                console.log("Error updating organization", textStatus, errorThrown);
+            }
+        );
+    });
+});
+
 </script>

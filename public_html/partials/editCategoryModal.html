@@ -12,60 +12,69 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title">Edit Category</h4>
+                <h2 class="modal-title">Edit Category</h2>
             </div>
             <div class="modal-body">
-                <input class="hidden" type="number" id="editCategoryId">
-                <div class="form-group">
+                <label class="sr-only">Id<input class="hidden" type="number" id="editCategoryId"></label>
+                <fieldset class="form-group">
                     <label for="editCategoryName">Category name</label>
                     <input class="form-control" type="text" id="editCategoryName">
-                </div>
-                <div class="form-group">
-                    <button id="editCategorySubmitButton" class="btn btn-primary" type="button">
-                        Submit Changes
-                    </button>
-                    <button class="btn btn-standard pull-right" type="button" data-dismiss="modal">
-                        Reset
-                    </button>
-                </div>
+                </fieldset>
+            </div>
+            <div class="modal-footer">
+                <button id="editCategorySubmitButton" class="btn btn-primary pull-left" type="button">
+                    Submit
+                </button>
+                <button id="editCategoryCancelButton" class="btn btn-standard pull-right" type="button">
+                    Cancel
+                </button>
             </div>
         </div>
     </div>
 </div>
 <script type="text/javascript">
-    $(document).ready(function() {
-        console.log("Calling document ready in editCategoryModal");
 
-        $("#editCategorySubmitButton").click(function() {
-            var category = {
-                'categoryId': $("#editCategoryId").val(),
-                'categoryName': $("#editCategoryName").val()
-            };
+$(document).ready(function() {
+    console.log("Calling document ready in editCategoryModal");
 
-            serverProxy.updateCategory(category,
-                function(data, status) {
-                    console.log("AJAX success for updateCategory", data, status);
-                    if (data['success']) {
-                        resetEditCategoryModal();
-                        syncCategories();
-                    }
-                    else {
-                        alert("Unable to edit the category");
-                        // TODO use bootstrap alerts
-                    }
-                },
-                function(jqXHR, textStatus, errorThrown) {
-                    console.log("Error updating category", textStatus, errorThrown);
+    // when the submit button is clicked, use AJAX to update the remote server and then sync category data
+    $("#editCategorySubmitButton").click(function() {
+        var category = {
+            'categoryId': $("#editCategoryId").val(),
+            'categoryName': $("#editCategoryName").val()
+        };
+
+        serverProxy.updateCategory(category,
+            function(data, status) {
+                console.log("AJAX success for updateCategory", data, status);
+                if (data['success']) {
+                    resetEditCategoryModal();
+                    syncCategories();
                 }
-            );
-        });
-
-        function resetEditCategoryModal() {
-            console.log("entering resetEditCategoryModal");
-
-            $("#editCategoryModal").modal('hide');
-            $("#editItemId").val("");
-            $("#editItemName").val("");
-        }
+                else {
+                    alert("Unable to edit the category");
+                    // TODO use bootstrap alerts
+                }
+            },
+            function(jqXHR, textStatus, errorThrown) {
+                console.log("Error updating category", textStatus, errorThrown);
+            }
+        );
     });
+
+    // When the cancel button is clicked, clear and close the form
+    $("#editCategoryCancelButton").click(function() {
+        resetEditCategoryModal();
+    });
+
+    // clear and close the form
+    function resetEditCategoryModal() {
+        console.log("entering resetEditCategoryModal");
+
+        $("#editCategoryModal").modal('hide');
+        $("#editItemId").val("");
+        $("#editItemName").val("");
+    }
+});
+
 </script>

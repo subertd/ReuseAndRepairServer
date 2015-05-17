@@ -8,7 +8,6 @@
  - @depends array items
  - @depends array categories
  - @depends function syncDatabase
- - @depends function populateItemsList
 -->
 
 <div id="addItemModal" class="modal fade" role="dialog">
@@ -18,27 +17,27 @@
                 <h2 class="modal-title">Add a New Item</h2>
             </div>
             <div class="modal-body">
-                <div class="form-group">
+                <fieldset class="form-group">
                     <label for="addItemName">Item Name</label>
                     <input class="form-control" type='text' id='addItemName'>
-                </div>
-                <div class="form-group">
+                </fieldset>
+                <fieldset class="form-group">
                     <legend>Categories</legend>
                     <ul id="addItemCategoriesList" class="list-group"></ul>
-                </div>
-                <div class="form-group">
+                </fieldset>
+                <fieldset class="form-group">
                     <label for="addItemSelectCategory">Select Category</label>
                     <select class="form-control" id="addItemSelectCategory" name='categoryId'></select>
-                </div>
-                <div class="form-group">
+                </fieldset>
+                <fieldset class="form-group">
                     <button class="btn btn-info" id="addItemAddCategory">Add Category</button>
-                </div>
+                </fieldset>
             </div>
             <div class="modal-footer">
                 <button id="addItemSubmitButton" class="btn btn-primary pull-left" type="button">
                     Add Item
                 </button>
-                <button id="addItemCancelButton" class="btn btn-standard pull-right" type="button" data-dismiss="modal">
+                <button id="addItemCancelButton" class="btn btn-standard pull-right" type="button">
                     Cancel
                 </button>
             </div>
@@ -46,6 +45,8 @@
     </div>
 </div>
 <script type="text/javascript">
+
+$(document).ready(function() {
 
     var addItemCategories = []; // A list of categories to be associated with the new item
 
@@ -110,53 +111,49 @@
     });
 
     // When the submit form button is pressed, use ajax to persist the new item and refresh the client data
-    $(document).ready(function() {
-        $("#addItemSubmitButton").click(function() {
+    $("#addItemSubmitButton").click(function() {
 
-            var categoryRefs = [];
-            addItemCategories.forEach(function(category) {
-                categoryRefs.push(category.id);
-            });
+        var categoryRefs = [];
+        addItemCategories.forEach(function(category) {
+            categoryRefs.push(category.id);
+        });
 
-            var item = {
-                'itemName': $("#addItemName").val(),
-                'categoryRefs': categoryRefs
-            };
+        var item = {
+            'itemName': $("#addItemName").val(),
+            'categoryRefs': categoryRefs
+        };
 
-            serverProxy.insertItem(item,
-                function(data, status) {
-                    console.log("AJAX success for insertItem", data, status);
-                    if (data['success']) {
-                        resetAddItemModal();
-                        syncDatabase();
-                    }
-                    else {
-                        alert("Unable to add item");
-                        // TODO use bootstrap alerts
-                    }
-                },
-                function(jqXHR, textStatus, errorThrown) {
-                    console.log("Error inserting item", textStatus, errorThrown);
+        serverProxy.insertItem(item,
+            function(data, status) {
+                console.log("AJAX success for insertItem", data, status);
+                if (data['success']) {
+                    resetAddItemModal();
+                    syncDatabase();
                 }
-            );
-        });
+                else {
+                    alert("Unable to add item");
+                    // TODO use bootstrap alerts
+                }
+            },
+            function(jqXHR, textStatus, errorThrown) {
+                console.log("Error inserting item", textStatus, errorThrown);
+            }
+        );
     });
 
-    $(document).ready(function() {
-        $("#addItemCancelButton").click(function() {
-            resetAddItemModal();
-            $("#addItemModal").modal("hide");
-        });
+    // when the cancel button is clicked, clear and close the form
+    $("#addItemCancelButton").click(function() {
+        resetAddItemModal();
     });
 
+    // clear and close the form
     function resetAddItemModal() {
-        console.log("entering resetAddItemModal()");
-
         $("#addItemModal").modal('hide');
         addItemCategories = [];
         $("#addItemCategoriesList").empty();
         $("#addItemName").val("");
         $("#addItemSelectCategory").val("0");
     }
+});
 
 </script>

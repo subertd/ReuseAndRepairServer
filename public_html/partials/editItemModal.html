@@ -9,7 +9,6 @@
  - @depends array categories
  - @depends array itemCategories
  - @depends function syncDatabase
- - @depends function populateItemsList
 -->
 
 <div id="editItemModal" class="modal fade" role="dialog">
@@ -19,28 +18,28 @@
                 <h2 class="modal-title">Edit Item</h2>
             </div>
             <div class="modal-body">
-                <input class="hidden" type="number" id="editItemId">
-                <div class="form-group">
+                <label class="sr-only">Id<input class="hidden" type="number" id="editItemId"></label>
+                <fieldset class="form-group">
                     <label for="editItemName">Item Name</label>
                     <input class="form-control" type="text" id="editItemName">
-                </div>
-                <div class="form-group">
+                </fieldset>
+                <fieldset class="form-group">
                     <legend>Categories</legend>
                     <ul id="editItemCategoriesList" class="list-group"></ul>
-                </div>
-                <div class="form-group">
+                </fieldset>
+                <fieldset class="form-group">
                     <label for="editItemSelectCategory">Select Category</label>
                     <select class="form-control" id="editItemSelectCategory" name="categoryId"></select>
-                </div>
-                <div class="form-group">
+                </fieldset>
+                <fieldset class="form-group">
                     <button class="btn btn-info" id="editItemAddCategory">Add Category</button>
-                </div>
+                </fieldset>
             </div>
             <div class="modal-footer">
                 <button id="editItemSubmitButton" class="btn btn-primary pull-left" type="button">
                     Submit Changes
                 </button>
-                <button id=editItemCancelButton" class="btn btn-standard pull-right" type="button" data-dismiss="modal">
+                <button id="editItemCancelButton" class="btn btn-standard pull-right" type="button">
                     Cancel
                 </button>
             </div>
@@ -49,134 +48,131 @@
 </div>
 <script type="text/javascript">
 
+$(document).ready(function() {
+
     var editItemCategories = []; // A list of categories to be associated with the item
 
-    $(document).ready(function() {
-        console.log("Calling document ready in editItemModal");
+    // On opening the modal
+    $("#itemsList").on('click', 'li', function() {
 
-        // On opening the modal
-        $("#itemsList").on('click', 'li', function() {
-
-            // Set up a selector with all the category options
-            $("#editItemSelectCategory").empty();
-            categories.forEach(function(category) {
-                var categoryOption = $(document.createElement('option'));
-                categoryOption.val(category['id']);
-                categoryOption.html(category['name']);
-                $("#editItemSelectCategory").append(categoryOption);
-            });
-
-            // pre-fill editItemCategories
-            var matchingItemCategories = $.grep(itemCategories, function(itemCategory) {
-                return itemCategory['itemId'] == $("#editItemId").val();
-            });
-            matchingItemCategories.forEach(function(itemCategory) {
-
-                var category = $.grep(categories, function(_category) {
-                    console.log(_category, itemCategory, _category['id'] == itemCategory['categoryId']);
-                    return _category['id'] == itemCategory['categoryId'];
-                })[0];
-
-                editItemCategories.push(category);
-            });
-            populateEditItemCategoriesList();
+        // Set up a selector with all the category options
+        $("#editItemSelectCategory").empty();
+        categories.forEach(function(category) {
+            var categoryOption = $(document.createElement('option'));
+            categoryOption.val(category['id']);
+            categoryOption.html(category['name']);
+            $("#editItemSelectCategory").append(categoryOption);
         });
 
-        function populateEditItemCategoriesList() {
+        // pre-fill editItemCategories
+        var matchingItemCategories = $.grep(itemCategories, function(itemCategory) {
+            return itemCategory['itemId'] == $("#editItemId").val();
+        });
+        matchingItemCategories.forEach(function(itemCategory) {
 
-            // Set up a list of all categories that the item will have associated with it
-            var categoriesList = $("#editItemCategoriesList");
-            categoriesList.empty();
-            editItemCategories.forEach(function(category) {
-
-                var listItem = $(document.createElement('li'));
-                listItem.addClass("list-group-item");
-                listItem.val(category.id);
-                listItem.html(category.name);
-                categoriesList.append(listItem);
-            });
-        }
-
-        // When the Add Category button is pressed, add the selected category to the list and refresh the list data
-        // on the form
-        $("#editItemAddCategory").click(function() {
-            console.log("Detecting a click of the editItemAddCategory button");
-
-            var categoryId = $("#editItemSelectCategory").val();
             var category = $.grep(categories, function(_category) {
-                return _category['id'] == categoryId;
+                console.log(_category, itemCategory, _category['id'] == itemCategory['categoryId']);
+                return _category['id'] == itemCategory['categoryId'];
             })[0];
 
-            if ($.inArray(category, editItemCategories, 0) == -1) {
-                editItemCategories.push(category);
-            }
-            populateEditItemCategoriesList();
+            editItemCategories.push(category);
         });
-
-        // When clicking on a categories list item, remove it from the list of categories to be associated with the item
-        $("#editItemCategoriesList").on('click', 'li', function() {
-            console.log("Click detected on an addItemCategoriesList item: ", this.value);
-
-            var categoryId = this.value;
-
-            var category = $.grep(editItemCategories, function(_category) {
-                return _category['id'] == categoryId;
-            })[0];
-
-            var arrayIndex = $.inArray(category, editItemCategories, 0);
-
-            editItemCategories.splice(arrayIndex, 1);
-
-            populateEditItemCategoriesList();
-        });
-
-        // When the submit form button is pressed, use ajax to persist the updated item and refresh the client data
-        $(document).ready(function() {
-            $("#editItemSubmitButton").click(function() {
-
-                var categoryRefs = [];
-                editItemCategories.forEach(function(category) {
-                    categoryRefs.push(category.id);
-                });
-
-                var item = {
-                    'itemId': $("#editItemId").val(),
-                    'itemName': $("#editItemName").val(),
-                    'categoryRefs': categoryRefs
-                };
-
-                serverProxy.updateItem(item,
-                    function(data, status) {
-                        console.log("AJAX success for updateItem", data, status);
-                        if (data['success']) {
-                            resetEditItemModal();
-                            syncDatabase();
-                        }
-                        else {
-                            alert("Unable to edit the item");
-                            // TODO use bootstrap alerts
-                        }
-                    },
-                    function(jqXHR, textStatus, errorThrown) {
-                        console.log("Error updating item", textStatus, errorThrown);
-                    }
-                );
-            });
-
-            $("#editItemCancelButton").click(function() {
-                resetEditItemModal();
-                $("#editItemModal").modal("hide");
-            });
-        });
-
-        function resetEditItemModal() {
-            console.log("entering resetEditItemModal");
-
-            $("#editItemModal").modal('hide');
-            editItemCategories = [];
-            $("#editItemCategoriesList").empty();
-            $("#editItemName").val("");
-            $("#editItemSelectCategory").val("0");
-        }
+        populateEditItemCategoriesList();
     });
+
+    // Set up a list of all categories that the item will have associated with it
+    function populateEditItemCategoriesList() {
+
+        var categoriesList = $("#editItemCategoriesList");
+        categoriesList.empty();
+        editItemCategories.forEach(function(category) {
+
+            var listItem = $(document.createElement('li'));
+            listItem.addClass("list-group-item");
+            listItem.val(category.id);
+            listItem.html(category.name);
+            categoriesList.append(listItem);
+        });
+    }
+
+    // When the Add Category button is pressed, add the selected category to the list and refresh the list data
+    // on the form
+    $("#editItemAddCategory").click(function() {
+        console.log("Detecting a click of the editItemAddCategory button");
+
+        var categoryId = $("#editItemSelectCategory").val();
+        var category = $.grep(categories, function(_category) {
+            return _category['id'] == categoryId;
+        })[0];
+
+        if ($.inArray(category, editItemCategories, 0) == -1) {
+            editItemCategories.push(category);
+        }
+        populateEditItemCategoriesList();
+    });
+
+    // When clicking on a categories list item, remove it from the list of categories to be associated with the item
+    $("#editItemCategoriesList").on('click', 'li', function() {
+        console.log("Click detected on an addItemCategoriesList item: ", this.value);
+
+        var categoryId = this.value;
+
+        var category = $.grep(editItemCategories, function(_category) {
+            return _category['id'] == categoryId;
+        })[0];
+
+        var arrayIndex = $.inArray(category, editItemCategories, 0);
+
+        editItemCategories.splice(arrayIndex, 1);
+
+        populateEditItemCategoriesList();
+    });
+
+    // When the submit form button is pressed, use ajax to persist the updated item and refresh the client data
+    $("#editItemSubmitButton").click(function() {
+
+        var categoryRefs = [];
+        editItemCategories.forEach(function(category) {
+            categoryRefs.push(category.id);
+        });
+
+        var item = {
+            'itemId': $("#editItemId").val(),
+            'itemName': $("#editItemName").val(),
+            'categoryRefs': categoryRefs
+        };
+
+        serverProxy.updateItem(item,
+            function(data, status) {
+                console.log("AJAX success for updateItem", data, status);
+                if (data['success']) {
+                    resetEditItemModal();
+                    syncDatabase();
+                }
+                else {
+                    alert("Unable to edit the item");
+                    // TODO use bootstrap alerts
+                }
+            },
+            function(jqXHR, textStatus, errorThrown) {
+                console.log("Error updating item", textStatus, errorThrown);
+            }
+        );
+    });
+
+    // when the cancel button is clicked, reset and close the form
+    $("#editItemCancelButton").click(function() {
+        resetEditItemModal();
+    });
+
+    // reset and close the form
+    function resetEditItemModal() {
+        $("#editItemModal").modal('hide');
+        editItemCategories = [];
+        $("#editItemCategoriesList").empty();
+        $("#editItemName").val("");
+        $("#editItemSelectCategory").val("0");
+    }
+});
+
 </script>
