@@ -318,8 +318,9 @@ var organizationRepairItems = [];
 function syncDatabase() {
     serverProxy.syncDatabase(
         function (data, status) {
+            console.log("AJAX success for syncDatabase", data, status);
+            console.log(data['success']);
             if (data['success']) {
-                console.log("AJAX success for syncDatabase", data, status);
                 organizations = data['organizations'];
                 categories = data['categories'];
                 items = data['items'];

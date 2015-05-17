@@ -21,7 +21,9 @@ class DatabaseSyncService {
 
     public function syncDatabase() {
         try {
-            return $this->dao->syncDatabase();
+            $database = $this->dao->syncDatabase();
+            $database['success'] = true;
+            return $database;
         }
         catch (PersistenceException $e) {
             throw new ServiceException(
