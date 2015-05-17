@@ -54,24 +54,22 @@
     $(document).ready(function() {
         console.log("Calling document ready in editItemModal");
 
-        // On opening the modal, set up a selector with all the category options
+        // On opening the modal
         $("#itemsList").on('click', 'li', function() {
 
             // Set up a selector with all the category options
+            $("#editItemSelectCategory").empty();
             categories.forEach(function(category) {
                 var categoryOption = $(document.createElement('option'));
                 categoryOption.val(category['id']);
                 categoryOption.html(category['name']);
-                $("#editItemSelectCategory").append(categoryOption)
+                $("#editItemSelectCategory").append(categoryOption);
             });
 
             // pre-fill editItemCategories
             var matchingItemCategories = $.grep(itemCategories, function(itemCategory) {
                 return itemCategory['itemId'] == $("#editItemId").val();
             });
-
-            console.log("categories: ", categories, "; itemCategories: ", itemCategories, "; matchingItemCategories: ", matchingItemCategories);
-
             matchingItemCategories.forEach(function(itemCategory) {
 
                 var category = $.grep(categories, function(_category) {
@@ -81,7 +79,6 @@
 
                 editItemCategories.push(category);
             });
-
             populateEditItemCategoriesList();
         });
 
@@ -165,9 +162,7 @@
                     }
                 );
             });
-        });
 
-        $(document).ready(function() {
             $("#editItemCancelButton").click(function() {
                 resetEditItemModal();
                 $("#editItemModal").modal("hide");
@@ -175,7 +170,7 @@
         });
 
         function resetEditItemModal() {
-            console.log("entering resetEditItemModal()");
+            console.log("entering resetEditItemModal");
 
             $("#editItemModal").modal('hide');
             editItemCategories = [];

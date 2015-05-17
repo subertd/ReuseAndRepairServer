@@ -52,17 +52,18 @@
     // On clicking the button to open this modal, set up a selector with all the category options
     $("#addItemButton").click(function() {
 
+        $("#addItemSelectCategory").empty();
         categories.forEach(function(category) {
             var categoryOption = $(document.createElement('option'));
             categoryOption.val(category['id']);
             categoryOption.html(category['name']);
-            $("#addItemSelectCategory").append(categoryOption)
+            $("#addItemSelectCategory").append(categoryOption);
         });
     });
 
+    // Set up a list of all categories that the item will have associated with it
     function populateAddItemCategoriesList() {
 
-        // Set up a list of all categories that the item will have associated with it
         var categoriesList = $("#addItemCategoriesList");
         categoriesList.empty();
         addItemCategories.forEach(function(category) {

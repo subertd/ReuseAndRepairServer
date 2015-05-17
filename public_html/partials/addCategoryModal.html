@@ -20,7 +20,7 @@
                     <input class="form-control" type="text" id="addCategoryName">
                 </div>
                 <div class="form-group">
-                    <button id="addCategorySubmitButton" class="btn btn-primary" type="button" data-dismiss="modal">
+                    <button id="addCategorySubmitButton" class="btn btn-primary" type="button">
                         Add Category
                     </button>
                     <button class="btn btn-standard pull-right" type="button" data-dismiss="modal">
@@ -42,12 +42,24 @@
             serverProxy.insertCategory(category,
                 function (data, status) {
                     console.debug("AJAX success for insertCategory", data, status);
-                    syncCategories();
+                    if (data['success']) {
+                        resetAddCategoryModal();
+                        syncCategories();
+                    }
+                    else {
+                        alert("Unable to add category");
+                    }
                 },
                 function (jqXHR, textStatus, errorThrown) {
                     console.log("Error inserting category", textStatus, errorThrown);
                 }
             );
         });
+
+        function resetAddCategoryModal() {
+            console.log("entering resetAddCategoryModal");
+
+            $("#addCategoryModal").modal('hide');
+        }
     });
 </script>

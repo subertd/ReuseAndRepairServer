@@ -71,23 +71,6 @@ function ServerProxy() {
         },
         getItems: function(callback, errorCallback) {
             ajaxToServer("get", "item", null, callback, errorCallback);
-        },
-
-        insertOrganizationItem: function(organizationItem, callback, errorCallback) {
-            ajaxToServer("post", "organizationItem", organizationItem, callback, errorCallback);
-        },
-        updateOrganizationItem: function(organizationItem, callback, errorCallback) {
-            ajaxToServer("put", "organizationItem", organizationItem, callback, errorCallback);
-        },
-        deleteOrganizationItem: function(organizationItem, callback, errorCallback) {
-            ajaxToServer("delete", "organizationItem", organizationItem, callback, errorCallback);
-        },
-        getOrganizationItems: function(callback, errorCallback) {
-            ajaxToServer("get", "organizationItem", null, callback, errorCallback);
-        },
-
-        getOrganizationItems: function(callback, errorCallback) {
-            ajaxToServer("get", "itemCategory", null, callback, errorCallback);
         }
     }
 }
