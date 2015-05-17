@@ -26,10 +26,10 @@ $(document).ready(function() {
     /**
      * show the modal and populate the form with existing values
      */
-    $("#organizationsList").on('click', 'li', function() {
-        console.log("click detected for organizations list element ", this.value);
+    $("#organizationsList").on('click', 'li span.edit', function() {
+        console.log("click detected for organizations list element ", $(this).parent().val());
 
-        var curOrganizationId = this.value;
+        var curOrganizationId = $(this).parent().val();
         var curOrganization = ($.grep(organizations, function(e) {
             return e.id == curOrganizationId;
         }))[0];
@@ -41,6 +41,28 @@ $(document).ready(function() {
         $("#editOrganizationPhysicalAddress").val(curOrganization.physicalAddress);
 
         $("#editOrganizationModal").modal('show');
+    });
+
+    $("#organizationsList").on('click', 'li span.remove', function() {
+
+        var index = $(this).parent().val();
+
+        serverProxy.deleteOrganization(
+            { 'id': index },
+            function(data, status) {
+                console.log("AJAX success for delete organization", data, status);
+                if (data['success']) {
+                    syncOrganizations();
+                }
+                else {
+                    alert("Unable to delete organization");
+                    // TODO use bootstrap alerts
+                }
+            },
+            function(jqXHR, textStatus, errorThrown) {
+                console.log("Error syncing organizations", textStatus, errorThrown);
+            }
+        );
     });
 });
 
@@ -63,7 +85,7 @@ function populateOrganizationsList() {
         var listItem = $(document.createElement('li'));
         listItem.addClass("list-group-item");
         listItem.attr("value", organization['id']);
-        listItem.html(organization['name']);
+        listItem.html("<span class='edit'>" + organization['name'] + "</span><span class='badge remove'><span class='glyphicon glyphicon-remove aria-hidden='true'></span></div>");
         $("#organizationsList").append(listItem);
     });
 }
