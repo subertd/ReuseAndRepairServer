@@ -318,17 +318,23 @@ var organizationRepairItems = [];
 function syncDatabase() {
     serverProxy.syncDatabase(
         function (data, status) {
-            console.log("AJAX success for syncDatabase", data, status);
-            organizations = data['organizations'];
-            categories = data['categories'];
-            items = data['items'];
-            itemCategories = data['itemCategories'];
-            organizationReuseItems = data['organizationReuseItems'];
-            organizationRepairItems = data['organizationRepairItems'];
+            if (data['success']) {
+                console.log("AJAX success for syncDatabase", data, status);
+                organizations = data['organizations'];
+                categories = data['categories'];
+                items = data['items'];
+                itemCategories = data['itemCategories'];
+                organizationReuseItems = data['organizationReuseItems'];
+                organizationRepairItems = data['organizationRepairItems'];
 
-            populateOrganizationsList();
-            populateCategoriesList();
-            populateItemsList();
+                populateOrganizationsList();
+                populateCategoriesList();
+                populateItemsList();
+            }
+            else {
+                alert("Unable to sync database");
+                // TODO use bootstrap alert
+            }
         },
         function (jqXHR, textStatus, errorThrown) {
             console.log("Error syncing database", textStatus, errorThrown);
