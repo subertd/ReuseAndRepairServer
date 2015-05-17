@@ -66,16 +66,17 @@ $(document).ready(function() {
     var addOrganizationReuseItems = []; // A list of items that this organization reuses
     var addOrganizationRepairItems = []; // A list of items that this organization repairs
 
-    // On clicking the button to open this modal, set up a selector with all the item options
+    // On clicking the button to open this modal
     $("#addOrganizationButton").click(function() {
-        console.log("Detecting click of the add organization button");
 
+        // Set up a selector with all the item options
+        var selectItem = $("#addOrganizationSelectItem");
+        selectItem.empty();
         items.forEach(function(item) {
-
             var itemOption = $(document.createElement('option'));
             itemOption.val(item['id']);
             itemOption.html(item['name']);
-            $("#addOrganizationSelectItem").append(itemOption);
+            selectItem.append(itemOption);
         });
     });
 

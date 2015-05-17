@@ -72,11 +72,13 @@ $(document).ready(function() {
     $("#organizationsList").on('click', 'li', function () {
 
         // Set up a selector with all the item options
+        var selectItem = $("#editOrganizationSelectItem");
+        selectItem.empty();
         items.forEach(function (item) {
             var itemOption = $(document.createElement('option'));
             itemOption.val(item['id']);
             itemOption.html(item['name']);
-            $("#editOrganizationSelectItem").append(itemOption);
+            selectItem.append(itemOption);
         });
 
         // Pre-fill editOrganizationReuseItems
