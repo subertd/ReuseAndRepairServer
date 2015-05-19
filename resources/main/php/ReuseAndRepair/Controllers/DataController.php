@@ -109,73 +109,81 @@ class DataController {
 
         $headers = getallheaders(); // gets the headers of the HTTP request
         $action = isset($headers[self::ACTION]) ? $headers[self::ACTION] : null;
+        $action = isset($headers[strtolower(self::ACTION)]) ? $headers[strtolower(self::ACTION)] : $action;
 
-        switch($_SERVER['REQUEST_METHOD']) {
-            case 'GET':
-                switch($action) {
-                    case self::ACTION_ORGANIZATION:
-                        $this->getOrganizations();
-                        break;
-                    case self::ACTION_CATEGORY:
-                        $this->getCategories();
-                        break;
-                    case self::ACTION_ITEM:
-                        $this->getItems();
-                        break;
-                    case self::ACTION_SYNC:
-                    default:
-                        $this->syncDatabase();
-                        break;
-                }
-                break;
-            case 'POST':
-                switch($action) {
-                    case self::ACTION_ORGANIZATION:
-                        $this->insertOrganization();
-                        break;
-                    case self::ACTION_CATEGORY:
-                        $this->insertCategory();
-                        break;
-                    case self::ACTION_ITEM:
-                        $this->insertItem();
-                        break;
-                    default:
-                        throw new ControllerException("Missing or unknown POST action: '$action'");
-                }
-                break;
-            case 'PUT':
-                switch($action) {
-                    case self::ACTION_ORGANIZATION:
-                        $this->updateOrganization();
-                        break;
-                    case self::ACTION_CATEGORY:
-                        $this->updateCategory();
-                        break;
-                    case self::ACTION_ITEM:
-                        $this->updateItem();
-                        break;
-                    default:
-                        throw new ControllerException("Missing or unknown PUT action: '$action'");
-                }
-                break;
-            case 'DELETE':
-                switch($action) {
-                    case self::ACTION_ORGANIZATION:
-                        $this->deleteOrganization();
-                        break;
-                    case self::ACTION_CATEGORY:
-                        $this->deleteCategory();
-                        break;
-                    case self::ACTION_ITEM:
-                        $this->deleteItem();
-                        break;
-                    default:
-                        throw new ControllerException("Missing or unknown DELETE action: '$action'");
-                }
-                break;
+        try {
+
+            switch ($_SERVER['REQUEST_METHOD']) {
+                case 'GET':
+                    switch ($action) {
+                        case self::ACTION_ORGANIZATION:
+                            $this->getOrganizations();
+                            break;
+                        case self::ACTION_CATEGORY:
+                            $this->getCategories();
+                            break;
+                        case self::ACTION_ITEM:
+                            $this->getItems();
+                            break;
+                        case self::ACTION_SYNC:
+                        default:
+                            $this->syncDatabase();
+                            break;
+                    }
+                    break;
+                case 'POST':
+                    switch ($action) {
+                        case self::ACTION_ORGANIZATION:
+                            $this->insertOrganization();
+                            break;
+                        case self::ACTION_CATEGORY:
+                            $this->insertCategory();
+                            break;
+                        case self::ACTION_ITEM:
+                            $this->insertItem();
+                            break;
+                        default:
+                            throw new ControllerException("Missing or unknown POST action: '$action'");
+                    }
+                    break;
+                case 'PUT':
+                    switch ($action) {
+                        case self::ACTION_ORGANIZATION:
+                            $this->updateOrganization();
+                            break;
+                        case self::ACTION_CATEGORY:
+                            $this->updateCategory();
+                            break;
+                        case self::ACTION_ITEM:
+                            $this->updateItem();
+                            break;
+                        default:
+                            throw new ControllerException("Missing or unknown PUT action: '$action'");
+                    }
+                    break;
+                case 'DELETE':
+                    switch ($action) {
+                        case self::ACTION_ORGANIZATION:
+                            $this->deleteOrganization();
+                            break;
+                        case self::ACTION_CATEGORY:
+                            $this->deleteCategory();
+                            break;
+                        case self::ACTION_ITEM:
+                            $this->deleteItem();
+                            break;
+                        default:
+                            throw new ControllerException("Missing or unknown DELETE action: '$action'");
+                    }
+                    break;
+            }
         }
-
-        $this->dao->close();
+        catch(ControllerException $e) {
+            $this->presenter->presentException($e);
+        }
+        finally {
+            $this->dao->close();
+        }
     }
 
     /**
