@@ -31,7 +31,7 @@ use ReuseAndRepair\Services\ServiceException;
  */
 class DataController {
 
-    const ACTION = "action";
+    const ACTION = "Action";
     const ACTION_SYNC = "sync";
     const ACTION_ORGANIZATION = "organization";
     const ACTION_CATEGORY = "category";
@@ -139,6 +139,8 @@ class DataController {
                     case self::ACTION_ITEM:
                         $this->insertItem();
                         break;
+                    default:
+                        throw new ControllerException("Missing or unknown POST action: '$action'");
                 }
                 break;
             case 'PUT':
@@ -152,6 +154,8 @@ class DataController {
                     case self::ACTION_ITEM:
                         $this->updateItem();
                         break;
+                    default:
+                        throw new ControllerException("Missing or unknown PUT action: '$action'");
                 }
                 break;
             case 'DELETE':
@@ -165,6 +169,8 @@ class DataController {
                     case self::ACTION_ITEM:
                         $this->deleteItem();
                         break;
+                    default:
+                        throw new ControllerException("Missing or unknown DELETE action: '$action'");
                 }
                 break;
         }
