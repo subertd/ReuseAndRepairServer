@@ -248,6 +248,20 @@ $(document).ready(function() {
             }
         );
     });
+
+    // The cancel button clears and closes the form
+    $("#editOrganizationCancelButton").click(function() {
+        resetEditOrganizationModal();
+    });
+
+    // clear and close the form
+    function resetEditOrganizationModal() {
+        $("#editOrganizationModal").modal('hide');
+        editOrganizationReuseItems = [];
+        editOrganizationRepairItems = [];
+        $("#editOrganizationReuseItemsList").empty();
+        $("#editOrganizationRepairItemsList").empty();
+    }
 });
 
 </script>
