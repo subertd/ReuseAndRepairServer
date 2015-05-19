@@ -90,6 +90,9 @@ class OrganizationsService {
         catch (ModelException $e) {
             throw new ServiceException(self::MODEL_ERROR, null, $e);
         }
+        catch (PersistenceException $e) {
+            throw new ServiceException("Unable to insert the organization into persistent memory", null, $e);
+        }
 
         return array('success' => false);
     }

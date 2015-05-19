@@ -345,13 +345,13 @@ class MysqlDataAccessObject implements DataAccessObject {
 
         if (!($stmt = $this->mysqli->prepare(self::UPDATE_ORGANIZATION_STRING)))
         {
-            die("Unable to prepare statement " . $this->mysqli->error);
+            throw new MysqliException("Unable to prepare statement " . $this->mysqli->error);
         }
 
         if (!$stmt->bind_param("ssssi",
             $name,$phoneNumber, $websiteUrl, $physicalAddress, $id))
         {
-            die("Unable to bind params " . $stmt->error);
+            throw new MysqliException("Unable to bind params " . $stmt->error);
         }
 
         if(!($result = $stmt->execute())) {
