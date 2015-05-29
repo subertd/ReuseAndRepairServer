@@ -1,50 +1,66 @@
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html>
-<head lang="en">
-    <meta charset="UTF-8">
-    <title>Corvallis Reuse and Repair App</title>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
-    <script src="javascript/server-proxy.js"></script>
+
+<head>
+	<meta charset="UTF-8">
+	<title>Corvallis Reuse and Repair App</title>
+	<link rel="stylesheet" type="text/css" href="style.css">
+	
+	<script type="text/javascript" src="jquery-1.11.1.min.js"></script>
+	<script type="text/javascript" src="jquery.validate.min.js"></script>
+
+	<script type="text/javascript" src="check-user-jqv.js"></script>
+	<script type="text/javascript" src="check-user-ajax.js"></script>
 </head>
+
 <body>
-<div id="target"></div>
-<!--<h1>Hello World</h1>
-<p>jQuery Failure</p>-->
-<script type="text/javascript">
-    $(document).ready(function() {
-        console.debug("the document is ready");
 
-        /*var serverProxy = new ServerProxy();
-        serverProxy.syncDatabase(
-            function(data, status) {
-                console.debug("Server callback: ", data, status);
-                $("p").html(JSON.stringify(data),
-            function(error) {
-                console.log("Error syncing database", error);
-            });
-        });
+<div>
+<h3 class="center">&emsp;</h3>
+<h3 class="center"></h3>
+<h3 class="center"></h3>
+</div>
 
-        var cat = {
-            // set the properties of cat
-            // second property
-        }
+<div>
+<form id="form1" method="POST"> 
+	<table>
+		<tr>
+			<td class="center" style="width:50%"> </td> 
+			<td class="center" style="width:50%" colspan="2">
+			<h2 class="center"><a href="http://www.republicservicesnw.com" target="_blank">Republic Services Website</a></h2><p>
+			<h4 class="center"><a href="corvallisrecycledepot.pdf" target="_blank">What does Republic recycling depot accept?</a></h4>
+			<h4 class="center"><a href="detailedrecyclingguide.pdf" target="_blank">What Republic takes in curbside recycling containers?</a></h4>
+			</td> 
+		</tr>
+		<tr>
+			<td class="center" style="width:50%"> </td> 
+			<td class="center" style="width:50%" colspan="2"><h3 class="center"><a href="#" >Click Here to Install <br> Corvallis Reuse and Repair Android App </a></h3></td> 
+		</tr>
+		<tr>
+			<td class="center" style="width:50%"> </td> 
+			<td class="center" style="width:50%" colspan="2"><h3 class="center"> Admin Login: </h3></td> 
+		</tr>
+		<tr>
+			<td class="center" style="width:50%"></td>
+			<td class="right" style="width:22%"><span class="center">Username: </span></td>
+			<td class="left" style="width:28%"><input type="text" name="username" id="username" maxlength="10" size="10" class="monospaced" value="admin"></td>
+		</tr>
+		<tr>
+			<td class="center" style="width:50%"> </td>
+			<td class="right" style="width:22%"><span class="center">Password: </span></td>
+			<td class="left" style="width:28%"><input type="password" name="password" id="password" maxlength="10" size="10" class="monospaced" value="AAaa12345"></td>
+		</tr>
+		<tr>
+			<td class="center" style="width:50%"> </td> 
+			<td class="right" style="width:22%"> </td>
+			<td class="left" style="width:28%"><input type="submit" value="Login" onclick="ajax1();"> </td>
+		</tr>
 
-        serverProxy.insert("cat", cat,
-            function(data, status) {
-                // what to do after AJAX success
-            },
-            function(error) {
-                console.log(error);
-            }
-        );
-        */
-
-        $(function() {
-            $("#target").load("partials/addItem.html", function() {
-                $(this).contents().unwrap();
-            })
-        })
-    });
-</script>
+	</table>		
+</form>
+</div>	
+<!--
+<div class="center" id="message"><p class="gray">(Don't have an account? Please <a href="create-account.html">register</a>.)</p></div>
+-->
 </body>
 </html>
