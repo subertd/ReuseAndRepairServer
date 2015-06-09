@@ -7,7 +7,7 @@
 	echo '<title> </title>';
 	echo '</head>';
 	echo '<body>';
-	echo 'Please go to the <a href="index.html">login page</a>.';
+	echo '<h3>Please go to the <a href="index.html">login page</a>.</h3>';
 	echo '</body>';
 	echo '</html>';
 ?>

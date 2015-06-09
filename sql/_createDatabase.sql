@@ -1,4 +1,4 @@
-# It doesn't seem safe to globally disable foreign key checks
+# It doesnt seem safe to globally disable foreign key checks
 # implementing another solution
 #SET FOREIGN_KEY_CHECKS = 0;
 
@@ -11,6 +11,14 @@
 
 DROP DATABASE IF EXISTS `cs419-g15`;
 CREATE DATABASE `cs419-g15`;
+
+CREATE TABLE `cs419-g15`.`admin_account` (
+	id INT(3) AUTO_INCREMENT PRIMARY KEY,
+	username VARCHAR(10) NOT NULL UNIQUE,
+	password VARCHAR(10) NOT NULL,
+	first_name VARCHAR(20) NOT NULL,
+	last_name VARCHAR(20) NOT NULL
+) ENGINE=InnoDB AUTO_INCREMENT=101 DEFAULT CHARSET=utf8;
 
 CREATE TABLE `cs419-g15`.`Organization` (
   `organization_id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,

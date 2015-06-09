@@ -1,5 +1,9 @@
 #SET FOREIGN_KEY_CHECKS = 0;
 
+INSERT INTO `cs419-g15`.`admin_account` (id,username,password,first_name,last_name) VALUES 
+('101','admin','AAaa12345','Admin1','Admin1'),
+('102','admin2','ZZzz67890','Admin2','Admin2');
+
 INSERT INTO  `cs419-g15`.`Organization` (
     `organization_id` ,
     `organization_name`,

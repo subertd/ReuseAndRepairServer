@@ -16,12 +16,10 @@ function ajax1() {
 		xhr.send(data);	
 		xhr.onreadystatechange = function() {
 			if (xhr.readyState == 4 && xhr.status == 200) {
-				//alert(200);//for debugging purpose only
 				document.getElementById("message").innerHTML = xhr.responseText;
 			}
 			if (xhr.readyState == 4 && xhr.status == 202) {
-				//alert(202);//for debugging purpose only
-				window.location = "data-html.php";
+				window.location = "main.php";
 			}
 		}
 	}
