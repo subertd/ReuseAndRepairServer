@@ -13,11 +13,7 @@ class JsonPresenter implements Presenter {
 
     public function presentResponse(array $response) {
 
-        //print_r($response);
-
         $utf8Response = $this->utf8ize($response);
-
-        //die("utf8Response$utf8Response'");
 
         header("content-type:application/json");
         echo json_encode($utf8Response);
