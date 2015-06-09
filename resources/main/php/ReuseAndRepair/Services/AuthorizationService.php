@@ -21,6 +21,8 @@ class AuthorizationService {
     /**
      * Returns whether the user is authorized to make changes to the data
      *
+     * At the moment, any user who can be authenticated is a priveledged user
+     *
      * @param AuthenticationService $authenticationService
      * @param array $params the parsed HTTP request parameters
      * @return bool true if the user is authorized, else false
@@ -28,13 +30,13 @@ class AuthorizationService {
     public function isAuthorized(AuthenticationService $authenticationService,
         array $params)
     {
-        // TODO implement
         /*
          * Put here, the code for determining whether a user, once identified,
          * is an administrative user.
          *
          * Use the AuthenticationService to get the identity of the user
          */
-        return true;
+
+        return $authenticationService->authenticate($params);
     }
 }

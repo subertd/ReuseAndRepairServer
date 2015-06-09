@@ -12,7 +12,7 @@ if (isset($_SESSION['username'])&&isset($_SESSION['password'])) {
     <title>Corvallis Reuse and Repair App</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
-    <script src="javascript/server-proxy.js"></script>
+    <script src="../public_html/javascript/server-proxy.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
 </head>
 <body>
@@ -31,7 +31,7 @@ if (isset($_SESSION['username'])&&isset($_SESSION['password'])) {
 			?>
 		</td>
 		<td class="header" style="width:25%">
-			<h3><a href="<?php echo $_SERVER['PHP_SELF']; ?>">Refresh Page</a>&emsp;<a href="logout.php">Log out</a></h3>
+			<h3><a href="<?php echo $_SERVER['PHP_SELF']; ?>">Refresh Page</a>&emsp;<a href="../public_html/logout.php">Log out</a></h3>
 		</td>
 	</tr>
 </table>	
