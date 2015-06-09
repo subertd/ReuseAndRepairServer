@@ -15,6 +15,10 @@ function ServerProxy() {
     var serverUrl = "data.php";
 
     var ajaxToServer = function(method, type, model, callback, errorCallback) {
+
+        model.userId = localStorage.getItem("userId");
+        model.sessionToken = localStorage.getItem("sessionToken");
+
         $.ajax({
             url: serverUrl,
             method: method,
