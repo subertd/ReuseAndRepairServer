@@ -1,8 +1,15 @@
 <?php
 
-session_start();
+require_once('../autoload.php');
 
-if (isset($_SESSION['userId'])&&isset($_SESSION['sessionToken'])) {
+use ReuseAndRepair\Session;
+
+//session_start();
+$session = new Session();
+
+if ($session->hasAuthenticatedSession()) {
+
+//if (isset($_SESSION['userId'])&&isset($_SESSION['sessionToken'])) {
 ?>
 
 <!DOCTYPE html>
@@ -22,17 +29,14 @@ if (isset($_SESSION['userId'])&&isset($_SESSION['sessionToken'])) {
 <div>
 <table class="header" style="width:100%;text-align: center;">
 	<tr>
-		
+		<td class="header" style="width:40%">
+                        <h3>Corvallis Reuse And Repair</h3>
+                </td>
 		<td class="header" style="width:40%">
 			<h3>Database Management Portal</h3>
 		</td>
-		<td class="header" style="width:20%">
-			<?php
-			echo '<h3>Welcome, '.$_SESSION['username'].'</h3>';
-			?>
-		</td>
 		<td class="header" style="width:40%">
-			<h3><a href="<?php echo $_SERVER['PHP_SELF']; ?>">Refresh Page</a>&emsp;<a href="logout.php">Log out</a></h3>
+			<h3><a href="logout.php">Log out</a></h3>
 		</td>
 	</tr>
 </table>	
@@ -386,6 +390,10 @@ $(document).ready(function() {
 	
 }
 else {
-	include('redirect.php');
+
+    echo "you done goofed. Here's the actual session\n";
+    print_r($_SESSION);
+
+	//include('redirect.php');
 }
 ?>

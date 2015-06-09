@@ -12,6 +12,8 @@ namespace ReuseAndRepair;
 class Session {
 
     public function __construct() {
+        $root = $_SERVER['DOCUMENT_ROOT'];
+        session_save_path ("sessions");
         session_start();
     }
 
@@ -21,13 +23,13 @@ class Session {
 
         $_SESSION['userId'] = $userId;
         $_SESSION['sessionToken'] = $sessionToken;
-
+        
         return $sessionToken;
     }
 
     public function verifySessionToken($userId, $sessionToken) {
 
-        if (isset($_SESSION['userId'])&&isset($_SESSION['sessionToken'])) {
+        if (isset($_SESSION['userId']) && isset($_SESSION['sessionToken'])) {
 
             if (strcmp($userId, $_SESSION['userId']) == 0
                 && strcmp($sessionToken, $_SESSION['sessionToken']) == 0)
@@ -37,5 +39,15 @@ class Session {
         }
 
         return false;
+    }
+
+    public function hasAuthenticatedSession() {
+
+        if (isset($_SESSION['userId']) && isset($_SESSION['sessionToken'])) {
+            return true;
+        }
+        else {
+            return false;
+        }
     }
 }

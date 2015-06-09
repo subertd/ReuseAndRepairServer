@@ -19,9 +19,10 @@ function ajax1() {
 				document.getElementById("message").innerHTML = xhr.responseText;
 			}
 			if (xhr.readyState == 4 && xhr.status == 202) {
-                localStorage.setItem("userName", xhr.getResponseHeader["userId"]);
-                localStorage.setItem("sessionToken", xhr.getResponseHeader["sessionToken"]);
-				window.location = "../main.php";
+                            console.log("202: " + xhr);
+                            localStorage.setItem("userName", xhr.getResponseHeader["userId"]);
+                            localStorage.setItem("sessionToken", xhr.getResponseHeader["sessionToken"]);
+                            window.location = "main.php";
 			}
 		}
 	}
