@@ -391,9 +391,9 @@ $(document).ready(function() {
 }
 else {
 
-    echo "you done goofed. Here's the actual session\n";
-    print_r($_SESSION);
+    //echo "you done goofed. Here's the actual session\n";
+    //print_r($_SESSION);
 
-	//include('redirect.php');
+    include('redirect.php');
 }
 ?>
