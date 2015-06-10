@@ -19,7 +19,7 @@ class Session {
 
     public function establishAuthenticatedSession($userId) {
 
-        $sessionToken = \openssl_random_pseudo_bytes (100, $cstrong);
+        $sessionToken = \md5($userId + \time());
 
         $_SESSION['userId'] = $userId;
         $_SESSION['sessionToken'] = $sessionToken;
@@ -36,6 +36,15 @@ class Session {
             {
                 return true;
             }
+            else {
+                print_r($_SESSION);
+                echo "userId: $userId; sessionToken: $sessionToken \n <br>";
+                die("Session.verify doesn't get a match for credentials");
+            }
+        }
+        else {
+ 
+            die("Session.verify... doesn't see session variables");
         }
 
         return false;

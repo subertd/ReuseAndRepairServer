@@ -23,14 +23,15 @@ class AuthenticationService {
 
         $session = new Session();
 
-        if (empty($params[self::USER_ID]) || empty($params[self::sessionToken])) {
+        if (empty($params[self::USER_ID]) || empty($params[self::SESSION_TOKEN])) {
             throw new ServiceException("Missing parameters for userId and/or sessionToken");
         }
 
-        if ($session->verifySessionToken($params[self::USER_ID], $params[self::sessionToken])) {
+        if ($session->verifySessionToken($params[self::USER_ID], $params[self::SESSION_TOKEN])) {
             return true;
         }
         else {
+
             return false;
         }
     }

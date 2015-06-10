@@ -31,8 +31,6 @@ if ((isset($_POST['username']))&&(isset($_POST['password']))) {
                 $session = new Session();
                 $sessionToken = $session->establishAuthenticatedSession($userId);
 	
-                $sessionToken = "TEST TEST TEST";
-	
                 $response = array(
                     'userId' => $userId,
                     'sessionToken' => $sessionToken

@@ -18,12 +18,13 @@ function ajax1() {
 			if (xhr.readyState == 4 && xhr.status == 200) {
 				document.getElementById("message").innerHTML = xhr.responseText;
 			}
-			if (xhr.readyState == 4 && xhr.status == 202) {
-                        console.log("202: " + xhr);
-                        var response = JSON.stringify(xhr.responseText);
-                        localStorage.setItem("userId", response["userId"]);
-                        localStorage.setItem("sessionToken", response["sessionToken"]);
-                        window.location = "main.php";
+			else if (xhr.readyState == 4 && xhr.status == 202) {
+                            console.log("202: ", xhr);
+                            var response = JSON.parse(xhr.responseText);
+                            localStorage.setItem("userId", response["userId"]);
+                            localStorage.setItem("sessionToken", response["sessionToken"]);
+                            window.location = "main.php";
+                           
 			}
 		}
 	}

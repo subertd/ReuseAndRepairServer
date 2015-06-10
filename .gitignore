@@ -1,2 +1,3 @@
 composer.lock
-resources/main/config/database.ini
+iresources/main/config/database.ini
+public_html/sessions/
