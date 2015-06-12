@@ -9,6 +9,8 @@
 namespace ReuseAndRepair;
 
 
+use ReuseAndRepair\Services\ServiceException;
+
 class Session {
 
     public function __construct() {
@@ -37,9 +39,7 @@ class Session {
                 return true;
             }
             else {
-                print_r($_SESSION);
-                echo "userId: $userId; sessionToken: $sessionToken \n <br>";
-                die("Session.verify doesn't get a match for credentials");
+                throw new ServiceException("Invalid session token");
             }
         }
         else {

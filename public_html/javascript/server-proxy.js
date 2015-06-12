@@ -21,7 +21,7 @@ function ServerProxy() {
             model.sessionToken = localStorage.getItem("sessionToken");
         }
 
-        console.log("model: ", model);
+        console.log("model: ", model, JSON.stringify(model));
 
         $.ajax({
             url: serverUrl,
