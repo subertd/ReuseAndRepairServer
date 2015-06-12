@@ -36,20 +36,9 @@ if ((isset($_POST['username']))&&(isset($_POST['password']))) {
                     'sessionToken' => $sessionToken
                 );
 
-                //print_r($response);
-             //   echo json_encode($response);                
-
                 header("Content-type:application/json");
                 header("HTTP/1.0 202 Accepted");
                 echo json_encode($response);
-	  //      die();
-
-//die("TEST TEST TEST");
-
-
-            //    header("userId", $userId);
-            //    header("sessionToken", $sessionToken);
-             //   die();
             }
         }
     }

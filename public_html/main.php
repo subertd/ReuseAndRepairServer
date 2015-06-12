@@ -4,12 +4,10 @@ require_once('../autoload.php');
 
 use ReuseAndRepair\Session;
 
-//session_start();
 $session = new Session();
 
 if ($session->hasAuthenticatedSession()) {
 
-//if (isset($_SESSION['userId'])&&isset($_SESSION['sessionToken'])) {
 ?>
 
 <!DOCTYPE html>
@@ -390,9 +388,6 @@ $(document).ready(function() {
 	
 }
 else {
-
-    //echo "you done goofed. Here's the actual session\n";
-    //print_r($_SESSION);
 
     include('redirect.php');
 }

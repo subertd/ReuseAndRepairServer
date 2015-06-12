@@ -181,6 +181,7 @@ class MysqlDataAccessObject implements DataAccessObject {
 
             return array('success' => true);
         } catch (MysqliException $e) {
+
             $this->mysqli->rollback();
             $this->mysqli->autocommit(true);
             throw new PersistenceException("Unable to persist organization", null, $e);
@@ -207,7 +208,7 @@ class MysqlDataAccessObject implements DataAccessObject {
 
         if (!($stmt = $this->mysqli->prepare(self::INSERT_ORGANIZATION_STRING)))
         {
-            throw new MysqliException("Unable to prepare statement for insert organization" . $this->mysqli->error);
+            throw new MysqliException("Unable to prepare statement for insert organization " . $this->mysqli->error);
         }
 
         if (!$stmt->bind_param("ssss", $name, $phoneNumber, $websiteUrl, $physicalAddress))
@@ -220,6 +221,39 @@ class MysqlDataAccessObject implements DataAccessObject {
         }
 
         $organization->setId($stmt->insert_id);
+    }
+
+    private function updateOrganizationInOrganizationTable(Organization $organization)
+    {
+        /** @var int $id */
+        $id = $organization->getId();
+
+        /** @var string $name */
+        $name = $organization->getName();
+
+        /** @var string $phoneNumber */
+        $phoneNumber = $organization->getPhoneNumber();
+
+        /** @var string $websiteUrl */
+        $websiteUrl = $organization->getWebsiteUrl();
+
+        /** @var string $physicalAddress */
+        $physicalAddress = $organization->getPhysicalAddress();
+
+        if (!($stmt = $this->mysqli->prepare(self::UPDATE_ORGANIZATION_STRING)))
+        {
+            throw new MysqliException("Unable to prepare statement for update organization " . $this->mysqli->error);
+        }
+
+        if (!$stmt->bind_param("ssssi",
+            $name,$phoneNumber, $websiteUrl, $physicalAddress, $id))
+        {
+            throw new MysqliException("Unable to bind params " . $stmt->error);
+        }
+
+        if(!($result = $stmt->execute())) {
+            throw new PersistenceException($stmt->error, $stmt->errno);
+        }
     }
 
     /**
@@ -315,7 +349,7 @@ class MysqlDataAccessObject implements DataAccessObject {
             ) VALUES ";
         foreach($itemRelationships as $index=>$itemRelationship) {
             $itemId = (int)$itemRelationship['itemId'];
-            $additionalRepairInfo = $this->mysqli->real_escape_string($itemRelationship['additionalRepairInfo']);
+            $additionalRepairInfo = isset($itemRelationship['additionalRepairInfo']) ? $this->mysqli->real_escape_string($itemRelationship['additionalRepairInfo']) : "";
             if ($index > 0) { $sql .= ", "; }
             $sql .= "($organizationId, $itemId, '$additionalRepairInfo')";
         }
@@ -328,37 +362,25 @@ class MysqlDataAccessObject implements DataAccessObject {
 
     public function updateOrganization(Organization $organization)
     {
-        /** @var int $id */
-        $id = $organization->getId();
+        $this->mysqli->autocommit(false);
 
-        /** @var string $name */
-        $name = $organization->getName();
+        try {
+            $this->updateOrganizationInOrganizationTable($organization);
+            $this->clearOrganizationReuseItemsForOrganization($organization);
+            $this->clearOrganizationRepairItemsForOrganization($organization);
+            $this->setOrganizationReuseItemsForOrganization($organization);
+            $this->setOrganizationRepairItemsForOrganization($organization);
 
-        /** @var string $phoneNumber */
-        $phoneNumber = $organization->getPhoneNumber();
+            $this->mysqli->commit();
+        }
+        catch (MysqliException $e) {
 
-        /** @var string $websiteUrl */
-        $websiteUrl = $organization->getWebsiteUrl();
-
-        /** @var string $physicalAddress */
-        $physicalAddress = $organization->getPhysicalAddress();
-
-        if (!($stmt = $this->mysqli->prepare(self::UPDATE_ORGANIZATION_STRING)))
-        {
-            throw new MysqliException("Unable to prepare statement " . $this->mysqli->error);
+            $this->mysqli->rollback();
+            $this->mysqli->autocommit(true);
+            throw new PersistenceException("Unable to persist updates to organization", null, $e);
         }
 
-        if (!$stmt->bind_param("ssssi",
-            $name,$phoneNumber, $websiteUrl, $physicalAddress, $id))
-        {
-            throw new MysqliException("Unable to bind params " . $stmt->error);
-        }
-
-        if(!($result = $stmt->execute())) {
-            throw new PersistenceException($stmt->error, $stmt->errno);
-        }
-
-        return array('success' => $result);
+        return array('success' => true);
     }
 
     public function deleteOrganization($id) {
